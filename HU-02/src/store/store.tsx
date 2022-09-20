@@ -32,6 +32,7 @@ type PropsState = {
     showInfo: boolean;
     showWriteRegister: boolean;
   };
+  user: 'customer' | 'admin';
 };
 
 type PropsDataDB = {
@@ -88,6 +89,7 @@ export const StoreProvider = ({ children }) => {
       showInfo: false,
       showWriteRegister: false,
     },
+    user: 'customer',
   });
 
   const initialalue: PropsStore = {

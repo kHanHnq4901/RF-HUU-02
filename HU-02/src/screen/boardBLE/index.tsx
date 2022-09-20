@@ -93,12 +93,14 @@ export const BoardBLEScreen = () => {
             //style={{ ...styles.btn, backgroundColor: Colors.secondary }}
             onPress={throttle(handleBtn.onUpdateFirmWareContainer, 2000)}
           />
-          {/* <Button
-            label="Đổi tên thiết bị"
-            style={styles.btn}
-            //style={{ ...styles.btn, backgroundColor: Colors.secondary }}
-            onPress={throttle(handleBtn.onChangeNamePress, 2000)}
-          /> */}
+          {controller.store?.value.user === 'admin' && (
+            <Button
+              label="Đổi tên thiết bị"
+              style={styles.btn}
+              //style={{ ...styles.btn, backgroundColor: Colors.secondary }}
+              onPress={throttle(handleBtn.onChangeNamePress, 2000)}
+            />
+          )}
         </View>
         <View
           style={{

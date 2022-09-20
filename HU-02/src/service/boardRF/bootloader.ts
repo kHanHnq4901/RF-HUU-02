@@ -2,9 +2,9 @@ import { Buffer } from 'buffer';
 import { hookProps, setStatus } from '../../screen/boardBLE/controller';
 import { int32_t, int64_t, uint32_t, uint8_t } from '../../util/custom_typedef';
 import {
-  analysisRx,
   hhuFunc_HeaderProps,
   hhuFunc_Send,
+  hhuFunc_wait,
   TYPE_HHU_CMD,
 } from '../hhu/Ble/hhuFunc';
 
@@ -208,7 +208,7 @@ export const SendFlashPage = async (): Promise<boolean> => {
       let bResult = await hhuFunc_Send(hhuHeader, buff);
       if (bResult === true) {
         console.log('wait ...');
-        const respond = await analysisRx(4000);
+        const respond = await hhuFunc_wait(4000);
         console.log('wait bResult:', respond.bSucceed);
         if (respond.bSucceed) {
           if (respond.obj.hhuHeader.u8Cmd === TYPE_HHU_CMD.ACK) {

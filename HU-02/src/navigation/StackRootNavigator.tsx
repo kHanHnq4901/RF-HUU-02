@@ -10,7 +10,7 @@ const Stack = createNativeStackNavigator<StackRootParamsList>();
 export function StackRootNavigator() {
   return (
     <Stack.Navigator
-      initialRouteName="Drawer"
+      initialRouteName="Login"
       screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Drawer" component={DrawerNavigator} />

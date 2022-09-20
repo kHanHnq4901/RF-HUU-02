@@ -6249,6 +6249,11 @@ react-native-select-dropdown@^2.0.3:
   resolved "https://registry.yarnpkg.com/react-native-select-dropdown/-/react-native-select-dropdown-2.0.3.tgz#4e23668c6bba92ef05c1729fd3acd003ed2cf947"
   integrity sha512-UEJxd1O6FW0IrEhdnHD/LwpksgkvHvqifpBqHmPuLhHmB/8oRLBQDLaXCodNTPu1nDQ/ARYOjUNxNuNIel9N6Q==
 
+react-native-sha256@^1.4.7:
+  version "1.4.8"
+  resolved "https://registry.yarnpkg.com/react-native-sha256/-/react-native-sha256-1.4.8.tgz#0c22ccb6a6d59ca5301488d5551c2c9aa13a50dc"
+  integrity sha512-vjkvYxdK2wQlKZ78hqp8s3jfS6J0ks4IGZIFwKaLhlhVTGF0iAlZvh6WHcjaQa2GEgC4IRQXnpPyjIVhp5H6WA==
+
 react-native-share@^7.3.9:
   version "7.3.9"
   resolved "https://registry.yarnpkg.com/react-native-share/-/react-native-share-7.3.9.tgz#e745421027b96e78ade9794bddaf441ff4c19718"

@@ -244,5 +244,11 @@ const ondUpdateFirmwareBtnPress = async (reset: boolean = true) => {
   } catch (err) {
     console.log('err here');
     console.log(err.message);
+    hookProps.setState(state => {
+      state.isBusy = false;
+      state.status = 'Xảy ra lỗi';
+      state.isUpdatingFirmware = false;
+      return { ...state };
+    });
   }
 };

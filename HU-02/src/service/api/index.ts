@@ -62,7 +62,7 @@ export const getVersion = async (): Promise<PropsReturnGetVerion> => {
   ret.priority = 'Cao';
   try {
     const rest = await axios.get(
-      `http://222.252.14.147:5050/version.txt?timestamp=${new Date().getTime()}`,
+      `http://222.252.14.147:5050/HU_02/version.txt?timestamp=${new Date().getTime()}`,
     );
     const arr: string[] = rest?.data.split('_');
     if (arr.length !== 3) {
@@ -97,7 +97,7 @@ export const getStringFirmware = async (): Promise<PropsReturnGetFirmware> => {
 
   try {
     const { data }: { data: string } = await axios.get(
-      `http://222.252.14.147:5050/GELEXEMIC_Firmware.txt?timestamp=${new Date().getTime()}`,
+      `http://222.252.14.147:5050/HU_02/firmware.txt?timestamp=${new Date().getTime()}`,
     );
     ret.bResult = true;
     ret.strFirmware = data;

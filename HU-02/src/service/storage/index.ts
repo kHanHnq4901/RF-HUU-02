@@ -16,6 +16,7 @@ export type PropsSettingAndAlarm = {
 
 export type PropsAppSetting = {
   password: string;
+  passwordAdmin: string;
   numRetriesRead: string;
   CMISPath: string;
   IP: string;
@@ -30,6 +31,10 @@ export const getDefaultStorageValue = (): PropsAppSetting => {
   storageVariable.password = '123456';
   storageVariable.IP = '222.252.14.147';
   storageVariable.Port = '6060';
+  storageVariable.password =
+    '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92';
+  storageVariable.passwordAdmin =
+    'fa656a64a169bd0f37f44fc4c42e62f8b533827eff4af4f2050b238da70b0bf3';
   // storageVariable.showResultOKInWriteData = false;
   // storageVariable.setting = {
   //   typeAlarm: 'Percent',
