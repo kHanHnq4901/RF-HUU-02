@@ -1,7 +1,4 @@
 import { DrawerParamsList } from '../navigation/model/model';
-import { StackViewDataNavigator } from '../navigation/StackViewData';
-import { StackWriteBookCodeNavigator } from '../navigation/StackWriteByBookCode';
-import { StackWriteColumnCodeNavigator } from '../navigation/StackWriteByColumnCode';
 import { AboutScreen } from '../screen/about';
 import { BoardBLEScreen } from '../screen/boardBLE';
 import { DeclareMeterScreen } from '../screen/declareMeter';
@@ -37,13 +34,7 @@ export const screenDatas: DataScreensProps = [
     icon: 'pie-chart',
     component: OverViewScreen,
   },
-  {
-    title: 'Khai báo đồng hồ',
-    info: 'Khai báo đồng hồ kèm vị trí GPS của đồng hồ',
-    id: 'DeclareMeter',
-    icon: 'creditcard',
-    component: DeclareMeterScreen,
-  },
+
   {
     title: 'Xem chỉ số',
     info: 'Xem toàn bộ dữ liệu. \nNhấn vào biểu tượng quyển sách để xem chi tiết',
@@ -59,6 +50,13 @@ export const screenDatas: DataScreensProps = [
     id: 'WriteData',
     icon: 'ios-pencil',
     component: null, //StackWriteDataNavigator,
+  },
+  {
+    title: 'Khai báo đồng hồ',
+    info: 'Khai báo đồng hồ kèm vị trí GPS của đồng hồ',
+    id: 'DeclareMeter',
+    icon: 'ios-create-outline',
+    component: DeclareMeterScreen,
   },
   // {
   //   title: 'Xem điện áp',
