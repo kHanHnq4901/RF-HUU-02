@@ -8,7 +8,7 @@ import { onLoginPress } from './handleButton';
 
 const TAG = 'LoginScreen:';
 
-const version = 'RF Gelex Version ' + ver;
+const version = 'HU-02 Version ' + ver;
 
 let pass = '';
 

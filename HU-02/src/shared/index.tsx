@@ -4,6 +4,7 @@ import { StackWriteBookCodeNavigator } from '../navigation/StackWriteByBookCode'
 import { StackWriteColumnCodeNavigator } from '../navigation/StackWriteByColumnCode';
 import { AboutScreen } from '../screen/about';
 import { BoardBLEScreen } from '../screen/boardBLE';
+import { DeclareMeterScreen } from '../screen/declareMeter';
 import { ExportXmlScreen } from '../screen/exportXml';
 import { ImportXmlScreen } from '../screen/importXml';
 import { OverViewScreen } from '../screen/overview';
@@ -35,6 +36,13 @@ export const screenDatas: DataScreensProps = [
     id: 'Overview',
     icon: 'pie-chart',
     component: OverViewScreen,
+  },
+  {
+    title: 'Khai báo đồng hồ',
+    info: 'Khai báo đồng hồ kèm vị trí GPS của đồng hồ',
+    id: 'DeclareMeter',
+    icon: 'creditcard',
+    component: DeclareMeterScreen,
   },
   {
     title: 'Xem chỉ số',

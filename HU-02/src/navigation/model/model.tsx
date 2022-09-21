@@ -86,6 +86,7 @@ export type DrawerParamsList = {
   WriteDataByBookCode: NavigatorScreenParams<StackWriteBookCodeNavigationProp>;
   WriteDataByPosition: ParamsDrawerProps;
   ReadParameter: ParamsDrawerProps;
+  DeclareMeter: ParamsDrawerProps;
   ReadOptical: ParamsDrawerProps;
   AbnormalRegister: ParamsDrawerProps;
   ImportExportCSDL: ParamsDrawerProps;
