@@ -1,7 +1,7 @@
-import { useContext } from 'react';
-import { bleManagerEmitter } from '../../../screen/ble/controller';
-import { onReceiveSharingIntent } from '../../../service/event';
-import { requestPermissionWriteExternalStorage } from '../../../service/permission';
+import {useContext} from 'react';
+import {bleManagerEmitter} from '../../../screen/ble/controller';
+import {onReceiveSharingIntent} from '../../../service/event';
+import {requestPermissionWriteExternalStorage} from '../../../service/permission';
 import {
   PATH_IMPORT_CSDL,
   PATH_EXECUTE_CSDL,
@@ -10,13 +10,13 @@ import {
   PATH_EXPORT_XML,
   PATH_EXPORT_XML_EXTERNAL,
 } from '../../../shared/path';
-import { PropsStore, storeContext } from '../../../store/store';
+import {PropsStore, storeContext} from '../../../store/store';
 import RNFS from 'react-native-fs';
-import { updateValueAppSettingFromNvm } from '../../../service/storage';
-import { Alert, DeviceEventEmitter, EmitterSubscription } from 'react-native';
-import { UPDATE_FW_HHU } from '../../../service/event/constant';
-import { checkTabelDBIfExist } from '../../../database/repository';
-import { ObjSend } from '../../../service/hhu/Ble/hhuFunc';
+import {updateValueAppSettingFromNvm} from '../../../service/storage';
+import {Alert, DeviceEventEmitter, EmitterSubscription} from 'react-native';
+import {UPDATE_FW_HHU} from '../../../service/event/constant';
+import {checkTabelDBIfExist} from '../../../database/repository';
+import {ObjSend} from '../../../service/hhu/Ble/hhuFunc';
 import {
   connectLatestBLE,
   handleUpdateValueForCharacteristic,
@@ -40,7 +40,7 @@ const hhuHandleDisconnectedPeripheral = data => {
   store?.setValue(state => {
     state.hhu.idConnected = null;
     state.hhu.connect = 'DISCONNECTED';
-    return { ...state };
+    return {...state};
   });
   ObjSend.id = null;
 };
@@ -49,7 +49,7 @@ export const onInit = async navigation => {
   let appSetting = await updateValueAppSettingFromNvm();
   store?.setValue(state => {
     state.appSetting = appSetting;
-    return { ...state };
+    return {...state};
   });
 
   console.log('add listener drawer');
@@ -67,13 +67,13 @@ export const onInit = async navigation => {
   }
 
   try {
-    if (store?.value.hhu.connect === 'DISCONNECTED') {
+    if (store.state.hhu.connect === 'DISCONNECTED') {
       connectLatestBLE(store);
     }
   } catch (err) {
     store?.setValue(state => {
       state.hhu.connect = 'DISCONNECTED';
-      return { ...state };
+      return {...state};
     });
   }
 

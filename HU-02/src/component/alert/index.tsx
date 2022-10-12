@@ -26,7 +26,7 @@ export const Alert = () => {
 
   return (
     <SCLAlert
-      show={store.value.alert.show}
+      show={store.state.alert.show}
       onRequestClose={closeAlert}
       slideAnimationDuration={0}
       onDismiss={closeAlert}

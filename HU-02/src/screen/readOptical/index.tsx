@@ -1,7 +1,7 @@
-import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
-import { useNavigation } from '@react-navigation/native';
+import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
+import {useNavigation} from '@react-navigation/native';
 import throttle from 'lodash.throttle';
-import React, { useMemo } from 'react';
+import React, {useMemo} from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -10,10 +10,10 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Row, Rows, Table } from 'react-native-table-component';
-import { Button } from '../../component/button/button';
-import { CheckboxButton } from '../../component/checkbox/checkbox';
-import { RadioButton } from '../../component/radioButton/radioButton';
+import {Row, Rows, Table} from 'react-native-table-component';
+import {Button} from '../../component/button/button';
+import {CheckboxButton} from '../../component/checkbox/checkbox';
+import {RadioButton} from '../../component/radioButton/radioButton';
 import Theme, {
   Colors,
   CommonFontSize,
@@ -25,8 +25,8 @@ import Theme, {
   sizeScreen,
 } from '../../theme';
 import * as readParamsController from './controller';
-import { onDeInit, onInit } from './controller';
-import { onBtnReadPress } from './handleButton';
+import {onDeInit, onInit} from './controller';
+import {onBtnReadPress} from './handleButton';
 
 export const ReadOpticalScreen = () => {
   const hookProps = readParamsController.GetHookProps();
@@ -37,7 +37,7 @@ export const ReadOpticalScreen = () => {
     return onDeInit;
   }, []);
 
-  const RenderRadioButton = ({ e }: { e: any }) => {
+  const RenderRadioButton = ({e}: {e: any}) => {
     return useMemo(() => {
       return (
         <RadioButton
@@ -46,7 +46,7 @@ export const ReadOpticalScreen = () => {
           value={e}
           checked={hookProps.state.typeRead === e ? true : false}
           onPress={() => {
-            hookProps.setState(state => ({ ...state, typeRead: e }));
+            hookProps.setState(state => ({...state, typeRead: e}));
           }}
         />
       );
@@ -73,7 +73,7 @@ export const ReadOpticalScreen = () => {
     }, [...hookProps.state.dataTable]);
   };
 
-  const styleSelectDate = { ...styles.selectDate };
+  const styleSelectDate = {...styles.selectDate};
   //console.log('hookProps.state.typeRead:', hookProps.state.typeRead);
   styleSelectDate.color =
     hookProps.state.typeRead === 'Dữ liệu gần nhất'
@@ -94,7 +94,7 @@ export const ReadOpticalScreen = () => {
               hookProps.setState(state => {
                 state.typeData.items[index].checked =
                   !state.typeData.items[index].checked;
-                return { ...state };
+                return {...state};
               });
             }}
             style={styles.checkBoxTypeData}
@@ -123,7 +123,7 @@ export const ReadOpticalScreen = () => {
                         date.nativeEvent.timestamp as string | number,
                       );
                       console.log(state.dateStart.toLocaleString());
-                      return { ...state };
+                      return {...state};
                     });
                   }
                 },
@@ -156,7 +156,7 @@ export const ReadOpticalScreen = () => {
                         date.nativeEvent.timestamp as string | number,
                       );
                       console.log(state.dateStart.toLocaleString());
-                      return { ...state };
+                      return {...state};
                     });
                   }
                 },
@@ -192,7 +192,7 @@ export const ReadOpticalScreen = () => {
                         date.nativeEvent.timestamp as string | number,
                       );
                       console.log(state.dateEnd.toLocaleString());
-                      return { ...state };
+                      return {...state};
                     });
                   }
                 },
@@ -224,7 +224,7 @@ export const ReadOpticalScreen = () => {
                       state.dateEnd = new Date(
                         date.nativeEvent.timestamp as string | number,
                       );
-                      return { ...state };
+                      return {...state};
                     });
                   }
                 },
@@ -250,7 +250,7 @@ export const ReadOpticalScreen = () => {
         })}
       </View>
       <Text style={styles.status}>{hookProps.state.status}</Text>
-      <Table borderStyle={{ borderWidth: 2, borderColor: '#c8e1ff' }}>
+      <Table borderStyle={{borderWidth: 2, borderColor: '#c8e1ff'}}>
         <Row
           data={readParamsController.dataHeaderTable}
           style={styles.head}
@@ -275,7 +275,7 @@ export const ReadOpticalScreen = () => {
               if (hookProps.state.requestStop === false) {
                 hookProps.setState(state => {
                   state.requestStop = true;
-                  return { ...state };
+                  return {...state};
                 });
               }
             }}

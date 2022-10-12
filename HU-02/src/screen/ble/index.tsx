@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -9,10 +9,11 @@ import {
 import IconAnt from 'react-native-vector-icons/AntDesign';
 import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
 
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { Caption } from 'react-native-paper';
-import { StackRootParamsList } from '../../navigation/model/model';
+import {useNavigation} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {Caption} from 'react-native-paper';
+import {StackRootList} from '../../navigation/model/model';
+import {Colors, normalize} from '../../theme';
 import {
   GetHookProps,
   hookProps,
@@ -22,8 +23,7 @@ import {
   setStatus,
   store,
 } from './controller';
-import { connectHandle, disConnect, onScanPress } from './handleButton';
-import { Colors, normalize } from '../../theme';
+import {connectHandle, disConnect, onScanPress} from './handleButton';
 
 const TAG = 'BleScreen:';
 
@@ -39,14 +39,12 @@ const BleItem = (props: PropsItemBle) => {
         disConnect(props.id);
       }}>
       <View style={styles.row}>
-        <Text style={{ ...styles.titleItem, maxWidth: '80%' }}>
-          {props.name}
-        </Text>
+        <Text style={{...styles.titleItem, maxWidth: '80%'}}>{props.name}</Text>
         <IconFontAwesome
           name="bluetooth"
           size={25}
           color={
-            props.id === store?.value.hhu.idConnected ? '#5fe321' : '#8f0cad'
+            props.id === store.state.hhu.idConnected ? '#5fe321' : '#8f0cad'
           }
         />
       </View>
@@ -60,7 +58,7 @@ const BleItem = (props: PropsItemBle) => {
 export const SetUpBleScreen = () => {
   GetHookProps();
 
-  const navigation = useNavigation<StackNavigationProp<StackRootParamsList>>();
+  const navigation = useNavigation<StackNavigationProp<StackRootList>>();
 
   React.useEffect(() => {
     onInit(navigation);
@@ -72,14 +70,14 @@ export const SetUpBleScreen = () => {
   //const refScroll = useRef<any>({});
 
   return (
-    <View style={{ flex: 1, paddingHorizontal: 10 }}>
+    <View style={{flex: 1, paddingHorizontal: 10}}>
       <View
         style={{
           flexDirection: 'row',
           marginVertical: 20,
           paddingHorizontal: 8,
         }}>
-        <View style={{ flex: 1 }} />
+        <View style={{flex: 1}} />
         <TouchableOpacity
           onPress={onScanPress}
           style={{
@@ -88,7 +86,7 @@ export const SetUpBleScreen = () => {
             padding: 10,
             borderRadius: 15,
           }}>
-          <Text style={{ fontSize: 20, marginRight: 10, color: Colors.text }}>
+          <Text style={{fontSize: 20, marginRight: 10, color: Colors.text}}>
             {hookProps.state.ble.isScan ? 'Đang tìm kiếm ...' : 'Tìm kiếm'}
           </Text>
           <IconAnt name="search1" size={35} color="#f70f3c" />
@@ -98,25 +96,25 @@ export const SetUpBleScreen = () => {
       <Text style={styles.status}>{hookProps.state.status}</Text>
 
       <ScrollView showsVerticalScrollIndicator={false}>
-        {store.value.hhu.connect === 'CONNECTED' && (
+        {store.state.hhu.connect === 'CONNECTED' && (
           <>
-            <Text style={{ ...styles.title, marginBottom: 10 }}>
+            <Text style={{...styles.title, marginBottom: 10}}>
               Thiết bị đang kết nối:
             </Text>
             <BleItem
-              id={store.value.hhu.idConnected as string}
-              name={store.value.hhu.idConnected as string}
+              id={store.state.hhu.idConnected as string}
+              name={store.state.hhu.idConnected as string}
             />
           </>
         )}
 
-        <Text style={{ ...styles.title, marginBottom: 10 }}>
+        <Text style={{...styles.title, marginBottom: 10}}>
           Thiết bị khả dụng:
         </Text>
         {hookProps.state.ble.listNewDevice.map((item, index) => {
           return <BleItem key={item.id} id={item.id} name={item.name} />;
         })}
-        <Text style={{ ...styles.title, marginBottom: 10, marginTop: 25 }}>
+        <Text style={{...styles.title, marginBottom: 10, marginTop: 25}}>
           Thiết bị đã kết nối:
         </Text>
         {hookProps.state.ble.listBondedDevice.map((item, index) => {

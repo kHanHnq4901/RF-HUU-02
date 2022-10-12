@@ -151,7 +151,7 @@
 //   );
 
 //   let filter = false;
-//   if (store?.value.appSetting.showResultOKInWriteData === true) {
+//   if (store.state.appSetting.showResultOKInWriteData === true) {
 //     filter = false;
 //   } else {
 //     filter = true;
@@ -306,7 +306,7 @@
 // };
 
 // const readData = async () => {
-//   let numRetries = Number(store?.value.appSetting.numRetriesRead);
+//   let numRetries = Number(store.state.appSetting.numRetriesRead);
 
 //   if (numRetries <= 0) {
 //     numRetries = 1;
@@ -448,7 +448,7 @@
 //                   state.KHCMISs[indexCurRow].checked = false;
 //                   if (itemUpdate.isAbnormal !== true) {
 //                     if (
-//                       store?.value.appSetting.showResultOKInWriteData !== true
+//                       store.state.appSetting.showResultOKInWriteData !== true
 //                     ) {
 //                       if (itemUpdate.updateSucced === true) {
 //                         // remove from array
@@ -533,7 +533,7 @@
 //     setStatus('Chưa có item nào được chọn');
 //     return;
 //   }
-//   if (store?.value.hhu.connect !== 'CONNECTED') {
+//   if (store.state.hhu.connect !== 'CONNECTED') {
 //     hookProps.setState(state => {
 //       state.status = 'Chưa kết nối bluetooth';
 //       return { ...state };
@@ -633,34 +633,34 @@
 //   let isAbnormal: boolean = false;
 //   let statusAbnormal = '';
 //   if (props.isWriteHand !== true) {
-//     if (store?.value.appSetting.setting.typeAlarm === 'Value') {
+//     if (store.state.appSetting.setting.typeAlarm === 'Value') {
 //       if (
 //         props.newCapacity >=
-//           Number(store.value.appSetting.setting.upperThresholdValue) ||
+//           Number(store.state.appSetting.setting.upperThresholdValue) ||
 //         props.newCapacity <=
-//           Number(store.value.appSetting.setting.lowerThresholdValue)
+//           Number(store.state.appSetting.setting.lowerThresholdValue)
 //       ) {
 //         isAbnormal = true;
 //         statusAbnormal = `
 //         Seri: ${props.seri}
 //         Bộ chỉ số: ${props.BCSCMIS}
-//         Ngưỡng trên: ${store.value.appSetting.setting.upperThresholdValue} kWh
-//         Ngưỡng dưới: ${store.value.appSetting.setting.lowerThresholdValue} kWh
+//         Ngưỡng trên: ${store.state.appSetting.setting.upperThresholdValue} kWh
+//         Ngưỡng dưới: ${store.state.appSetting.setting.lowerThresholdValue} kWh
 //         Sản lượng thực tế: ${props.newCapacity}`;
 //       }
 //     } else {
 //       percent = (props.newCapacity / props.oldCapacity) * 100;
 //       if (
 //         percent >=
-//           Number(store?.value.appSetting.setting.upperThresholdPercent) ||
-//         percent <= Number(store?.value.appSetting.setting.lowerThresholdPercent)
+//           Number(store.state.appSetting.setting.upperThresholdPercent) ||
+//         percent <= Number(store.state.appSetting.setting.lowerThresholdPercent)
 //       ) {
 //         isAbnormal = true;
 //         statusAbnormal = `
 //         Seri: ${props.seri}
 //         Bộ chỉ số: ${props.BCSCMIS}
-//         Ngưỡng trên: ${store?.value.appSetting.setting.upperThresholdPercent}%
-//         Ngưỡng dưới: ${store?.value.appSetting.setting.lowerThresholdPercent}%
+//         Ngưỡng trên: ${store.state.appSetting.setting.upperThresholdPercent}%
+//         Ngưỡng dưới: ${store.state.appSetting.setting.lowerThresholdPercent}%
 //         Sản lượng thực tế: ${percent}%`;
 //       }
 //     }

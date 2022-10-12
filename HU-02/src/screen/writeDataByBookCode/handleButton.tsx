@@ -446,7 +446,7 @@ export const convertApsResponse2PropsInsertDb = (
 };
 
 const readData = async () => {
-  let numRetries = Number(store?.value.appSetting.numRetriesRead);
+  let numRetries = Number(store.state.appSetting.numRetriesRead);
 
   if (numRetries <= 0) {
     numRetries = 1;
@@ -489,7 +489,7 @@ const readData = async () => {
           });
           console.log(TAG, 'result:', JSON.stringify(result));
           if (result.bSucceed === false) {
-            if (store?.value.hhu.connect !== 'CONNECTED') {
+            if (store.state.hhu.connect !== 'CONNECTED') {
               return;
             }
             if (optinalRFCode !== strRFCode && optinalRFCode !== '') {
@@ -663,7 +663,7 @@ const readData = async () => {
             index = -1; // reset index -1 ++ = 0
             break;
           } else {
-            if (store?.value.hhu.connect !== 'CONNECTED') {
+            if (store.state.hhu.connect !== 'CONNECTED') {
               return;
             }
             hookProps.setState(state => {
@@ -705,7 +705,7 @@ export const onBtnReadPress = async () => {
     setStatus('Chưa có item nào được chọn');
     return;
   }
-  if (store?.value.hhu.connect !== 'CONNECTED') {
+  if (store.state.hhu.connect !== 'CONNECTED') {
     hookProps.setState(state => {
       state.status = 'Chưa kết nối bluetooth';
       return { ...state };
@@ -808,28 +808,28 @@ export const updateDataToDB = async (
   let isAbnormal: boolean = false;
   let statusAbnormal = '';
   if (props.isWriteHand !== true) {
-    if (store?.value.appSetting.setting.typeAlarm === 'Value') {
+    if (store.state.appSetting.setting.typeAlarm === 'Value') {
       if (
         props.newCapacity >=
-          Number(store.value.appSetting.setting.upperThresholdValue) ||
+          Number(store.state.appSetting.setting.upperThresholdValue) ||
         props.newCapacity <=
-          Number(store.value.appSetting.setting.lowerThresholdValue)
+          Number(store.state.appSetting.setting.lowerThresholdValue)
       ) {
         isAbnormal = true;
         statusAbnormal = `
         Seri: ${props.seri}
         Bộ chỉ số: ${props.BCSCMIS}
         Chỉ số hiện tại: ${props.T0} kWh
-        Ngưỡng trên: ${store.value.appSetting.setting.upperThresholdValue} kWh
-        Ngưỡng dưới: ${store.value.appSetting.setting.lowerThresholdValue} kWh
+        Ngưỡng trên: ${store.state.appSetting.setting.upperThresholdValue} kWh
+        Ngưỡng dưới: ${store.state.appSetting.setting.lowerThresholdValue} kWh
         Sản lượng thực tế: ${props.newCapacity}`;
       }
     } else {
       percent = (props.newCapacity / props.oldCapacity) * 100;
       if (
         percent >=
-          Number(store?.value.appSetting.setting.upperThresholdPercent) ||
-        percent <= Number(store?.value.appSetting.setting.lowerThresholdPercent)
+          Number(store.state.appSetting.setting.upperThresholdPercent) ||
+        percent <= Number(store.state.appSetting.setting.lowerThresholdPercent)
       ) {
         isAbnormal = true;
         statusAbnormal = `
@@ -838,8 +838,8 @@ export const updateDataToDB = async (
         Chỉ số hiện tại: ${props.T0} kWh
         Sản lượng mới: ${props.newCapacity} kWh
         Sản lượng cũ: ${props.oldCapacity} kWh
-        Ngưỡng trên: ${store?.value.appSetting.setting.upperThresholdPercent}%
-        Ngưỡng dưới: ${store?.value.appSetting.setting.lowerThresholdPercent}%
+        Ngưỡng trên: ${store.state.appSetting.setting.upperThresholdPercent}%
+        Ngưỡng dưới: ${store.state.appSetting.setting.lowerThresholdPercent}%
         Ngưỡng thực tế: ${percent.toFixed(0)}%`;
       }
     }

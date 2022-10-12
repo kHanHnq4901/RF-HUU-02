@@ -1,22 +1,28 @@
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import throttle from 'lodash.throttle';
-import React, { useEffect } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, {useEffect} from 'react';
+import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import * as Progress from 'react-native-progress';
-import { Button } from '../../component/button/button';
-import { DrawerParamsList } from '../../navigation/model/model';
+import {Button} from '../../component/button/button';
+import {DrawerParamsList} from '../../navigation/model/model';
 import Theme, {
   Colors,
   CommonFontSize,
   normalize,
   sizeScreen,
 } from '../../theme';
-import * as controller from './controller';
-import { GetHookProps, hookProps, variable } from './controller';
+import {
+  GetHookProps,
+  hookProps,
+  onDeInit,
+  onInit,
+  store,
+  variable,
+} from './controller';
 import * as handleBtn from './handleButton';
-import { onUpdateFirmWareContainer } from './handleButton';
-import { EatBeanLoader } from 'react-native-indicator';
-import { ModalGetText } from '../../component/modal/modalGetText';
+import {onUpdateFirmWareContainer} from './handleButton';
+import {EatBeanLoader} from 'react-native-indicator';
+import {ModalGetText} from '../../component/modal/modalGetText';
 
 const sizeChartPie = sizeScreen.width * 0.42;
 
@@ -28,11 +34,11 @@ export const BoardBLEScreen = () => {
   //const navigation = useNavigation();
 
   useEffect(() => {
-    controller.onInit();
+    onInit();
     // navigation.addListener('focus', () => {
     //   console.log('focus');
     // });
-    return controller.onDeInit;
+    return onDeInit;
   }, []);
 
   useEffect(() => {
@@ -44,9 +50,9 @@ export const BoardBLEScreen = () => {
   }, [route.params?.isUpdate]);
 
   const version =
-    controller.store?.value.hhu.version?.length === 0
+    store.state.hhu.version?.length === 0
       ? ''
-      : 'HHU: ' + controller.store?.value.hhu.version;
+      : 'HHU: ' + store.state.hhu.version;
 
   return (
     <View style={styles.container}>
@@ -93,7 +99,7 @@ export const BoardBLEScreen = () => {
             //style={{ ...styles.btn, backgroundColor: Colors.secondary }}
             onPress={throttle(handleBtn.onUpdateFirmWareContainer, 2000)}
           />
-          {controller.store?.value.user === 'admin' && (
+          {store.state.user === 'admin' && (
             <Button
               label="Đổi tên thiết bị"
               style={styles.btn}

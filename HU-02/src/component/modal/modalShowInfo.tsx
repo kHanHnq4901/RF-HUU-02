@@ -24,7 +24,7 @@ export const ModalInfo = (props: Props) => {
   return (
     <Portal>
       <Modal
-        visible={store?.value.modal.showInfo as boolean}
+        visible={store.state.modal.showInfo as boolean}
         onDismiss={onDismiss}
         contentContainerStyle={styles.modal}>
         <View style={styles.header}>

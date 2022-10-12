@@ -1,5 +1,5 @@
-import React, { Component, useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, {Component, useEffect} from 'react';
+import {StyleSheet, Text, View} from 'react-native';
 import Theme from '../../theme';
 import * as controller from './controller';
 

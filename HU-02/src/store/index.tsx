@@ -1,6 +1,6 @@
-import React, { Dispatch, SetStateAction, useState } from 'react';
-import { PropsKHCMISModel } from '../database/model';
-import { getDefaultStorageValue, PropsAppSetting } from '../service/storage';
+import React, {Dispatch, useState} from 'react';
+import {getDefaultStorageValue, PropsAppSetting} from '../service/storage';
+import {PropsInfoUser} from '../service/user';
 
 type PropsState = {
   hhu: {
@@ -11,7 +11,7 @@ type PropsState = {
     shortVersion: string;
   };
   net: {
-    netconnected: boolean;
+    netConnected: boolean;
     netReachAble: boolean;
   };
   app: {
@@ -33,33 +33,19 @@ type PropsState = {
     showWriteRegister: boolean;
   };
   user: 'customer' | 'admin';
-};
-
-type PropsDataDB = {
-  item: PropsKHCMISModel;
-  id: string;
-};
-
-type PropsData = {
-  dataBD: PropsDataDB[];
-  codeStation: string[];
-  codeBook: string[];
-  codeColumn: string[];
+  userInfo: PropsInfoUser;
 };
 
 export type PropsStore = {
-  data: PropsData[];
-  setData: Dispatch<SetStateAction<PropsData[]>>;
-  value: PropsState;
-  setValue: Dispatch<React.SetStateAction<PropsState>>;
+  state: PropsState;
+  setState: Dispatch<React.SetStateAction<PropsState>>;
 };
 
-export const storeContext = React.createContext<PropsStore | null>(null);
+export const storeContext = React.createContext<PropsStore>(null);
 
-export const StoreProvider = ({ children }) => {
-  const [data, setData] = useState<PropsData[]>([]);
-
-  const [hook, setHook] = useState<PropsState>({
+export const StoreProvider = ({children}) => {
+  const userInfo = {} as PropsInfoUser;
+  const [state, setState] = useState<PropsState>({
     hhu: {
       //isConnected: false,
       connect: 'DISCONNECTED',
@@ -70,7 +56,7 @@ export const StoreProvider = ({ children }) => {
 
     net: {
       netReachAble: false,
-      netconnected: false,
+      netConnected: false,
     },
     app: {
       enableDebug: false,
@@ -90,17 +76,16 @@ export const StoreProvider = ({ children }) => {
       showWriteRegister: false,
     },
     user: 'customer',
+    userInfo: userInfo,
   });
 
-  const initialalue: PropsStore = {
-    data: data,
-    setData: setData,
-    value: hook,
-    setValue: setHook,
+  const initialValue: PropsStore = {
+    state,
+    setState,
   };
 
   return (
-    <storeContext.Provider value={initialalue}>
+    <storeContext.Provider value={initialValue}>
       {children}
     </storeContext.Provider>
   );

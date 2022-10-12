@@ -188,7 +188,7 @@ const getDataDb = async (ref, routeParams: PropsRouteParamsWriteColumn) => {
 
   //console.log(TAG, 'routeParams', routeParams);
   try {
-    //if (store?.value.appSetting.showResultOKInWriteData === true) {
+    //if (store.state.appSetting.showResultOKInWriteData === true) {
     items = await CMISKHServices.findAll();
     dataDB = items;
     for (let item of dataDB) {

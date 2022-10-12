@@ -1,22 +1,19 @@
-import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
-import { useNavigation } from '@react-navigation/native';
+import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
+import {useNavigation} from '@react-navigation/native';
 import throttle from 'lodash.throttle';
-import React, { useMemo } from 'react';
+import React, {useMemo} from 'react';
 import {
-  Dimensions,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
-  TextInput,
 } from 'react-native';
-import { Row, Rows, Table } from 'react-native-table-component';
-import { Button } from '../../component/button/button';
-import { CheckboxButton } from '../../component/checkbox/checkbox';
-import { RadioButton } from '../../component/radioButton/radioButton';
-import { AutoCompleteInput } from '../../component/TextInputSugesstion';
-import { meterSpecies } from '../../service/hhu/defineEM';
+import {Row, Rows, Table} from 'react-native-table-component';
+import {Button} from '../../component/button/button';
+import {RadioButton} from '../../component/radioButton/radioButton';
+import {AutoCompleteInput} from '../../component/TextInputSugesstion';
 import Theme, {
   Colors,
   CommonFontSize,
@@ -27,9 +24,9 @@ import Theme, {
   scaleHeight,
 } from '../../theme';
 import * as readParamsController from './controller';
-import { itemTypeMeter, onDeInit, onInit } from './controller';
+import {itemTypeMeter, onDeInit, onInit} from './controller';
 import * as handleButton from './handleButton';
-import { filterSeri, onEditSeriDone } from './handleButton';
+import {filterSeri, onEditSeriDone} from './handleButton';
 
 export const ReadParameterScreen = () => {
   const hookProps = readParamsController.GetHookProps();
@@ -40,7 +37,7 @@ export const ReadParameterScreen = () => {
     return onDeInit;
   }, []);
 
-  const RenderRadioButton = ({ e }: { e: any }) => {
+  const RenderRadioButton = ({e}: {e: any}) => {
     return useMemo(() => {
       return (
         <RadioButton
@@ -49,7 +46,7 @@ export const ReadParameterScreen = () => {
           value={e}
           checked={hookProps.state.typeRead === e ? true : false}
           onPress={() => {
-            hookProps.setState(state => ({ ...state, typeRead: e }));
+            hookProps.setState(state => ({...state, typeRead: e}));
           }}
         />
       );
@@ -59,7 +56,7 @@ export const ReadParameterScreen = () => {
   const RenderTable = () => {
     return useMemo(() => {
       return (
-        <Table borderStyle={{ borderWidth: 2, borderColor: '#c8e1ff' }}>
+        <Table borderStyle={{borderWidth: 2, borderColor: '#c8e1ff'}}>
           {/* <Row
             data={readParamsController.dataHeaderTable}
             style={styles.head}
@@ -71,7 +68,7 @@ export const ReadParameterScreen = () => {
     }, [...hookProps.state.dataTable]);
   };
 
-  const styleSelectDate = { ...styles.selectDate };
+  const styleSelectDate = {...styles.selectDate};
   //console.log('hookProps.state.typeRead:', hookProps.state.typeRead);
   styleSelectDate.color =
     hookProps.state.typeRead === 'Dữ liệu gần nhất'
@@ -89,10 +86,10 @@ export const ReadParameterScreen = () => {
             keyboardType="numeric"
             selectTextOnFocus={true}
             onChangeText={text =>
-              hookProps.setState(state => ({ ...state, seri: text }))
+              hookProps.setState(state => ({...state, seri: text}))
             }
             onSelectedItem={item =>
-              hookProps.setState(state => ({ ...state, seri: item }))
+              hookProps.setState(state => ({...state, seri: item}))
             }
             placeholder="Nhập số Seri"
           />
@@ -147,7 +144,7 @@ export const ReadParameterScreen = () => {
                         date.nativeEvent.timestamp as string | number,
                       );
                       console.log(state.dateStart.toLocaleString());
-                      return { ...state };
+                      return {...state};
                     });
                   }
                 },
@@ -180,7 +177,7 @@ export const ReadParameterScreen = () => {
                         date.nativeEvent.timestamp as string | number,
                       );
                       console.log(state.dateStart.toLocaleString());
-                      return { ...state };
+                      return {...state};
                     });
                   }
                 },
@@ -216,7 +213,7 @@ export const ReadParameterScreen = () => {
                         date.nativeEvent.timestamp as string | number,
                       );
                       console.log(state.dateEnd.toLocaleString());
-                      return { ...state };
+                      return {...state};
                     });
                   }
                 },
@@ -248,7 +245,7 @@ export const ReadParameterScreen = () => {
                       state.dateEnd = new Date(
                         date.nativeEvent.timestamp as string | number,
                       );
-                      return { ...state };
+                      return {...state};
                     });
                   }
                 },
@@ -274,7 +271,7 @@ export const ReadParameterScreen = () => {
         })}
       </View>
       <Text style={styles.status}>{hookProps.state.status}</Text>
-      <Table borderStyle={{ borderWidth: 2, borderColor: '#c8e1ff' }}>
+      <Table borderStyle={{borderWidth: 2, borderColor: '#c8e1ff'}}>
         <Row
           data={readParamsController.dataHeaderTable}
           style={styles.head}
@@ -299,7 +296,7 @@ export const ReadParameterScreen = () => {
               if (hookProps.state.requestStop === false) {
                 hookProps.setState(state => {
                   state.requestStop = true;
-                  return { ...state };
+                  return {...state};
                 });
               }
             }}

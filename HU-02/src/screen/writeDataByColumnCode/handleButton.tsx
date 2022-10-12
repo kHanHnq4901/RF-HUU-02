@@ -326,7 +326,7 @@ export function onPencilPress(props: PropsPencil) {
 }
 
 const readData = async () => {
-  let numRetries = Number(store?.value.appSetting.numRetriesRead);
+  let numRetries = Number(store.state.appSetting.numRetriesRead);
 
   if (numRetries <= 0) {
     numRetries = 1;
@@ -369,7 +369,7 @@ const readData = async () => {
           });
           console.log(TAG, 'result:', JSON.stringify(result));
           if (result.bSucceed === false) {
-            if (store?.value.hhu.connect !== 'CONNECTED') {
+            if (store.state.hhu.connect !== 'CONNECTED') {
               return;
             }
             if (optinalRFCode !== strRFCode && optinalRFCode !== '') {
@@ -543,7 +543,7 @@ const readData = async () => {
             index = -1; // reset index -1 ++ = 0
             break;
           } else {
-            if (store?.value.hhu.connect !== 'CONNECTED') {
+            if (store.state.hhu.connect !== 'CONNECTED') {
               return;
             }
             hookProps.setState(state => {
@@ -601,7 +601,7 @@ export const onBtnReadPress = async () => {
     setStatus('Chưa có item nào được chọn');
     return;
   }
-  if (store?.value.hhu.connect !== 'CONNECTED') {
+  if (store.state.hhu.connect !== 'CONNECTED') {
     hookProps.setState(state => {
       state.status = 'Chưa kết nối bluetooth';
       return { ...state };

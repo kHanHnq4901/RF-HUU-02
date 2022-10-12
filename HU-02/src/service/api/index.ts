@@ -96,7 +96,7 @@ export const getStringFirmware = async (): Promise<PropsReturnGetFirmware> => {
   };
 
   try {
-    const { data }: { data: string } = await axios.get(
+    const {data}: {data: string} = await axios.get(
       `http://222.252.14.147:5050/HU_02/firmware.txt?timestamp=${new Date().getTime()}`,
     );
     ret.bResult = true;

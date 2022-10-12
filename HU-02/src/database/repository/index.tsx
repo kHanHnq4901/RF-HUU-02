@@ -1,10 +1,10 @@
 import SQLite from 'react-native-sqlite-storage';
-import { TYPE_READ_RF } from '../../service/hhu/defineEM';
-import { NAME_CSDL } from '../../shared/path';
-import { isNumeric } from '../../util/util';
-import { dumyEntity, PropsKHCMISEntity, TABLE_NAME } from '../entity';
-import { getTypeOfColumn, PropsPercentRead } from '../model';
-import { PropsFilter, PropsPagination, PropsSorting } from '../service';
+import {TYPE_READ_RF} from '../../service/hhu/defineEM';
+import {NAME_CSDL} from '../../shared/path';
+import {isNumeric} from '../../util';
+import {dumyEntity, PropsKHCMISEntity, TABLE_NAME} from '../entity';
+import {getTypeOfColumn, PropsPercentRead} from '../model';
+import {PropsFilter, PropsPagination, PropsSorting} from '../service';
 
 const TAG = 'Repository:';
 
@@ -87,7 +87,7 @@ export const getDBConnection = async (): Promise<boolean> => {
 };
 
 export type PropsCondition = {
-  data: { [key: string]: any } | { [key: string]: any }[];
+  data: {[key: string]: any} | {[key: string]: any}[];
   logic: '=' | '!=' | '<=' | '>=';
   operator: 'AND' | 'OR' | 'LIKE' | '';
 };
@@ -109,7 +109,7 @@ export interface ICMISKHRepository {
   ) => Promise<any[]>;
   update: (
     condition: PropsCondition,
-    valueSet: { [key: string]: any },
+    valueSet: {[key: string]: any},
   ) => Promise<boolean>;
   save: (item: PropsKHCMISEntity) => Promise<boolean>;
   getPercentRead: () => Promise<PropsPercentRead>;
@@ -171,7 +171,7 @@ KHCMISRepository.findAll = async (
             convertStringSpecial(condition.data[i]);
         }
       } else {
-        for (let obj of condition.data as { [key: string]: any }[]) {
+        for (let obj of condition.data as {[key: string]: any}[]) {
           for (let i in obj) {
             if (first === true) {
               first = false;
@@ -309,7 +309,7 @@ const convertStringSpecial = (value): string => {
 
 KHCMISRepository.update = async (
   condition: PropsCondition,
-  valueSet: { [key: string]: any },
+  valueSet: {[key: string]: any},
 ): Promise<boolean> => {
   if ((await getDBConnection()) === false) {
     return false;
@@ -347,7 +347,7 @@ KHCMISRepository.update = async (
         convertStringSpecial(condition.data[i]);
     }
   } else {
-    for (let obj of condition.data as { [key: string]: any }[]) {
+    for (let obj of condition.data as {[key: string]: any}[]) {
       for (let i in obj) {
         if (first === true) {
           first = false;
@@ -365,7 +365,7 @@ KHCMISRepository.update = async (
   // return;
   try {
     const results = (await db?.executeSql(query)) as [
-      { rows: { length: number }; rowsAffected: number },
+      {rows: {length: number}; rowsAffected: number},
     ];
     //console.log('result update: ' + JSON.stringify(results));
     if (results[0]?.rowsAffected > 0) {
@@ -399,7 +399,7 @@ KHCMISRepository.getPercentRead = async (): Promise<PropsPercentRead> => {
       | [
           {
             insertId: any;
-            rows: { item: any; length: number; raw: any };
+            rows: {item: any; length: number; raw: any};
             rowsAffected: number;
           },
         ]

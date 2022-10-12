@@ -1,14 +1,14 @@
 import React from 'react';
-import { Image, ScrollView, StyleSheet, View } from 'react-native';
-import { Text } from '../../component/Text';
-import { sizeScreen } from '../../theme';
+import {Image, ScrollView, StyleSheet, View} from 'react-native';
+import {Text} from '../../component/Text';
+import {sizeScreen} from '../../theme';
 
 export const AboutScreen = () => {
   return (
     <ScrollView>
       <Image
         source={require('../../asset/images/image/about_intro.jpg')}
-        style={{ width: '100%', height: sizeScreen.height * 0.3 }}
+        style={{width: '100%', height: sizeScreen.height * 0.3}}
         resizeMode="stretch"
       />
       {/* <View style={styles.constainText}>

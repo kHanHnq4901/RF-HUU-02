@@ -78,7 +78,7 @@ export function Header(props: DrawerHeaderProps) {
           onLongPress={onBleLongPress}
           onPress={onBlePress}
           style={styles.borderIcon}>
-          {store?.value.hhu.connect === 'CONNECTING' ? (
+          {store.state.hhu.connect === 'CONNECTING' ? (
             <CircleSnail
               color={['red', 'green', 'blue']}
               size={sizeIcon}
@@ -89,11 +89,11 @@ export function Header(props: DrawerHeaderProps) {
           ) : (
             <MaterialCommunityIcons
               name={
-                store?.value.hhu.connect ? 'bluetooth-connect' : 'bluetooth-off'
+                store.state.hhu.connect ? 'bluetooth-connect' : 'bluetooth-off'
               }
               size={sizeIcon}
               color={
-                store?.value.hhu.connect === 'CONNECTED' ? '#5fe321' : 'black'
+                store.state.hhu.connect === 'CONNECTED' ? '#5fe321' : 'black'
               }
             />
           )}

@@ -40,10 +40,10 @@ export const DrawerContent = props => {
   // useEffect(() => {
   //   //console.log('a');
   //   return () => {
-  //     console.log('onDeinit:', store?.value.appSetting);
-  //     saveValueAppSettingToNvm(store?.value.appSetting as PropsAppSetting);
+  //     console.log('onDeinit:', store.state.appSetting);
+  //     saveValueAppSettingToNvm(store.state.appSetting as PropsAppSetting);
   //   };
-  // }, [store?.value.appSetting]);
+  // }, [store.state.appSetting]);
 
   //console.log('ren drawer');
 
@@ -165,7 +165,7 @@ export const DrawerContent = props => {
           marginHorizontal: 20,
         }}>
         <Text style={styles.textVersion}>
-          HHU {store?.value.hhu.shortVersion}
+          HHU {store.state.hhu.shortVersion}
         </Text>
         <Text style={styles.textVersion}>Phiên bản {Shared.version}</Text>
       </View>

@@ -1,5 +1,5 @@
-import { Keyboard } from 'react-native';
-import { ObjSend } from '../../service/hhu/Ble/hhuFunc';
+import {Keyboard} from 'react-native';
+import {ObjSend} from '../../service/hhu/Ble/hhuFunc';
 import {
   FieldOpticalResponseProps,
   opticalSend,
@@ -20,25 +20,25 @@ import {
   ByteArrayToString,
   BufferToString,
 } from '../../util/util';
-import { hookProps, store } from './controller';
-import { Buffer } from 'buffer';
-import { sizeof, Struct2Array } from '../../util/struct-and-array';
+import {hookProps, store} from './controller';
+import {Buffer} from 'buffer';
+import {sizeof, Struct2Array} from '../../util/struct-and-array';
 import {
   getUnitByLabel,
   getUnitByLabelOptical,
   PropsLabelOptical,
 } from '../../service/hhu/util/utilFunc';
-import { PropsLabel } from '../../service/hhu/defineWM';
+import {PropsLabel} from '../../service/hhu/defineWM';
 
 export function setStatus(message: string) {
   hookProps.setState(state => {
     state.status = message;
-    return { ...state };
+    return {...state};
   });
 }
 
 function checkCondition(): boolean {
-  if (store?.value.hhu.connect !== 'CONNECTED') {
+  if (store.state.hhu.connect !== 'CONNECTED') {
     showToast('Chưa kết nối bluetooth');
     return false;
   }
@@ -81,7 +81,7 @@ export async function onBtnReadPress() {
     state.seri = '';
     state.status = 'Đang đọc ...';
     state.dataTable = [];
-    return { ...state };
+    return {...state};
   });
 
   for (let itm of hookProps.state.typeData.items) {
@@ -102,7 +102,7 @@ export async function onBtnReadPress() {
     if (state.status === 'Đang đọc ...') {
       state.status = '';
     }
-    return { ...state };
+    return {...state};
   });
   return;
 }
@@ -118,7 +118,7 @@ function ConvertObjToHook(objResponse: any) {
           itm,
           objResponse[itm] + getUnitByLabelOptical(itm as PropsLabelOptical),
         ]);
-        return { ...state };
+        return {...state};
       });
     } else if (
       typeof objResponse[itm] === 'object' &&
@@ -135,7 +135,7 @@ function ConvertObjToHook(objResponse: any) {
       }
       hookProps.setState(state => {
         state.dataTable = state.dataTable.concat(dataTable);
-        return { ...state };
+        return {...state};
       });
     }
   }

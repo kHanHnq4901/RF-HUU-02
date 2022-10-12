@@ -151,7 +151,7 @@
 //   for (let row of rows) {
 //     const typeReadRf = row[indexHeader.typeReadRf];
 //     let ok = false;
-//     if (store?.value.appSetting.showResultOKInWriteData === true) {
+//     if (store.state.appSetting.showResultOKInWriteData === true) {
 //       ok = true;
 //     } else {
 //       if (
@@ -229,7 +229,7 @@
 //   //console.log('kkkk');
 //   let items: PropsKHCMISModel[];
 //   try {
-//     if (store?.value.appSetting.showResultOKInWriteData === true) {
+//     if (store.state.appSetting.showResultOKInWriteData === true) {
 //       items = await CMISKHServices.findAll();
 //     } else {
 //       items = await CMISKHServices.findAll(undefined, condition);

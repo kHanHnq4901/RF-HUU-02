@@ -49,10 +49,10 @@ export const onLowerThresholdDoneSubmit = (text: string) => {
 
   let uppervalue;
 
-  if (store.value.appSetting.setting.typeAlarm === 'Value') {
-    uppervalue = Number(store.value.appSetting.setting.upperThresholdValue);
+  if (store.state.appSetting.setting.typeAlarm === 'Value') {
+    uppervalue = Number(store.state.appSetting.setting.upperThresholdValue);
   } else {
-    uppervalue = Number(store.value.appSetting.setting.upperThresholdPercent);
+    uppervalue = Number(store.state.appSetting.setting.upperThresholdPercent);
   }
   const lower = Number(text);
   if (Number(text) < 0 || lower >= uppervalue) {
@@ -88,10 +88,10 @@ export const onUpperThresholdDoneSubmit = (text: string) => {
   }
   let lowerValue;
 
-  if (store.value.appSetting.setting.typeAlarm === 'Value') {
-    lowerValue = Number(store.value.appSetting.setting.lowerThresholdValue);
+  if (store.state.appSetting.setting.typeAlarm === 'Value') {
+    lowerValue = Number(store.state.appSetting.setting.lowerThresholdValue);
   } else {
-    lowerValue = Number(store.value.appSetting.setting.lowerThresholdPercent);
+    lowerValue = Number(store.state.appSetting.setting.lowerThresholdPercent);
   }
   const upper = Number(text);
   if (upper <= lowerValue) {
@@ -127,6 +127,6 @@ export const onCheckBoxShowDataOkInWritwRegister = () => {
   });
 };
 export async function onSavePress() {
-  await saveValueAppSettingToNvm(store?.value.appSetting as PropsAppSetting);
+  await saveValueAppSettingToNvm(store.state.appSetting as PropsAppSetting);
   showToast('Đã lưu');
 }

@@ -192,7 +192,7 @@ const getDataDb = async (ref, routeParams: PropsRouteParamsWriteBook) => {
 
   console.log(TAG, 'firstTime', firstTime);
   try {
-    //if (store?.value.appSetting.showResultOKInWriteData === true) {
+    //if (store.state.appSetting.showResultOKInWriteData === true) {
     items = await CMISKHServices.findAll();
     dataDB = items;
     for (let item of dataDB) {

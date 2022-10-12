@@ -1,6 +1,6 @@
-import { Buffer } from 'buffer';
-import { hookProps, setStatus } from '../../screen/boardBLE/controller';
-import { int32_t, int64_t, uint32_t, uint8_t } from '../../util/custom_typedef';
+import {Buffer} from 'buffer';
+import {hookProps, setStatus} from '../../screen/boardBLE/controller';
+import {int32_t, int64_t, uint32_t, uint8_t} from '../../util/custom_typedef';
 import {
   hhuFunc_HeaderProps,
   hhuFunc_Send,
@@ -38,14 +38,14 @@ const bootVariable = {
 const SendMessage = (msg: string) => {
   hookProps.setState(state => {
     state.status = msg;
-    return { ...state };
+    return {...state};
   });
 };
 
 const SetProgressBar = (value: number) => {
   hookProps.setState(state => {
     state.progressUpdate = value;
-    return { ...state };
+    return {...state};
   });
 };
 

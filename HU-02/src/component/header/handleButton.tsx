@@ -6,13 +6,13 @@ import { showToast } from '../../util/util';
 import { navigation, store } from './controller';
 
 export async function onBlePress() {
-  // if (store.value.hhu.connected === 'BLE') {
+  // if (store.state.hhu.connected === 'BLE') {
 
-  if (store?.value.hhu.connect === 'DISCONNECTED') {
+  if (store.state.hhu.connect === 'DISCONNECTED') {
     try {
       connectLatestBLE(store);
     } catch {}
-  } else if (store?.value.hhu.connect === 'CONNECTING') {
+  } else if (store.state.hhu.connect === 'CONNECTING') {
   } else {
     Alert.alert(
       'Ngắt bluetooth ?',
@@ -45,7 +45,7 @@ export async function onBlePress() {
 }
 
 export function onBleLongPress() {
-  //if (store.value.typeConnect === 'BLE') {
+  //if (store.state.typeConnect === 'BLE') {
   navigation.navigate('BleScreen');
   //}
 }

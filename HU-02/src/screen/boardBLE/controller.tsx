@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { PropsStore, storeContext } from '../../store/store';
+import React, {useState} from 'react';
+import {PropsStore, storeContext} from '../../store/store';
 
 export const variable = {
   onOkChangeName: text => {},
@@ -24,7 +24,7 @@ export type HookProps = {
 const TAG = ' Controller: ';
 
 export const hookProps = {} as HookProps;
-export let store = {} as PropsStore | null;
+export let store = {} as PropsStore;
 
 export const GetHookProps = (): HookProps => {
   const [state, setState] = useState<HookState>({
@@ -52,6 +52,6 @@ export const setStatus = (status: string) => {
   hookProps.setState(state => {
     state.status = status;
 
-    return { ...state };
+    return {...state};
   });
 };

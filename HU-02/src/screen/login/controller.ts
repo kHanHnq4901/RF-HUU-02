@@ -1,58 +1,62 @@
-import React, { useState } from 'react';
-import { updateValueAppSettingFromNvm } from '../../service/storage';
-import { PropsStore, storeContext } from '../../store/store';
-import axios from 'axios';
-import { useNavigation } from '@react-navigation/native';
-import { StackRootNavigationProp } from '../../navigation/model/model';
-import { Alert } from 'react-native';
+import React from 'react';
+import {useNavigation} from '@react-navigation/native';
+import type {StackNavigationProp} from '@react-navigation/stack';
+import {getUserStorage} from '../../service/storage/user';
+import {PropsStore, storeContext} from '../../store';
+import {StackRootList} from '../../navigation/model/model';
+import {updateValueAppSettingFromNvm} from '../../service/storage';
 
-const TAG = 'Login Controller';
-
-type PropsHookState = {};
-
-type PropsHook = {
-  state: PropsHookState;
-  setState: React.Dispatch<React.SetStateAction<PropsHookState>>;
+type PropsState = {
+  password: string;
+  btnSignInBusy: boolean;
 };
 
-export const hookProps = {} as PropsHook;
-export let store = {} as PropsStore;
-export let navigation = {} as StackRootNavigationProp;
+type PropsHook = {
+  state: PropsState;
+  setState: React.Dispatch<React.SetStateAction<PropsState>>;
+};
 
-export const GetHookProps = (): PropsHook => {
-  const [state, setState] = useState<PropsHookState>({});
-  hookProps.state = state;
-  hookProps.setState = setState;
+export const hook = {} as PropsHook;
+export let store = {} as PropsStore;
+export let navigation = {} as StackNavigationProp<StackRootList>;
+
+export function UpdateHook() {
+  const [state, setState] = React.useState<PropsState>({
+    password: '',
+    btnSignInBusy: false,
+  });
+
+  hook.state = state;
+  hook.setState = setState;
 
   store = React.useContext(storeContext);
 
-  navigation = useNavigation<StackRootNavigationProp>();
+  navigation = useNavigation<StackNavigationProp<StackRootList>>();
+}
 
-  return hookProps;
-};
+export async function onInit() {
+  navigation.addListener('focus', async () => {
+    hook.setState(state => {
+      state.password = '';
+      return {...state};
+    });
 
-export const onInit = async () => {
-  let appSetting = await updateValueAppSettingFromNvm();
-  store?.setValue(state => {
-    state.appSetting = appSetting;
-    return { ...state };
+    const appSetting = await updateValueAppSettingFromNvm();
+
+    const user = await getUserStorage();
+
+    store.setState(state => {
+      state.appSetting = appSetting;
+      state.userInfo.USER_ACCOUNT = user.userAccount;
+      state.userInfo.USER_TEL = user.userAccount;
+      return {...state};
+    });
   });
-  try {
-    const { data }: { data: string } = await axios.get(
-      'http://worldtimeapi.org/api/timezone/Asia/Ho_Chi_Minh',
-    );
-    const onlineDate = new Date(data);
-    const curDate = new Date();
-    const secDif = (curDate.getTime() - onlineDate.getTime()) / 1000;
-    if (Math.abs(secDif) > 120) {
-      Alert.alert(
-        'Thời gian sai',
-        'Thời gian của thiết bị chưa đúng, vui lòng chỉnh lại để đám bảo tính đúng của dữ liệu khi ghi chỉ số',
-      );
-    } else {
-      console.log(TAG, 'time is true');
-    }
-  } catch (err) {
-    console.log(TAG, err.message);
-  }
-};
+
+  navigation.addListener('beforeRemove', e => {
+    //console.log('e:', e);
+    e.preventDefault();
+  });
+}
+
+export function onDeInit() {}

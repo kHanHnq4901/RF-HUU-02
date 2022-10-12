@@ -34,7 +34,7 @@ export const ModalWriteRegister = (props: Props) => {
   return (
     <Portal>
       <Modal
-        visible={store?.value.modal.showWriteRegister as boolean}
+        visible={store.state.modal.showWriteRegister as boolean}
         onDismiss={onDismiss}
         contentContainerStyle={styles.modal}>
         <View style={styles.header}>

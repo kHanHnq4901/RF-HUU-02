@@ -486,7 +486,7 @@
 //                   if (index >= startIndexTabel && index < endIndexTabel) {
 //                     // const typeReadRf = item.data[indexHeader.typeReadRf];
 //                     // let show = false;
-//                     // if(controller.store?.value.appSetting.showResultOKInWriteData !== true){
+//                     // if(controller.store.state.appSetting.showResultOKInWriteData !== true){
 
 //                     //   if (
 //                     //     typeReadRf !== TYPE_READ_RF.READ_SUCCEED &&

@@ -1,5 +1,5 @@
-import { ToastAndroid } from 'react-native';
-import { Buffer } from 'buffer';
+import {Alert, ToastAndroid} from 'react-native';
+import {Buffer} from 'buffer';
 
 export function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -14,6 +14,10 @@ export function isNumeric(str: any) {
     !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
     !isNaN(parseFloat(str))
   ); // ...and ensure strings of whitespace fail
+}
+
+export function showAlert(message: string): void {
+  Alert.alert(message);
 }
 
 export function showToast(message: string) {

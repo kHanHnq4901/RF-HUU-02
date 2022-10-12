@@ -1,12 +1,8 @@
-import { DrawerNavigationProp } from '@react-navigation/drawer';
-import {
-  CompositeNavigationProp,
-  NavigatorScreenParams,
-} from '@react-navigation/native';
-import type { StackNavigationProp } from '@react-navigation/stack';
-import { PropsKHCMISModel } from '../../database/model';
-import { PropsDatatable } from '../../screen/writeDataByBookCode/controller';
-export type StackRootParamsList = {
+import {DrawerNavigationProp} from '@react-navigation/drawer';
+import {NavigatorScreenParams} from '@react-navigation/native';
+import type {StackNavigationProp} from '@react-navigation/stack';
+import {PropsDatatable} from '../../screen/writeDataByBookCode/controller';
+export type StackRootList = {
   Login: undefined;
   Drawer: NavigatorScreenParams<DrawerParamsList>;
   BleScreen: undefined;
@@ -57,7 +53,7 @@ export type StackWriteDataByColumnCodeList = {
 //   DrawerNavigationProp<DrawerParamsList>
 // >;
 
-export type StackRootNavigationProp = StackNavigationProp<StackRootParamsList>;
+export type StackRootNavigationProp = StackNavigationProp<StackRootList>;
 
 export type StackWiteDataNavigationProp =
   StackNavigationProp<StackWriteDataList>;

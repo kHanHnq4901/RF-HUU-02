@@ -101,7 +101,7 @@ export async function onChangeNamePress() {
   if (hookProps.state.isBusy === true) {
     return;
   }
-  if (store?.value.hhu.connect !== 'CONNECTED') {
+  if (store.state.hhu.connect !== 'CONNECTED') {
     setStatus('Chưa kết nối bluetooth');
     return;
   }
@@ -154,7 +154,7 @@ const ondUpdateFirmwareBtnPress = async (reset: boolean = true) => {
   if (hookProps.state.isBusy === true) {
     return;
   }
-  if (store?.value.hhu.connect !== 'CONNECTED') {
+  if (store.state.hhu.connect !== 'CONNECTED') {
     setStatus('Chưa kết nối bluetooth');
     return;
   }

@@ -9,8 +9,8 @@ const TAG = 'handleBtn Ble:';
 
 export const connectHandle = async (id: string) => {
   try {
-    if (store?.value.hhu.connect === 'CONNECTED') {
-      await BleManager.disconnect(store.value.hhu.idConnected, true);
+    if (store.state.hhu.connect === 'CONNECTED') {
+      await BleManager.disconnect(store.state.hhu.idConnected, true);
     }
     let succeed: boolean = false;
     try {
@@ -111,8 +111,8 @@ export const onScanPress = async () => {
 
 export const disConnect = async (id: string) => {
   try {
-    //console.log('here:', store.value.bleConnected);
-    if (store?.value.hhu.connect === 'CONNECTED') {
+    //console.log('here:', store.state.bleConnected);
+    if (store.state.hhu.connect === 'CONNECTED') {
       console.log('diconnect...');
       //await Ble.stopNotification(id);
       if (id === null) {

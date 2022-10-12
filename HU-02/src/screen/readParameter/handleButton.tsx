@@ -55,7 +55,7 @@ export const onEditSeriDone = (text: string): void => {
 };
 
 const checkCondition = (): boolean => {
-  if (store?.value.hhu.connect !== 'CONNECTED') {
+  if (store.state.hhu.connect !== 'CONNECTED') {
     showToast('Chưa kết nối bluetooth');
     return false;
   }
@@ -82,7 +82,7 @@ const checkCondition = (): boolean => {
 };
 
 const readData = async () => {
-  let numRetries = Number(store?.value.appSetting.numRetriesRead);
+  let numRetries = Number(store.state.appSetting.numRetriesRead);
 
   if (numRetries <= 0) {
     numRetries = 1;

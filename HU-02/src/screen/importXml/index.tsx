@@ -1,14 +1,13 @@
-import React, { useEffect, useMemo } from 'react';
-import { Text, StyleSheet, View, ScrollView, FlatList } from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import React, {useEffect} from 'react';
+import {FlatList, StyleSheet, Text, View} from 'react-native';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {Caption, Checkbox, Divider} from 'react-native-paper';
+import {Button} from '../../component/button/button';
+import {PropsFileInfo} from '../../shared/file';
+import Theme, {Colors, normalize} from '../../theme';
 import * as controller from './controller';
-import Theme, { Colors, normalize } from '../../theme';
-import { Button } from '../../component/button/button';
-import { Caption, Checkbox, Divider } from 'react-native-paper';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import * as handleButton from './handleButton';
-import { Alert } from '../../component/alert';
-import { PropsFileInfo } from '../../shared/file';
-import { useNavigation } from '@react-navigation/native';
 
 export const ImportXmlScreen = () => {
   const hookProps = controller.GetHookProps();
@@ -19,7 +18,7 @@ export const ImportXmlScreen = () => {
     return controller.onDeInit;
   }, []);
 
-  const RenderItem = ({ item }: { item: PropsFileInfo }) => {
+  const RenderItem = ({item}: {item: PropsFileInfo}) => {
     // return useMemo(
     //   () => (
 
@@ -33,7 +32,7 @@ export const ImportXmlScreen = () => {
                 //console.log(state);
               }
             });
-            return { ...state };
+            return {...state};
           });
         }}>
         {/* <Divider /> */}
@@ -43,7 +42,7 @@ export const ImportXmlScreen = () => {
             status={item.checked ? 'checked' : 'unchecked'}
             onPress={() => {}}
           />
-          <View style={{ flex: 1 }}>
+          <View style={{flex: 1}}>
             <Text style={styles.title}>{item.name}</Text>
           </View>
           <View style={styles.dateTimeItem}>
@@ -72,9 +71,8 @@ export const ImportXmlScreen = () => {
   return (
     <View style={Theme.StyleCommon.container}>
       {hookProps.state.xmlList.length === 0 ? (
-        <View
-          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Text style={{ fontSize: 45, fontWeight: 'bold' }}>Trống</Text>
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <Text style={{fontSize: 45, fontWeight: 'bold'}}>Trống</Text>
         </View>
       ) : (
         <FlatList
@@ -87,7 +85,7 @@ export const ImportXmlScreen = () => {
         <Button
           label="Xóa"
           onPress={handleButton.onDeleteFilePress}
-          style={{ flex: 1, height: 50, maxWidth: 150 }}
+          style={{flex: 1, height: 50, maxWidth: 150}}
         />
         <Button
           style={{

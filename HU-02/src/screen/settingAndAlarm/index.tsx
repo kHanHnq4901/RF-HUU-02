@@ -30,7 +30,7 @@ export const SettingAndAlarmScreen = () => {
                 label={item.title}
                 value={item.value}
                 checked={
-                  store.value.appSetting.setting.typeAlarm === item.value
+                  store.state.appSetting.setting.typeAlarm === item.value
                     ? true
                     : false
                 }
@@ -51,9 +51,9 @@ export const SettingAndAlarmScreen = () => {
               placeholder=""
               keyboardType="numeric"
               value={
-                store.value.appSetting.setting.typeAlarm === 'Value'
-                  ? store.value.appSetting.setting.lowerThresholdValue
-                  : store.value.appSetting.setting.lowerThresholdPercent
+                store.state.appSetting.setting.typeAlarm === 'Value'
+                  ? store.state.appSetting.setting.lowerThresholdValue
+                  : store.state.appSetting.setting.lowerThresholdPercent
               }
               textInputStyle={styles.valueTextInput}
               onChangeText={text => {
@@ -77,9 +77,9 @@ export const SettingAndAlarmScreen = () => {
               placeholder=""
               keyboardType="numeric"
               value={
-                store.value.appSetting.setting.typeAlarm === 'Value'
-                  ? store.value.appSetting.setting.upperThresholdValue
-                  : store.value.appSetting.setting.upperThresholdPercent
+                store.state.appSetting.setting.typeAlarm === 'Value'
+                  ? store.state.appSetting.setting.upperThresholdValue
+                  : store.state.appSetting.setting.upperThresholdPercent
               }
               onChangeText={text => {
                 store.setValue(state => {
@@ -106,11 +106,11 @@ export const SettingAndAlarmScreen = () => {
               <TextInputInteractive
                 placeholder=""
                 keyboardType="numeric"
-                value={store.value.appSetting.IP}
+                value={store.state.appSetting.IP}
                 textInputStyle={styles.textIP}
                 onChangeText={text => {
                   store.setValue(state => {
-                    store.value.appSetting.IP = text;
+                    store.state.appSetting.IP = text;
                     return { ...state };
                   });
                 }}
@@ -127,11 +127,11 @@ export const SettingAndAlarmScreen = () => {
               <TextInputInteractive
                 placeholder=""
                 keyboardType="numeric"
-                value={store.value.appSetting.Port}
+                value={store.state.appSetting.Port}
                 textInputStyle={styles.valueTextInput}
                 onChangeText={text => {
                   store.setValue(state => {
-                    store.value.appSetting.Port = text;
+                    store.state.appSetting.Port = text;
                     return { ...state };
                   });
                 }}
@@ -149,11 +149,11 @@ export const SettingAndAlarmScreen = () => {
           <TextInputInteractive
             placeholder=""
             keyboardType="numeric"
-            value={store.value.appSetting.numRetriesRead}
+            value={store.state.appSetting.numRetriesRead}
             textInputStyle={styles.valueTextInput}
             onChangeText={text => {
               store.setValue(state => {
-                store.value.appSetting.numRetriesRead = text;
+                store.state.appSetting.numRetriesRead = text;
                 return { ...state };
               });
             }}
@@ -167,7 +167,7 @@ export const SettingAndAlarmScreen = () => {
       </Text>
       <CheckboxButton
         label="Hiển thị"
-        checked={store.value.appSetting.showResultOKInWriteData}
+        checked={store.state.appSetting.showResultOKInWriteData}
         onPress={onCheckBoxShowDataOkInWriteRegister}
       /> */}
       </ScrollView>

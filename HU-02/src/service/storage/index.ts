@@ -1,10 +1,11 @@
 import AsyncStorage from '@react-native-community/async-storage';
-import { PATH_EXECUTE_CSDL, PATH_EXPORT_XML } from '../../shared/path';
+import {PATH_EXECUTE_CSDL, PATH_EXPORT_XML} from '../../shared/path';
 
 const KEY_SETTING = 'APP_SETTING';
 const TAG = 'STORAGE SERVICE:';
 const KEY_LAST_PATH_IMPORT = 'LAST_PATH_IMPORT';
 const KEY_SERI_READ_PARAM = 'SERI_READ_PARAMS';
+export const KEY_USER = 'KEY_USER';
 
 export type PropsSettingAndAlarm = {
   typeAlarm: 'Value' | 'Percent';
@@ -19,8 +20,10 @@ export type PropsAppSetting = {
   passwordAdmin: string;
   numRetriesRead: string;
   CMISPath: string;
-  IP: string;
-  Port: string;
+  server: {
+    host: string;
+    port: string;
+  };
 };
 
 export const getDefaultStorageValue = (): PropsAppSetting => {
@@ -29,8 +32,10 @@ export const getDefaultStorageValue = (): PropsAppSetting => {
   storageVariable.CMISPath = '';
   storageVariable.numRetriesRead = '1';
   storageVariable.password = '123456';
-  storageVariable.IP = '222.252.14.147';
-  storageVariable.Port = '6060';
+  storageVariable.server = {
+    host: '222.252.14.147',
+    port: '6060',
+  };
   storageVariable.password =
     '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92';
   storageVariable.passwordAdmin =
@@ -58,8 +63,10 @@ export const updateValueAppSettingFromNvm =
         storageVariable.CMISPath = storageVar.CMISPath;
         storageVariable.numRetriesRead = storageVar.numRetriesRead;
         storageVariable.password = storageVar.password;
-        storageVariable.IP = storageVar.IP;
-        storageVariable.Port = storageVar.Port;
+        storageVariable.server = {
+          host: storageVar.server.host,
+          port: storageVar.server.port,
+        };
 
         //console.log('storageVariable:', storageVar);
         for (let i in storageVariable) {
