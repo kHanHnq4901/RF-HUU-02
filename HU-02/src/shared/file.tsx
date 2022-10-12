@@ -1,5 +1,5 @@
 import RNFS from 'react-native-fs';
-import { getFilExtension, showToast } from '../util/util';
+import { getFilExtension, showToast } from '../util';
 
 const TAG = ' SHARED FILE: ';
 

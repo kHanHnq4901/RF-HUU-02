@@ -1,7 +1,7 @@
 import { data, store } from '../../component/alert';
 
 export const closeAlert = () => {
-  store.setValue(value => {
+  store.setState(value => {
     value.alert.show = false;
     return { ...value };
   });
@@ -21,7 +21,7 @@ export const showAlertInfo = (props: Props) => {
   data.title = props.title;
   data.subtitle = props.subtitle;
   data.theme = 'info';
-  store.setValue(value => {
+  store.setState(value => {
     value.alert.show = true;
     return { ...value };
   });
@@ -34,7 +34,7 @@ export const showAlertSuccess = (props: Props) => {
   data.title = props.title;
   data.subtitle = props.subtitle;
   data.theme = 'success';
-  store.setValue(value => {
+  store.setState(value => {
     value.alert.show = true;
     return { ...value };
   });
@@ -47,7 +47,7 @@ export const showAlertWarning = (props: Props) => {
   data.title = props.title;
   data.subtitle = props.subtitle;
   data.theme = 'warning';
-  store.setValue(value => {
+  store.setState(value => {
     value.alert.show = true;
     return { ...value };
   });
@@ -60,7 +60,7 @@ export const showAlertDanger = (props: Props) => {
   data.title = props.title;
   data.subtitle = props.subtitle;
   data.theme = 'danger';
-  store.setValue(value => {
+  store.setState(value => {
     value.alert.show = true;
     return { ...value };
   });

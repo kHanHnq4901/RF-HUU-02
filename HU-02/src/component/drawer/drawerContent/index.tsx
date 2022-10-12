@@ -1,5 +1,5 @@
-import { DrawerContentScrollView } from '@react-navigation/drawer';
-import { useNavigation } from '@react-navigation/native';
+import {DrawerContentScrollView} from '@react-navigation/drawer';
+import {useNavigation} from '@react-navigation/native';
 import React from 'react';
 import {
   Alert,
@@ -10,22 +10,25 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import { Avatar, Divider } from 'react-native-paper';
-import { DrawerNavigationProps } from '../../../navigation/model/model';
+import {Avatar, Divider} from 'react-native-paper';
+import {
+  DrawerNavigationProps,
+  StackRootNavigationProp,
+} from '../../../navigation/model/model';
 
 import * as Shared from '../../../shared';
-import { screenDatas } from '../../../shared';
-import Theme, { Colors, normalize } from '../../../theme';
-import { infoHeader } from '../../header';
-import { Text } from '../../Text';
-import { DrawerItem } from '../drawerItem';
-import { GetHookProps, onDeInit, onInit, store } from './controller';
+import {screenDatas} from '../../../shared';
+import Theme, {Colors, normalize} from '../../../theme';
+import {infoHeader} from '../../header';
+import {Text} from '../../Text';
+import {DrawerItem} from '../drawerItem';
+import {GetHookProps, onDeInit, onInit, store} from './controller';
 
 const TAG = 'DrawerContent:';
 
 export const DrawerContent = props => {
   const navigation = useNavigation<DrawerNavigationProps>();
-  //const navigationRoot = useNavigation<StackRootNavigationProp>();
+  const navigationRoot = useNavigation<StackRootNavigationProp>();
 
   GetHookProps();
 
@@ -57,23 +60,30 @@ export const DrawerContent = props => {
         <View style={styles.containerInfo}>
           <ImageBackground
             source={require('../../../asset/images/drawer/HeaderDrawer.jpg')}
-            style={{ height: 120, marginTop: -5 }}
+            style={{height: 120, marginTop: -5}}
 
             //resizeMode="cover"
           />
           <View style={styles.infoUser}>
-            <Avatar.Image
+            {/* <Avatar.Image
               size={60}
-              style={{ marginBottom: 10, elevation: 1 }}
+              style={{marginBottom: 10, elevation: 1}}
               source={require('../../../asset/images/icon/rf.jpg')}
-            />
+            /> */}
+
             <Image
               source={require('../../../asset/images/logo/logo.png')}
-              style={{ height: 50, width: 150 }}
+              style={{height: 50, width: 150}}
               resizeMode="contain"
             />
+            <Text style={styles.logoText}>HU-02</Text>
             {/* <Text style={Theme.StyleCommon.title}>Gelex HHU</Text> */}
           </View>
+
+          <Text style={styles.userName}>
+            {/* 🤗 */}
+            {store.state.userInfo.USER_NAME}
+          </Text>
 
           <View style={styles.body}>
             <Divider />
@@ -102,35 +112,44 @@ export const DrawerContent = props => {
                 return null;
               }
             })}
-            {/* title: 'Đọc RF',
-    info: `
-    Đọc dữ liệu tức thời công tơ bất kỳ, dữ liệu sẽ không được lưu vào DB.
-    Chức năng Khởi tạo, Search , Reset module công tơ
-    `,
 
-    id: 'ReadParameter',
-    icon: 'ios-book-outline',
-    component: ReadParameterScreen, */}
-            {/* <DrawerItem
-              lable="Đọc RF"
-              icon="ios-book-outline"
-              colorIcon={Theme.Colors.primary}
+            <Divider />
+            <Image
+              source={require('../../../asset/images/icon/user.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+            <DrawerItem
+              lable="Thông tin người dùng"
+              icon="person-outline"
+              colorIcon={Colors.secondary}
               onPress={() => {
-                //console.log(element.id);
-                infoHeader.title = 'Đọc RF';
-                infoHeader.info = `
-                      Đọc dữ liệu tức thời công tơ bất kỳ, dữ liệu sẽ không được lưu vào DB.
-                      Chức năng Khởi tạo, Search , Reset module công tơ
-                      `;
-                navigation.navigate('ReadParameter', {
-                  info: `
-                        Đọc dữ liệu tức thời công tơ bất kỳ, dữ liệu sẽ không được lưu vào DB.
-                        Chức năng Khởi tạo, Search , Reset module công tơ
-                        `,
-                  title: 'Đọc RF',
-                });
+                navigation.navigate('UserInfo');
               }}
-            /> */}
+            />
+            <Divider />
+            <DrawerItem
+              lable="Cài đặt tài khoản"
+              icon="settings-outline"
+              colorIcon={Colors.secondary}
+              onPress={() => {
+                navigation.navigate('SettingUser');
+              }}
+            />
+
+            {/* <Divider /> */}
+            {/* <View style={styles.margin} /> */}
+            <DrawerItem
+              lable="Đăng xuất"
+              icon="log-out-outline"
+              onPress={() => {
+                console.log('logged out');
+                navigationRoot.push('SignIn');
+              }}
+              colorIcon={Colors.secondary}
+              // style={{ color: Theme.Colors.primary }}
+            />
+            <Divider />
 
             <Divider />
             <DrawerItem
@@ -152,7 +171,7 @@ export const DrawerContent = props => {
                   },
                 ]);
               }}
-              colorIcon={Theme.Colors.primary}
+              colorIcon={Theme.Colors.secondary}
               // style={{ color: Theme.Colors.primary }}
             />
           </View>
@@ -178,6 +197,7 @@ const styles = StyleSheet.create({
     // flex: 1,
     marginBottom: 5,
   },
+  logo: {height: 25, width: 150, marginTop: 20},
   textVersion: {
     fontSize: normalize(12),
     color: Colors.caption,
@@ -190,7 +210,7 @@ const styles = StyleSheet.create({
   infoUser: {
     flexDirection: 'column',
     alignItems: 'center',
-    marginTop: -50,
+    marginTop: -90,
   },
   version: {
     alignItems: 'flex-end',
@@ -199,5 +219,19 @@ const styles = StyleSheet.create({
   versionHHU: {
     alignItems: 'flex-start',
     marginLeft: 20,
+  },
+  logoText: {
+    fontFamily: 'kufam-semi-bold-italic',
+    fontSize: normalize(25),
+    marginBottom: 10,
+    color: '#f3688f',
+  },
+  userName: {
+    color: Colors.caption,
+    fontSize: normalize(30),
+    fontFamily: 'Lato-Regular',
+    marginBottom: 15,
+    marginVertical: 10,
+    marginLeft: 10,
   },
 });

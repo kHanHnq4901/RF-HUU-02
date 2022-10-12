@@ -13,7 +13,7 @@ import {
   sleep,
   ByteArrayToString,
   BufferToString,
-} from '../../util/util';
+} from '../../util';
 import * as controller from './controller';
 import { hookProps, store } from './controller';
 import { Buffer } from 'buffer';

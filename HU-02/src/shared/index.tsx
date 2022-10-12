@@ -1,13 +1,13 @@
-import { DrawerParamsList } from '../navigation/model/model';
-import { AboutScreen } from '../screen/about';
-import { BoardBLEScreen } from '../screen/boardBLE';
-import { DeclareMeterScreen } from '../screen/declareMeter';
-import { ExportXmlScreen } from '../screen/exportXml';
-import { ImportXmlScreen } from '../screen/importXml';
-import { OverViewScreen } from '../screen/overview';
-import { ReadOpticalScreen } from '../screen/readOptical';
-import { ReadParameterScreen } from '../screen/readParameter';
-import { SettingAndAlarmScreen } from '../screen/settingAndAlarm';
+import {DrawerParamsList} from '../navigation/model/model';
+import {AboutScreen} from '../screen/about';
+import {BoardBLEScreen} from '../screen/boardBLE';
+import {DeclareMeterScreen} from '../screen/declareMeter';
+import {ExportXmlScreen} from '../screen/exportXml';
+import {ImportXmlScreen} from '../screen/importXml';
+import {OverViewScreen} from '../screen/overview';
+import {ReadOpticalScreen} from '../screen/readOptical';
+import {ReadParameterScreen} from '../screen/readParameter';
+import {SettingAndAlarmScreen} from '../screen/settingAndAlarm';
 
 export const version = '1.0.0';
 

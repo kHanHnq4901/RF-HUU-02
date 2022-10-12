@@ -10,7 +10,7 @@ import {
   PATH_EXPORT_XML,
   PATH_EXPORT_XML_EXTERNAL,
 } from '../../../shared/path';
-import {PropsStore, storeContext} from '../../../store/store';
+import {PropsStore, storeContext} from '../../../store';
 import RNFS from 'react-native-fs';
 import {updateValueAppSettingFromNvm} from '../../../service/storage';
 import {Alert, DeviceEventEmitter, EmitterSubscription} from 'react-native';
@@ -24,7 +24,7 @@ import {
 
 const TAG = 'controllerDrawerContent:';
 
-export let store = {} as PropsStore | null;
+export let store = {} as PropsStore;
 
 let hhuDisconnectListener: any = null;
 let hhuReceiveDataListener: any = null;
@@ -37,7 +37,7 @@ export const GetHookProps = () => {
 
 const hhuHandleDisconnectedPeripheral = data => {
   console.log('data disconnect peripheral:', data);
-  store?.setValue(state => {
+  store.setState(state => {
     state.hhu.idConnected = null;
     state.hhu.connect = 'DISCONNECTED';
     return {...state};
@@ -47,7 +47,7 @@ const hhuHandleDisconnectedPeripheral = data => {
 
 export const onInit = async navigation => {
   let appSetting = await updateValueAppSettingFromNvm();
-  store?.setValue(state => {
+  store.setState(state => {
     state.appSetting = appSetting;
     return {...state};
   });
@@ -71,7 +71,7 @@ export const onInit = async navigation => {
       connectLatestBLE(store);
     }
   } catch (err) {
-    store?.setValue(state => {
+    store.setState(state => {
       state.hhu.connect = 'DISCONNECTED';
       return {...state};
     });

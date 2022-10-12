@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { PropsStore, storeContext } from '../../store/store';
+import { PropsStore, storeContext } from '../../store';
 
 export type HookState = {};
 

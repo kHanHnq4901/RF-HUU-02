@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { PropsKHCMISModel } from '../../database/model';
 import { TYPE_READ_RF } from '../../service/hhu/defineEM';
-import { PropsStore, storeContext } from '../../store/store';
+import { PropsStore, storeContext } from '../../store';
 import { getIndexOfHeader } from '../WriteRegister/controller';
 import { PropsData } from './index';
 

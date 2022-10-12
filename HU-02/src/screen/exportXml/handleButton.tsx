@@ -1,7 +1,7 @@
 import Share from 'react-native-share';
 import * as controller from './controller';
 import { hookProps, updateXmlFile } from './controller';
-import { showToast } from '../../util/util';
+import { showToast } from '../../util';
 import { showAlertDanger } from '../../service/alert';
 import { deleteFile } from '../../shared/file';
 import { Alert } from 'react-native';

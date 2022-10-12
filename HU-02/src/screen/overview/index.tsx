@@ -1,9 +1,9 @@
-import { useNavigation } from '@react-navigation/native';
-import React, { useRef } from 'react';
-import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { VictoryPie } from 'victory-native';
-import { DetailDB } from '../../component/detailDB';
-import Theme, { normalize } from '../../theme';
+import {useNavigation} from '@react-navigation/native';
+import React from 'react';
+import {Dimensions, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {VictoryPie} from 'victory-native';
+import {DetailDB} from '../../component/detailDB';
+import Theme, {normalize} from '../../theme';
 import {
   colorsChart,
   dummyDataTable,
@@ -16,11 +16,7 @@ import {
 
 const deviceWidth = Dimensions.get('window').width;
 
-const ItemLabel = (props: {
-  label: string;
-  quantity: number;
-  color: string;
-}) => {
+const ItemLabel = (props: {label: string; quantity: number; color: string}) => {
   return (
     <View style={styles.containerItemLabel}>
       <View
@@ -32,7 +28,7 @@ const ItemLabel = (props: {
           marginRight: 10,
         }}
       />
-      <Text style={{ color: 'black', fontSize: normalize(20) }}>
+      <Text style={{color: 'black', fontSize: normalize(20)}}>
         {props.label + ': ' + props.quantity}
       </Text>
     </View>
@@ -85,7 +81,7 @@ export const OverViewScreen = () => {
               colorScale={colorsChart}
               data={total === 0 ? dummyDataTable : hookProps.state.graphicData}
               width={deviceWidth}
-              labels={({ datum }) => {
+              labels={({datum}) => {
                 //console.log('lb:', datum.x);
                 return datum.x;
               }}

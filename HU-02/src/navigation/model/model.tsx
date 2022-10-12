@@ -3,7 +3,8 @@ import {NavigatorScreenParams} from '@react-navigation/native';
 import type {StackNavigationProp} from '@react-navigation/stack';
 import {PropsDatatable} from '../../screen/writeDataByBookCode/controller';
 export type StackRootList = {
-  Login: undefined;
+  SignIn: undefined;
+  SignUp: undefined;
   Drawer: NavigatorScreenParams<DrawerParamsList>;
   BleScreen: undefined;
 };
@@ -97,4 +98,6 @@ export type DrawerParamsList = {
   ChangePassword: ParamsDrawerProps;
   SupportCustomer: ParamsDrawerProps;
   About: ParamsDrawerProps;
+  UserInfo: undefined;
+  SettingUser: undefined;
 };

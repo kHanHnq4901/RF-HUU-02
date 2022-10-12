@@ -1,9 +1,9 @@
-import React, { useContext, useState } from 'react';
-import { NativeEventEmitter, NativeModules } from 'react-native';
-import { PropsStore, storeContext } from '../../store/store';
+import React, {useContext, useState} from 'react';
+import {NativeEventEmitter, NativeModules} from 'react-native';
+import {PropsStore, storeContext} from '../../store';
 import BleManager from '../../util/BleManager';
-import { check, PERMISSIONS, request, RESULTS } from 'react-native-permissions';
-import { onScanPress } from './handleButton';
+import {check, PERMISSIONS, request, RESULTS} from 'react-native-permissions';
+import {onScanPress} from './handleButton';
 import LocationEnabler from 'react-native-location-enabler';
 
 export type PropsItemBle = {
@@ -16,7 +16,7 @@ type PropsBLE = {
   isScan: boolean;
 
   listBondedDevice: PropsItemBle[];
-  listNewDevice: { name: string; id: string }[];
+  listNewDevice: {name: string; id: string}[];
   // idConnected: string | null;
 };
 
@@ -37,7 +37,7 @@ export const hookProps = {} as HookProps;
 export let store = {} as PropsStore;
 
 const {
-  PRIORITIES: { HIGH_ACCURACY },
+  PRIORITIES: {HIGH_ACCURACY},
   useLocationSettings,
 } = LocationEnabler;
 
@@ -105,14 +105,14 @@ export const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
 const handleStopScan = () => {
   hookProps.setState(state => {
     state.ble.isScan = false;
-    return { ...state };
+    return {...state};
   });
 };
 
 export const setStatus = (status: string) => {
   hookProps.setState(state => {
     state.status = status;
-    return { ...state };
+    return {...state};
   });
 };
 
@@ -133,13 +133,13 @@ const handleDiscoverPeripheral = peripheral => {
   //console.log('res:', res);
   if (res.name !== null && res.advertising.isConnectable) {
     hookProps.state.ble.listNewDevice.forEach(itm => {
-      peripherals.set(itm.id, { name: itm.name, id: itm.id });
+      peripherals.set(itm.id, {name: itm.name, id: itm.id});
     });
-    peripherals.set(res.id, { name: res.name, id: res.id });
+    peripherals.set(res.id, {name: res.name, id: res.id});
 
     hookProps.setState(state => {
       state.ble.listNewDevice = Array.from(peripherals.values());
-      return { ...state };
+      return {...state};
     });
     //refScroll.current.scrollToEnd({ animated: true });
     //refScroll.current.scrollTo({ x: 0, y: 0, animated: true });
@@ -151,7 +151,7 @@ let listenerDiscover;
 
 export const onInit = async navigation => {
   try {
-    await BleManager.start({ showAlert: false });
+    await BleManager.start({showAlert: false});
     await BleManager.enableBluetooth();
     let list: PropsListBondBle[] = await BleManager.getBondedPeripherals();
     hookProps.setState(state => {
@@ -163,7 +163,7 @@ export const onInit = async navigation => {
           name: item.name,
         });
       });
-      return { ...state };
+      return {...state};
     });
 
     listenerStopScan = bleManagerEmitter.addListener(

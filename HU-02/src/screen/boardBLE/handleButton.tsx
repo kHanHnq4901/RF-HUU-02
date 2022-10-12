@@ -1,8 +1,8 @@
-import { hookProps, setStatus, store, variable } from './controller';
+import {hookProps, setStatus, store, variable} from './controller';
 
 import KeepAwake from 'react-native-keep-awake';
-import { getStringFirmware, getVersion } from '../../service/api';
-import { FillFlash, SendFlashPage } from '../../service/boardRF/bootloader';
+import {getStringFirmware, getVersion} from '../../service/api';
+import {FillFlash, SendFlashPage} from '../../service/boardRF/bootloader';
 import {
   readVersion,
   resetBoard,
@@ -21,7 +21,7 @@ export const onResetBoardBtnPress = async () => {
     state.isBusy = true;
     state.status = 'Đang thực hiện ...';
 
-    return { ...state };
+    return {...state};
   });
 
   let bResult: boolean = await resetBoard(TYPE_HHU_CMD.RESET);
@@ -33,7 +33,7 @@ export const onResetBoardBtnPress = async () => {
       state.status = 'Reset thất bại';
     }
     state.isBusy = false;
-    return { ...state };
+    return {...state};
   });
 };
 export const onReadVersionBtnPress = async () => {
@@ -45,7 +45,7 @@ export const onReadVersionBtnPress = async () => {
     state.isBusy = true;
     state.status = 'Đang đọc ...';
 
-    return { ...state };
+    return {...state};
   });
 
   let version = await readVersion();
@@ -53,10 +53,10 @@ export const onReadVersionBtnPress = async () => {
     let arr = version.split('.');
     arr.pop();
     const shortVersion = arr.join('.').toLocaleLowerCase().replace('v', '');
-    store?.setValue(state => {
+    store.setState(state => {
       state.hhu.version = version as string;
       state.hhu.shortVersion = shortVersion;
-      return { ...state };
+      return {...state};
     });
   }
 
@@ -67,13 +67,13 @@ export const onReadVersionBtnPress = async () => {
       state.status = 'Đọc thất bại';
     }
     state.isBusy = false;
-    return { ...state };
+    return {...state};
   });
 };
 variable.onOkChangeName = async text => {
   hookProps.setState(state => {
     state.showModalSetName = false;
-    return { ...state };
+    return {...state};
   });
 
   let result = await resetBoard(TYPE_HHU_CMD.RESET_TO_SET_NAME);
@@ -94,7 +94,7 @@ variable.onOkChangeName = async text => {
 variable.onDismiss = () => {
   hookProps.setState(state => {
     state.showModalSetName = false;
-    return { ...state };
+    return {...state};
   });
 };
 export async function onChangeNamePress() {
@@ -107,7 +107,7 @@ export async function onChangeNamePress() {
   }
   hookProps.setState(state => {
     state.showModalSetName = true;
-    return { ...state };
+    return {...state};
   });
 }
 
@@ -119,7 +119,7 @@ export const onCheckUpdateBtnPress = async () => {
     state.isBusy = true;
     state.status = 'Đang kiểm tra update ...';
 
-    return { ...state };
+    return {...state};
   });
   let status: string = '';
   const response = await getVersion();
@@ -140,7 +140,7 @@ export const onCheckUpdateBtnPress = async () => {
     state.isBusy = false;
     state.status = status;
 
-    return { ...state };
+    return {...state};
   });
 };
 
@@ -166,7 +166,7 @@ const ondUpdateFirmwareBtnPress = async (reset: boolean = true) => {
     state.isUpdatingFirmware = true;
     //state.progressUpdate = 0;
 
-    return { ...state };
+    return {...state};
   });
   if (reset) {
     let bResult: boolean = await resetBoard(TYPE_HHU_CMD.RESET_TO_PROGRAM);
@@ -178,7 +178,7 @@ const ondUpdateFirmwareBtnPress = async (reset: boolean = true) => {
         state.isUpdatingFirmware = false;
         state.progressUpdate = 0;
 
-        return { ...state };
+        return {...state};
       });
       return;
     }
@@ -194,7 +194,7 @@ const ondUpdateFirmwareBtnPress = async (reset: boolean = true) => {
       state.isUpdatingFirmware = true;
       state.progressUpdate = 0;
 
-      return { ...state };
+      return {...state};
     });
   } else {
     hookProps.setState(state => {
@@ -202,7 +202,7 @@ const ondUpdateFirmwareBtnPress = async (reset: boolean = true) => {
       state.status = response.message;
       state.isUpdatingFirmware = false;
 
-      return { ...state };
+      return {...state};
     });
   }
 
@@ -216,7 +216,7 @@ const ondUpdateFirmwareBtnPress = async (reset: boolean = true) => {
         state.status = retApi.message;
         state.isUpdatingFirmware = false;
 
-        return { ...state };
+        return {...state};
       });
       return;
     }
@@ -238,7 +238,7 @@ const ondUpdateFirmwareBtnPress = async (reset: boolean = true) => {
       state.isBusy = false;
       state.status = status;
       state.isUpdatingFirmware = false;
-      return { ...state };
+      return {...state};
     });
     console.log('state.progressUpdate:', hookProps.state.progressUpdate);
   } catch (err) {
@@ -248,7 +248,7 @@ const ondUpdateFirmwareBtnPress = async (reset: boolean = true) => {
       state.isBusy = false;
       state.status = 'Xảy ra lỗi';
       state.isUpdatingFirmware = false;
-      return { ...state };
+      return {...state};
     });
   }
 };

@@ -11,7 +11,7 @@ import {
   getLabelAndIsManyPriceBy3Character,
   TYPE_READ_RF,
 } from '../../service/hhu/defineEM';
-import { PropsStore, storeContext } from '../../store/store';
+import { PropsStore, storeContext } from '../../store';
 import { sizeScreen } from '../../theme';
 
 type PropsCheckBox = {

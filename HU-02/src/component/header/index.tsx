@@ -1,22 +1,20 @@
-import { DrawerHeaderProps } from '@react-navigation/drawer/lib/typescript/src/types';
+import {DrawerHeaderProps} from '@react-navigation/drawer/lib/typescript/src/types';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Appbar, Avatar } from 'react-native-paper';
-import { CircleSnail } from 'react-native-progress';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Appbar, Avatar} from 'react-native-paper';
+import {CircleSnail} from 'react-native-progress';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import { RouteProp, useRoute } from '@react-navigation/native';
+import {RouteProp, useRoute} from '@react-navigation/native';
 import {
   DrawerParamsList,
   ParamsDrawerProps,
 } from '../../navigation/model/model';
-import { storeContext } from '../../store/store';
-import Theme, { Colors, normalize, scale } from '../../theme';
-import { Alert } from '../alert';
-import { ModalInfo } from '../modal/modalShowInfo';
-import { onBleLongPress, onBlePress } from './handleButton';
-import { GetHookProps } from './controller';
-import { screenDatas } from '../../shared';
+import Theme, {Colors, normalize, scale} from '../../theme';
+import {ModalInfo} from '../modal/modalShowInfo';
+import {onBleLongPress, onBlePress} from './handleButton';
+import {GetHookProps, store} from './controller';
+import {screenDatas} from '../../shared';
 
 const TAG = 'HEADER:';
 
@@ -30,8 +28,6 @@ const sizeIcon = scale * 25;
 export function Header(props: DrawerHeaderProps) {
   GetHookProps();
 
-  const store = React.useContext(storeContext);
-
   const route = useRoute<RouteProp<DrawerParamsList, 'Overview'>>();
 
   // if (props.route.params) {
@@ -42,7 +38,7 @@ export function Header(props: DrawerHeaderProps) {
   return (
     <>
       <Appbar.Header
-        style={{ backgroundColor: 'white', elevation: 5 }}
+        style={{backgroundColor: 'white', elevation: 5}}
         //dark={false}
         //theme={{ colors: { primary: 'transparent' } }}
       >
@@ -56,7 +52,7 @@ export function Header(props: DrawerHeaderProps) {
             <Avatar.Image
               size={40 * scale}
               source={require('../../asset/images/icon/rf.jpg')}
-              style={{ elevation: 5, marginLeft: 5, zIndex: 100 }}
+              style={{elevation: 5, marginLeft: 5, zIndex: 100}}
             />
             {/* <Icon name="user-circle" size={40} color={theme.colors.primary} /> */}
           </TouchableOpacity>
@@ -73,7 +69,7 @@ export function Header(props: DrawerHeaderProps) {
         title={route.params?.title}
       /> */}
         <Text style={styles.title}>{route.params?.title}</Text>
-        <View style={{ flex: 1 }} />
+        <View style={{flex: 1}} />
         <TouchableOpacity
           onLongPress={onBleLongPress}
           onPress={onBlePress}
@@ -102,9 +98,9 @@ export function Header(props: DrawerHeaderProps) {
           <MaterialCommunityIcons
             name="information-outline"
             onPress={() => {
-              store?.setValue(state => {
+              store.setState(state => {
                 state.modal.showInfo = true;
-                return { ...state };
+                return {...state};
               });
             }}
             size={sizeIcon}
@@ -117,7 +113,7 @@ export function Header(props: DrawerHeaderProps) {
       <ModalSetting /> */}
       </Appbar.Header>
       {/* <Divider /> */}
-      <Alert />
+
       <ModalInfo title="Thông tin" info={infoHeader.info} />
     </>
   );

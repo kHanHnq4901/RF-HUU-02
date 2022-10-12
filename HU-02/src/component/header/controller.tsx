@@ -1,7 +1,7 @@
-import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
-import { StackRootNavigationProp } from '../../navigation/model/model';
-import { PropsStore, storeContext } from '../../store/store';
+import {useNavigation} from '@react-navigation/native';
+import React, {useState} from 'react';
+import {StackRootNavigationProp} from '../../navigation/model/model';
+import {PropsStore, storeContext} from '../../store';
 
 export type HookState = {};
 

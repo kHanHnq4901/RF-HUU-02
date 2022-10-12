@@ -1,6 +1,6 @@
-import { PermissionsAndroid, Platform } from 'react-native';
+import {PermissionsAndroid, Platform} from 'react-native';
+import {sleep} from '.';
 import BleManager from './BleManager';
-import { sleep } from './util';
 
 const TAG = 'Ble.ts:';
 

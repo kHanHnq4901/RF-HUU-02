@@ -73,12 +73,10 @@ export async function onLoginPress(props?: PropsLogin) {
       });
 
       navigation.push('Drawer', {
-        screen: 'Bottom',
+        screen: 'Overview',
         params: {
-          screen: 'HomeStack',
-          params: {
-            screen: 'Home',
-          },
+          title: 'Tổng quan',
+          info: 'Hiển thị tỉ lệ thu lập dữ liệu của thiết bị HHU',
         },
       });
 

@@ -5,6 +5,8 @@ import {Header} from '../component/header';
 import {screenDatas} from '../shared';
 import {Fonts, scale} from '../theme';
 import {DrawerParamsList} from './model/model';
+import {UserInfoScreen} from '../screen/userInfoScreen';
+import {SettingUserScreen} from '../screen/settingUser';
 
 const Drawer = createDrawerNavigator<DrawerParamsList>();
 
@@ -35,12 +37,16 @@ export const DrawerNavigator = () => {
           return null;
         }
       })}
-      {/* <Drawer.Screen
-        name="ReadParameter"
-        component={ReadParameterScreen}
-        options={{ title: 'Read RF' }}
-        initialParams={{ title: 'Read RF', info: '' }}
-      /> */}
+      <Drawer.Screen
+        name="UserInfo"
+        component={UserInfoScreen}
+        options={{headerShown: false}}
+      />
+      <Drawer.Screen
+        name="SettingUser"
+        component={SettingUserScreen}
+        options={{headerShown: false}}
+      />
     </Drawer.Navigator>
   );
 };

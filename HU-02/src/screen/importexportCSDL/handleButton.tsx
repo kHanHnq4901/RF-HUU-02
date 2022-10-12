@@ -1,7 +1,7 @@
 import Share from 'react-native-share';
 import * as controller from './controller';
 import { hookProps } from './controller';
-import { showToast } from '../../util/util';
+import { showToast } from '../../util';
 import { showAlertDanger } from '../../service/alert';
 import {
   NAME_CSDL,

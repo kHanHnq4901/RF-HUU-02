@@ -7,7 +7,7 @@
 //   PropsKHCMISModel,
 // } from '../../database/model';
 // import { TYPE_READ_RF } from '../../service/hhu/defineEM';
-// import { PropsStore, storeContext } from '../../store/store';
+// import { PropsStore, storeContext } from '../../store';
 // import { PropsCondition } from '../../database/repository/index';
 // import { scale, scaleWidth } from '../../theme';
 // import { onSearchPress } from './handleButton';

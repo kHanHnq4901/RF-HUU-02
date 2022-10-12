@@ -11,7 +11,7 @@ import {
   showToast,
   sleep,
   StringFromArray,
-} from '../../../util/util';
+} from '../../../util';
 import { BleFunc_Send, BleFunc_StartNotification } from './bleHhuFunc';
 import { DeviceEventEmitter } from 'react-native';
 import { UPDATE_FW_HHU } from '../../event/constant';

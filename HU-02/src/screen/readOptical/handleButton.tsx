@@ -19,7 +19,7 @@ import {
   sleep,
   ByteArrayToString,
   BufferToString,
-} from '../../util/util';
+} from '../../util';
 import {hookProps, store} from './controller';
 import {Buffer} from 'buffer';
 import {sizeof, Struct2Array} from '../../util/struct-and-array';

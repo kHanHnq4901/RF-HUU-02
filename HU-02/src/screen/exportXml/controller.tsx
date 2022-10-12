@@ -8,7 +8,7 @@ import {
   writeXmlFile,
 } from '../../shared/file';
 import { PATH_EXPORT_XML } from '../../shared/path';
-import { getFilExtension, showToast } from '../../util/util';
+import { getFilExtension, showToast } from '../../util';
 import { PropsCreateXML } from '../../xml';
 import { exportDB2Xml } from '../../xml/xmlUtil';
 

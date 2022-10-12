@@ -1,21 +1,21 @@
-import { findNodeHandle, Vibration } from 'react-native';
-import { dataDBTabel } from '../../database/model';
-import { PropsCondition } from '../../database/repository';
-import { CMISKHServices } from '../../database/service';
+import {findNodeHandle, Vibration} from 'react-native';
+import {dataDBTabel} from '../../database/model';
+import {PropsCondition} from '../../database/repository';
+import {CMISKHServices} from '../../database/service';
 import {
   PropsExtraLabelPower,
   PropsLabelPower,
   PropsResponse,
 } from '../../service/hhu/aps/hhuAps';
-import { apsReadRfGCS } from '../../service/hhu/aps/hhuApsGCS';
-import { formatDateTimeDB } from '../../service/hhu/aps/util';
+import {apsReadRfGCS} from '../../service/hhu/aps/hhuApsGCS';
+import {formatDateTimeDB} from '../../service/hhu/aps/util';
 import {
   getRFCodeBySeriAndStockRFCode,
   POWER_DEFINE,
   TYPE_READ_RF,
 } from '../../service/hhu/defineEM';
-import { sleep } from '../../util/util';
-import { refScroll } from './controller';
+import {sleep} from '../../util';
+import {refScroll} from './controller';
 import {
   addMoreItemToRender,
   hookProps,
@@ -42,10 +42,10 @@ export function onItemPress(item: PropsDatatable) {
             itm.checked = !itm.checked;
           }
         }
-        return { ...itm };
+        return {...itm};
       });
     }
-    return { ...state };
+    return {...state};
   });
 }
 
@@ -61,14 +61,14 @@ type PropsFilter = {
 const setStatus = (value: string) => {
   hookProps.setState(state => {
     state.status = value;
-    return { ...state };
+    return {...state};
   });
 };
 
 const funcFilter = (
   dataTable: PropsTable,
   filter: PropsFilter,
-): { dataTable: PropsTable; totalBCS: number; totalSucceed: number } => {
+): {dataTable: PropsTable; totalBCS: number; totalSucceed: number} => {
   //console.log('filter:', filter);
   let totalBCS = 0;
   let totalSucceed = 0;
@@ -184,8 +184,8 @@ const funcFilter = (
         totalSucceed++;
       }
     }
-    itm.data = { ...itm.data };
-    return { ...itm };
+    itm.data = {...itm.data};
+    return {...itm};
   });
 
   dataTable.render = [];
@@ -203,7 +203,7 @@ const funcFilter = (
 export function onStopReadPress() {
   hookProps.setState(state => {
     state.requestStop = true;
-    return { ...state };
+    return {...state};
   });
 }
 
@@ -235,7 +235,7 @@ export function onSelectedItemDropdown(column: string) {
     state.dataTable = result.dataTable;
     state.totalBCS = result.totalBCS.toString();
     state.totalSucceed = result.totalSucceed.toString();
-    return { ...state };
+    return {...state};
   });
 }
 
@@ -245,7 +245,7 @@ export function onCheckBoxTypeReadChange(label: string) {
       if (cb.label === label) {
         cb.checked = !cb.checked;
       }
-      return { ...cb };
+      return {...cb};
     });
 
     let isNoRead = state.arrCheckBoxRead.find(
@@ -271,7 +271,7 @@ export function onCheckBoxTypeReadChange(label: string) {
     state.dataTable = result.dataTable;
     state.totalBCS = result.totalBCS.toString();
     state.totalSucceed = result.totalSucceed.toString();
-    return { ...state };
+    return {...state};
   });
 }
 
@@ -293,11 +293,11 @@ export function onSelectAllPress() {
         } else {
           item.checked = state.selectAll;
         }
-        return { ...item };
+        return {...item};
       });
     }
 
-    return { ...state };
+    return {...state};
   });
 }
 
@@ -326,7 +326,7 @@ export function onChangeTextSearch(searchText: string) {
     state.dataTable = result.dataTable;
     state.totalBCS = result.totalBCS.toString();
     state.totalSucceed = result.totalSucceed.toString();
-    return { ...state };
+    return {...state};
   });
 }
 
@@ -371,7 +371,7 @@ type PropsInsertDB = {
 const _getDataToDbByTitle = (
   valueInsertDb: PropsInsertDB,
   apsResponse: PropsResponse,
-  objPower: { [K in PropsLabelPower]?: string | undefined },
+  objPower: {[K in PropsLabelPower]?: string | undefined},
   labelPower: PropsLabelPower,
   titleExtraPower: PropsExtraLabelPower,
 ) => {
@@ -648,7 +648,7 @@ const readData = async () => {
               }
               state.totalSucceed = totalSucceed.toString();
 
-              return { ...state };
+              return {...state};
             });
 
             // if (node) {
@@ -672,8 +672,8 @@ const readData = async () => {
               for (let key in state.dataTable) {
                 state.dataTable[key] = state.dataTable[key].map(itm => {
                   if (itm.data.SERY_CTO === strSeri) {
-                    itm = { ...itm };
-                    itm.data = { ...itm.data };
+                    itm = {...itm};
+                    itm.data = {...itm.data};
                     itm.checked = false;
                     itm.data.LoaiDoc =
                       itm.data.LoaiDoc === TYPE_READ_RF.HAVE_NOT_READ
@@ -684,7 +684,7 @@ const readData = async () => {
                 });
               }
 
-              return { ...state };
+              return {...state};
             });
             let writeFailed = await updateReadFailToDb(strSeri);
             if (writeFailed !== true) {
@@ -708,7 +708,7 @@ export const onBtnReadPress = async () => {
   if (store.state.hhu.connect !== 'CONNECTED') {
     hookProps.setState(state => {
       state.status = 'Chưa kết nối bluetooth';
-      return { ...state };
+      return {...state};
     });
     Vibration.vibrate([20, 30, 20]);
     return;
@@ -718,7 +718,7 @@ export const onBtnReadPress = async () => {
     state.isReading = true;
     state.requestStop = false;
     //state.status = 'Đang đọc ...';
-    return { ...state };
+    return {...state};
   });
 
   //await BleFunc_StartNotification(ObjSend.id);
@@ -735,7 +735,7 @@ export const onBtnReadPress = async () => {
     if (state.status.includes('Đang đọc') === true) {
       state.status = '';
     }
-    return { ...state };
+    return {...state};
   });
   //await BleFunc_StopNotification(ObjSend.id);
 };
@@ -743,7 +743,7 @@ export const onBtnReadPress = async () => {
 export const onBtnStopPress = () => {
   hookProps.setState(state => {
     state.requestStop = true;
-    return { ...state };
+    return {...state};
   });
 };
 
@@ -860,9 +860,9 @@ export const updateDataToDB = async (
       variable.modalAlert.onDissmiss = () => resolve(false);
       variable.modalAlert.onOKPress = () => resolve(true);
 
-      store?.setValue(state => {
+      store.setState(state => {
         state.modal.showWriteRegister = true;
-        return { ...state };
+        return {...state};
       });
     });
 

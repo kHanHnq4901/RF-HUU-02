@@ -4,10 +4,9 @@ import {
   PropsItemColumn,
   PropsItemStation,
 } from '../../component/detailDB';
-import { infoHeader } from '../../component/header';
-import { PropsKHCMISModel, PropsPercentRead } from '../../database/model';
-import { CMISKHServices } from '../../database/service';
-import { TYPE_READ_RF } from '../../service/hhu/defineEM';
+import {PropsKHCMISModel, PropsPercentRead} from '../../database/model';
+import {CMISKHServices} from '../../database/service';
+import {TYPE_READ_RF} from '../../service/hhu/defineEM';
 
 const labels = [
   'Lỗi ',
@@ -186,7 +185,7 @@ export const onInit = async navigation => {
 
       state.detailDB = getDbDetail(dataDB);
 
-      return { ...state };
+      return {...state};
     });
   });
 };

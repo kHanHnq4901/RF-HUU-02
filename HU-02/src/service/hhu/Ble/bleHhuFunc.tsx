@@ -1,8 +1,8 @@
 import AsyncStorage from '@react-native-community/async-storage';
-import { PropsStore } from '../../../store/store';
+import { PropsStore } from '../../../store';
 import * as Ble from '../../../util/ble';
 import BleManager from '../../../util/BleManager';
-import { showToast, sleep } from '../../../util/util';
+import { showToast, sleep } from '../../../util';
 import { HhuObj, ObjSend, readVersion, ShakeHand } from './hhuFunc';
 
 const KEY_STORAGE = 'BLE_INFO';
@@ -94,7 +94,7 @@ export const BleFunc_TryConnectToLatest = async (): Promise<{
 export const connectLatestBLE = async (store: PropsStore) => {
   console.log(TAG, 'try connect to latest');
   showToast('Đang thử kết nối với thiết bị Bluetooth trước đó ...');
-  store.setValue(state => {
+  store.setState(state => {
     state.hhu.connect = 'CONNECTING';
     return { ...state };
   });
@@ -103,7 +103,7 @@ export const connectLatestBLE = async (store: PropsStore) => {
   let data = await BleFunc_TryConnectToLatest();
   //console.log('k');
   if (data.result) {
-    store.setValue(state => {
+    store.setState(state => {
       state.hhu.connect = 'CONNECTED';
       state.hhu.idConnected = data.id;
       return { ...state };
@@ -139,7 +139,7 @@ export const connectLatestBLE = async (store: PropsStore) => {
               .join('.')
               .toLocaleLowerCase()
               .replace('v', '');
-            store.setValue(state => {
+            store.setState(state => {
               state.hhu.version = version;
               state.hhu.shortVersion = shortVersion;
               return { ...state };
@@ -154,7 +154,7 @@ export const connectLatestBLE = async (store: PropsStore) => {
       }
     }
   } else {
-    store.setValue(state => {
+    store.setState(state => {
       state.hhu.connect = 'DISCONNECTED';
       return { ...state };
     });

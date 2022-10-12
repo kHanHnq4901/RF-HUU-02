@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {PropsStore, storeContext} from '../../store/store';
+import {PropsStore, storeContext} from '../../store';
 
 type RadioButton_Value = 'Dữ liệu gần nhất' | 'Theo thời gian' | 'Tức thời';
 

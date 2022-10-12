@@ -19,7 +19,7 @@
 //   POWER_DEFINE,
 //   TYPE_READ_RF,
 // } from '../../service/hhu/defineEM';
-// import { isNumeric, showToast, sleep } from '../../util/util';
+// import { isNumeric, showToast, sleep } from '../../util';
 // import * as controller from './controller';
 // import {
 //   getIndexOfHeader,
@@ -679,7 +679,7 @@
 //       controller.variable.modalAlert.content = statusAbnormal;
 //       controller.variable.modalAlert.onDissmiss = resolve;
 
-//       store?.setValue(state => {
+//       store.setState(state => {
 //         state.modal.showWriteRegister = true;
 //         return { ...state };
 //       });

@@ -3,7 +3,7 @@ import {
   PropsAppSetting,
   saveValueAppSettingToNvm,
 } from '../../service/storage';
-import { isNumeric, showToast } from '../../util/util';
+import { isNumeric, showToast } from '../../util';
 import { store } from './controller';
 
 export const onNumRetriesReadSubmit = (text: string) => {
@@ -29,7 +29,7 @@ export const onNumRetriesReadSubmit = (text: string) => {
         text: 'OK',
       },
     ]);
-    store.setValue(state => {
+    store.setState(state => {
       state.appSetting.numRetriesRead = '1';
       return { ...state };
     });
@@ -61,7 +61,7 @@ export const onLowerThresholdDoneSubmit = (text: string) => {
         text: 'OK',
       },
     ]);
-    store.setValue(state => {
+    store.setState(state => {
       if (state.appSetting.setting.typeAlarm === 'Value') {
         state.appSetting.setting.lowerThresholdValue = (
           uppervalue - 1 > 0 ? uppervalue - 1 : 0
@@ -100,7 +100,7 @@ export const onUpperThresholdDoneSubmit = (text: string) => {
         text: 'OK',
       },
     ]);
-    store.setValue(state => {
+    store.setState(state => {
       if (state.appSetting.setting.typeAlarm === 'Value') {
         state.appSetting.setting.upperThresholdValue = (
           lowerValue + 1
@@ -117,7 +117,7 @@ export const onUpperThresholdDoneSubmit = (text: string) => {
 };
 
 export const onCheckBoxShowDataOkInWritwRegister = () => {
-  store.setValue(state => {
+  store.setState(state => {
     state.appSetting.showResultOKInWriteData = state.appSetting
       .showResultOKInWriteData
       ? false

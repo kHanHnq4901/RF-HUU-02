@@ -1,8 +1,8 @@
-import React, { useContext } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
-import { Modal, Portal, Divider } from 'react-native-paper';
-import { storeContext } from '../../store/store';
-import { Colors, normalize } from '../../theme/index';
+import React, {useContext} from 'react';
+import {View, StyleSheet, TouchableOpacity, Text} from 'react-native';
+import {Modal, Portal, Divider} from 'react-native-paper';
+import {storeContext} from '../../store';
+import {Colors, normalize} from '../../theme/index';
 
 type Props = {
   title: string;
@@ -14,18 +14,18 @@ type Props = {
 export const ModalWriteRegister = (props: Props) => {
   const store = useContext(storeContext);
   function onDismiss() {
-    store?.setValue(state => {
+    store.setState(state => {
       state.modal.showWriteRegister = false;
-      return { ...state };
+      return {...state};
     });
     if (props.onDismiss) {
       props.onDismiss();
     }
   }
   function onOKPress() {
-    store?.setValue(state => {
+    store.setState(state => {
       state.modal.showWriteRegister = false;
-      return { ...state };
+      return {...state};
     });
     if (props.onOKPress) {
       props.onOKPress();

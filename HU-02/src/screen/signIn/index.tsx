@@ -21,7 +21,7 @@ import {
 import {onFingerPress, onLoginPress} from './handle';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-export function LoginScreen() {
+export function SignInScreen() {
   UpdateHook();
   React.useEffect(() => {
     onInit();
@@ -35,7 +35,7 @@ export function LoginScreen() {
         style={styles.logo}
         resizeMode="contain"
       />
-      <Text style={styles.text}>Đồng hồ nước</Text>
+      <Text style={styles.text}>HU-02</Text>
 
       <FormInput
         onChangeText={email =>
@@ -119,12 +119,12 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.backgroundColor,
   },
   logo: {
-    height: 150 * scale,
-    width: 150 * scale,
+    height: 200 * scale,
+    width: 200 * scale,
   },
   text: {
     fontFamily: 'kufam-semi-bold-italic',
-    fontSize: normalize(28),
+    fontSize: normalize(45),
     marginBottom: 10,
     color: '#f3688f',
   },

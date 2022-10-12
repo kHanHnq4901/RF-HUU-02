@@ -1,11 +1,11 @@
-import { Buffer } from 'buffer';
-import { crc16 } from '../../../util/crc16';
+import {Buffer} from 'buffer';
+import {crc16} from '../../../util/crc16';
 import {
   sizeof,
   Struct2Array,
   Array2Struct,
 } from '../../../util/struct-and-array';
-import { BufferToString } from '../../../util/util';
+import {BufferToString} from '../../../util';
 import {
   hhuFunc_HeaderProps,
   hhuFunc_PropsObjAnalysis,
@@ -20,7 +20,7 @@ import {
   Rtc_SimpleTimeType,
   SIZE_SERIAL,
 } from '../RF/radioProtocol';
-import { SimpleTimeToSTring } from '../util/utilFunc';
+import {SimpleTimeToSTring} from '../util/utilFunc';
 import {
   DataManager_IlluminateRecordProps,
   DataManager_IlluminateRecordType,

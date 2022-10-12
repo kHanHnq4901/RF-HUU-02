@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import RNFS from 'react-native-fs';
-import { getFilExtension, showToast } from '../../util/util';
+import { getFilExtension, showToast } from '../../util';
 import { PropsFileInfo } from '../../shared/file';
 import { PATH_IMPORT_CSDL, PATH_EXECUTE_CSDL } from '../../shared/path';
 import { DeviceEventEmitter, EmitterSubscription } from 'react-native';

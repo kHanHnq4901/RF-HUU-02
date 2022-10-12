@@ -5,7 +5,7 @@ import {
   getRFCodeBySeriAndStockRFCode,
   TYPE_READ_RF,
 } from '../../service/hhu/defineEM';
-import { sleep } from '../../util/util';
+import { sleep } from '../../util';
 import {
   convertApsResponse2PropsInsertDb,
   PropsUpdateDb,

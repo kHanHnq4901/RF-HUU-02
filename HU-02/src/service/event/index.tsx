@@ -1,5 +1,5 @@
 import ReceiveSharingIntent from 'react-native-receive-sharing-intent';
-import { getFilExtension } from '../../util/util';
+import { getFilExtension } from '../../util';
 import RNFS from 'react-native-fs';
 import { PATH_IMPORT_CSDL, PATH_IMPORT_XML } from '../../shared/path';
 import { Alert, DeviceEventEmitter, BackHandler } from 'react-native';

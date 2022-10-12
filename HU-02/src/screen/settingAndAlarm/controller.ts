@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { PropsStore, storeContext } from '../../store/store';
+import React, {useState} from 'react';
+import {PropsStore, storeContext} from '../../store';
 
 type PropsHookState = {
   typeAlarm: PropsTypeAlarmRegister;

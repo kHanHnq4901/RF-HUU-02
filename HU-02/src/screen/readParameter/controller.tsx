@@ -7,7 +7,7 @@ import {
 } from '../../service/hhu/defineEM';
 import { TypeReadRF } from '../../service/hhu/RF/RfFunc';
 import { getArrSeri, saveArrSeri } from '../../service/storage';
-import { PropsStore, storeContext } from '../../store/store';
+import { PropsStore, storeContext } from '../../store';
 import { arrSeri, setArrSeri } from './handleButton';
 
 type StateProps = {

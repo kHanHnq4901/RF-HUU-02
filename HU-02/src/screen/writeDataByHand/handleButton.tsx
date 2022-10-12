@@ -1,5 +1,5 @@
 import { formatDateTimeDB } from '../../service/hhu/aps/util';
-import { isNumeric } from '../../util/util';
+import { isNumeric } from '../../util';
 import { PropsDatatable } from '../writeDataByBookCode/controller';
 import { updateDataToDB } from '../WriteRegister/handleButton';
 import { hookProps } from './controller';

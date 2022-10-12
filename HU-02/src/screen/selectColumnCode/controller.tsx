@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { PropsKHCMISModel } from '../../database/model';
 import { CMISKHServices } from '../../database/service';
-import { PropsStore, storeContext } from '../../store/store';
+import { PropsStore, storeContext } from '../../store';
 
 // type PropsDataDB = {
 //   item: PropsKHCMISModel;

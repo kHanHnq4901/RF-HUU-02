@@ -10,7 +10,7 @@ import {
   getLabelAndIsManyPriceBy3Character,
   TYPE_READ_RF,
 } from '../../service/hhu/defineEM';
-import { PropsStore, storeContext } from '../../store/store';
+import { PropsStore, storeContext } from '../../store';
 import { dataDBTabel } from '../../database/model/index';
 import { NativeScrollEvent, ScrollView } from 'react-native';
 import { sizeScreen } from '../../theme/index';

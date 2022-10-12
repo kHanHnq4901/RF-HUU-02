@@ -1,5 +1,5 @@
-import { Buffer } from 'buffer';
-import { uint16_t } from './custom_typedef';
+import {Buffer} from 'buffer';
+import {uint16_t} from './custom_typedef';
 
 // const CRC16TB = [
 //   0, 0x1189, 0x2312, 0x329b, 0x4624, 0x57ad, 0x6536, 0x74bf, 0x8c48, 0x9dc1,
