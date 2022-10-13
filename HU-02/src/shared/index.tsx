@@ -8,6 +8,7 @@ import {OverViewScreen} from '../screen/overview';
 import {ReadOpticalScreen} from '../screen/readOptical';
 import {ReadParameterScreen} from '../screen/readParameter';
 import {SettingAndAlarmScreen} from '../screen/settingAndAlarm';
+import {StackWriteStationCodeNavigator} from '../navigation/StackWriteBySatationCode';
 
 export const version = '1.0.0';
 
@@ -81,19 +82,13 @@ export const screenDatas: DataScreensProps = [
     component: null, //StackWriteBookCodeNavigator,
   },
   {
-    title: 'Ghi theo mã cột',
+    title: 'Ghi theo mã trạm',
     info: `
-    Ghi chỉ số theo mã cột
-
-    B1: Chọn trạm biến áp
-    B2: Chọn các cột muốn ghi chỉ số
-        Ghi tất cả cột nếu không cột nào được chọn
-    B3: Chọn công tơ cần ghi chỉ số
-    B4: Ấn phím đọc
+    
     `,
     id: 'WriteDataByColumnCode',
     icon: 'ios-pencil',
-    component: null, //StackWriteColumnCodeNavigator,
+    component: StackWriteStationCodeNavigator,
   },
   {
     title: 'Ghi điện theo vị trí',
@@ -161,7 +156,7 @@ export const screenDatas: DataScreensProps = [
     `,
     id: 'ExportXml',
     icon: 'md-print',
-    component: ExportXmlScreen,
+    component: null,
   },
   {
     title: 'Nhập file xml',
@@ -173,7 +168,7 @@ export const screenDatas: DataScreensProps = [
     `,
     id: 'ImportXml',
     icon: 'code-download',
-    component: ImportXmlScreen,
+    component: null,
   },
   {
     title: 'Nhập xuất CMIS',

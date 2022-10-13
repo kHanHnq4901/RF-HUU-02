@@ -1,27 +1,26 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
+import { NativeScrollEvent } from 'react-native';
 import { PropsKHCMISModel } from '../../database/model';
 import { CMISKHServices } from '../../database/service';
 import {
-  PropsRouteParamsWriteBook,
-  StackWriteBookCodeNavigationProp,
+  PropsRouteParamsWriteColumn,
+  StackWriteStationCodeNavigationProp,
 } from '../../navigation/model/model';
 import {
   getLabelAndIsManyPriceBy3Character,
   TYPE_READ_RF,
 } from '../../service/hhu/defineEM';
 import { PropsStore, storeContext } from '../../store';
-import { dataDBTabel } from '../../database/model/index';
-import { NativeScrollEvent, ScrollView } from 'react-native';
-import { sizeScreen } from '../../theme/index';
-
-export const itemPerRender = 10;
+import { sizeScreen } from '../../theme';
 
 type PropsCheckBox = {
   checked: boolean;
   label: 'Chưa đọc' | 'Đọc lỗi' | 'Ghi tay' | 'Bất thường';
   // value: 'Chưa đọc' | 'Đọc lỗi' | 'Ghi tay' | 'Bất thường';
 };
+
+const itemPerRender = 10;
 
 export const variable = {
   modalAlert: {
@@ -40,11 +39,6 @@ export type PropsDatatable = {
   data: PropsKHCMISModel;
   isManyPrice: boolean;
   labelMeter: string;
-};
-
-export type PropsTable = {
-  render: PropsDatatable[];
-  noRender: PropsDatatable[];
 };
 
 export type HookState = {
@@ -66,13 +60,45 @@ export type HookProps = {
   setState: React.Dispatch<React.SetStateAction<HookState>>;
 };
 
+export type PropsTable = {
+  render: PropsDatatable[];
+  noRender: PropsDatatable[];
+};
+
 const TAG = ' Controller: ';
 
 export const hookProps = {} as HookProps;
 export let store = {} as PropsStore;
-export let navigation: StackWriteBookCodeNavigationProp;
-export let refScroll: React.MutableRefObject<ScrollView | null>;
-//export const _nodes = new Map();
+export let navigation: StackWriteStationCodeNavigationProp;
+
+export function isCloseToBottom({
+  layoutMeasurement,
+  contentOffset,
+  contentSize,
+}: NativeScrollEvent): boolean {
+  const paddingToBottom = sizeScreen.height * 3;
+
+  const result: boolean =
+    layoutMeasurement.height + contentOffset.y >=
+    contentSize.height - paddingToBottom;
+
+  //console.log('contentOffset:', contentOffset);
+
+  // if (result) {
+  //   console.log('layoutMeasurement:', layoutMeasurement);
+  //   console.log('contentSize:', contentSize);
+  // }
+  return result;
+}
+
+export function onScrollToEnd() {
+  if (hookProps.state.dataTable.noRender.length > 0) {
+    hookProps.setState(state => {
+      state.dataTable = addMoreItemToRender(state.dataTable);
+      return { ...state };
+    });
+  }
+}
 
 export function addMoreItemToRender(dataTable: PropsTable): PropsTable {
   let numAddItem = 0;
@@ -94,18 +120,9 @@ export function addMoreItemToRender(dataTable: PropsTable): PropsTable {
   return { ...dataTable };
 }
 
-export function onScrollToEnd() {
-  if (hookProps.state.dataTable.noRender.length > 0) {
-    hookProps.setState(state => {
-      state.dataTable = addMoreItemToRender(state.dataTable);
-      return { ...state };
-    });
-  }
-}
-
-export function GetHookProps(): HookProps {
+export const GetHookProps = (): HookProps => {
   const [state, setState] = useState<HookState>({
-    arrColumnColumnCode: ['Tất cả'],
+    arrColumnColumnCode: [],
     //dataDB: [],
     isReading: false,
     selectAll: false,
@@ -144,32 +161,11 @@ export function GetHookProps(): HookProps {
   hookProps.state = state;
   hookProps.setState = setState;
   store = React.useContext(storeContext) as PropsStore;
-  navigation = useNavigation<StackWriteBookCodeNavigationProp>();
-  refScroll = React.useRef<ScrollView | null>(null);
+  navigation = useNavigation<StackWriteStationCodeNavigationProp>();
   return hookProps;
-}
+};
 
-export function isCloseToBottom({
-  layoutMeasurement,
-  contentOffset,
-  contentSize,
-}: NativeScrollEvent): boolean {
-  const paddingToBottom = sizeScreen.height * 3;
-
-  const result: boolean =
-    layoutMeasurement.height + contentOffset.y >=
-    contentSize.height - paddingToBottom;
-
-  //console.log('contentOffset:', contentOffset);
-
-  // if (result) {
-  //   console.log('layoutMeasurement:', layoutMeasurement);
-  //   console.log('contentSize:', contentSize);
-  // }
-  return result;
-}
-
-const getDataDb = async (ref, routeParams: PropsRouteParamsWriteBook) => {
+const getDataDb = async (ref, routeParams: PropsRouteParamsWriteColumn) => {
   let items: PropsKHCMISModel[];
   let dataDB: PropsKHCMISModel[] = [];
   let columnCodeSet = new Set<string>();
@@ -190,7 +186,7 @@ const getDataDb = async (ref, routeParams: PropsRouteParamsWriteBook) => {
     return { ...state };
   });
 
-  console.log(TAG, 'firstTime', firstTime);
+  //console.log(TAG, 'routeParams', routeParams);
   try {
     //if (store.state.appSetting.showResultOKInWriteData === true) {
     items = await CMISKHServices.findAll();
@@ -198,8 +194,8 @@ const getDataDb = async (ref, routeParams: PropsRouteParamsWriteBook) => {
     for (let item of dataDB) {
       if (item.MA_TRAM === routeParams.stationCode) {
         let ok = false;
-        if (routeParams.bookCode.length > 0) {
-          if (routeParams.bookCode.includes(item.MA_QUYEN)) {
+        if (routeParams.columnCode.length > 0) {
+          if (routeParams.columnCode.includes(item.MA_COT)) {
             ok = true;
           }
         } else {
@@ -228,7 +224,6 @@ const getDataDb = async (ref, routeParams: PropsRouteParamsWriteBook) => {
             isManyPrice: labelAndIsManyPrice.isManyPrice,
             labelMeter: labelAndIsManyPrice.label,
           });
-          //break;
         }
         //console.log('item:', item);
       }
@@ -242,9 +237,7 @@ const getDataDb = async (ref, routeParams: PropsRouteParamsWriteBook) => {
     console.log(
       'dataTable:',
       dataTable.render.length + dataTable.noRender.length,
-    );
-    //console.log('show first:', dataTable[0]?.show);
-    //console.log('arrStationCode:', arrStationCode);
+    ); //console.log('arrStationCode:', arrStationCode);
     hookProps.setState(state => {
       //state.dataDB = dataDB;
       state.arrColumnColumnCode = arrColumnCode;
@@ -252,7 +245,6 @@ const getDataDb = async (ref, routeParams: PropsRouteParamsWriteBook) => {
       state.totalSucceed = totalSucceed.toString();
       state.dataTable = dataTable;
       state.status = '';
-
       return { ...state };
     });
     if (firstTime) {
@@ -265,7 +257,7 @@ const getDataDb = async (ref, routeParams: PropsRouteParamsWriteBook) => {
   }
 };
 
-export const onInit = async (routeParams: PropsRouteParamsWriteBook, ref) => {
+export const onInit = async (routeParams: PropsRouteParamsWriteColumn, ref) => {
   navigation.addListener('focus', () => {
     getDataDb(ref, routeParams);
   });

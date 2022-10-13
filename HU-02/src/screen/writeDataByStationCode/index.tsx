@@ -1,7 +1,6 @@
-import { RouteProp, useRoute } from '@react-navigation/native';
-import _ from 'lodash';
+import {RouteProp, useRoute} from '@react-navigation/native';
 import throttle from 'lodash.throttle';
-import React, { useRef } from 'react';
+import React, {useRef} from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -10,17 +9,16 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Checkbox } from 'react-native-paper';
-import { Pie } from 'react-native-progress';
+import {Checkbox} from 'react-native-paper';
+import {Pie} from 'react-native-progress';
 import SelectDropdown from 'react-native-select-dropdown';
-import Entypo from 'react-native-vector-icons/Entypo';
-import { Button } from '../../component/button/button';
-import { CheckboxButton } from '../../component/checkbox/checkbox';
-import { ModalWriteRegister } from '../../component/modal/modalWriteRegister';
-import { StackWriteDataByBookCodeList } from '../../navigation/model/model';
-import { TYPE_READ_RF } from '../../service/hhu/defineEM';
-import { Colors, normalize, scaleHeight, scaleWidth } from '../../theme';
-import { sizeScreen } from '../../theme/index';
+import {Button} from '../../component/button/button';
+import {CheckboxButton} from '../../component/checkbox/checkbox';
+import {ModalWriteRegister} from '../../component/modal/modalWriteRegister';
+import {StackWriteDataByStationCodeList} from '../../navigation/model/model';
+import {TYPE_READ_RF} from '../../service/hhu/defineEM';
+import {Colors, normalize, scaleHeight, scaleWidth} from '../../theme';
+import {sizeScreen} from '../../theme/index';
 import {
   GetHookProps,
   hookProps,
@@ -29,7 +27,6 @@ import {
   onInit,
   onScrollToEnd,
   PropsDatatable,
-  refScroll,
   variable,
 } from './controller';
 import {
@@ -42,44 +39,8 @@ import {
   onSelectedItemDropdown,
   onStopReadPress,
 } from './handleButton';
-
-const ItemColumnMemorized = React.memo(
-  (props: { column: string; selectedColumn: string }) => {
-    const background =
-      props.column === props.selectedColumn ? '#f7f72d' : 'white';
-    // console.log('ren: ' + props.column);
-    return (
-      <TouchableOpacity
-        onPress={() => {
-          onSelectedItemDropdown(props.column);
-        }}
-        style={{ ...styles.itemColumn, backgroundColor: background }}>
-        <Text style={styles.titleColumn}>{props.column}</Text>
-      </TouchableOpacity>
-    );
-  },
-  (prev, next) => {
-    return !(
-      (prev.selectedColumn === prev.column &&
-        next.selectedColumn !== next.column) ||
-      (prev.selectedColumn !== prev.column &&
-        next.selectedColumn === next.column)
-    );
-  },
-);
-
-// function ItemColumn({ column }) {
-
-//   return (
-//     <TouchableOpacity
-//       onPress={() => {
-//         onSelectedItemDropdown(column);
-//       }}
-//       style={{ ...styles.itemColumn, backgroundColor: background }}>
-//       <Text style={styles.titleColumn}>{column}</Text>
-//     </TouchableOpacity>
-//   );
-// }
+import Entypo from 'react-native-vector-icons/Entypo';
+import _ from 'lodash';
 
 export const SubRow1Memo = React.memo(
   (props: {
@@ -173,7 +134,7 @@ export const SubRow3Memo = React.memo(
   (prev, next) => _.isEqual(prev, next),
 );
 
-const IconPencilMemo = React.memo((props: { item: PropsDatatable }) => {
+const IconPencilMemo = React.memo((props: {item: PropsDatatable}) => {
   function _PencilPress() {
     //console.log('pencil press');
     onPencilPress({
@@ -219,7 +180,7 @@ function ItemStock(item: PropsDatatable) {
   return (
     <TouchableOpacity
       onPress={_onItemPress}
-      style={{ ...styleItemRow.container, backgroundColor: backgroundColor }}>
+      style={{...styleItemRow.container, backgroundColor: backgroundColor}}>
       {/* <TouchableOpacity style={styleItemRow.pencil} onPress={_PencilPress}>
         <Entypo name="pencil" size={35} color={Colors.primary} />
       </TouchableOpacity> */}
@@ -265,54 +226,16 @@ function areEqual(prev: PropsDatatable, next: PropsDatatable) {
 
 const ItemStockMemoried = React.memo(ItemStock, areEqual);
 
-export const styleItemRow = StyleSheet.create({
-  container: {
-    paddingVertical: 20,
-    paddingHorizontal: 5,
-    backgroundColor: 'white',
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  textImpress: {
-    fontWeight: 'bold',
-    fontSize: normalize(20),
-    //color: Colors.primary,
-    color: 'black',
-  },
-  textNormal: {
-    fontSize: normalize(18),
-    color: 'black',
-    //color: Colors.primary,
-  },
-  pencil: {
-    width: 50,
-    height: 50,
-    borderRadius: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute',
-    //backgroundColor: 'pink',
-    top: 5,
-    right: 15,
-    zIndex: 15,
-  },
-});
-
 const sizeChartWaiting =
   sizeScreen.width < sizeScreen.height
     ? sizeScreen.width * 0.2
     : sizeScreen.height * 0.2;
 
-export const WriteBookCodeScreen = () => {
+export const WriteStationCodeScreen = () => {
   GetHookProps();
 
   const route =
-    useRoute<RouteProp<StackWriteDataByBookCodeList, 'WriteBook'>>();
-
+    useRoute<RouteProp<StackWriteDataByStationCodeList, 'WriteStation'>>();
   const paramsRoute = route.params;
 
   //console.log('paramsRoute:', paramsRoute);
@@ -335,9 +258,8 @@ export const WriteBookCodeScreen = () => {
         onDismiss={variable.modalAlert.onDissmiss}
         onOKPress={variable.modalAlert.onOKPress}
       />
-
-      <View style={{ backgroundColor: 'white' }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+      <View style={{backgroundColor: 'white'}}>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           <Text style={styles.label}>Chọn mã cột</Text>
           <Text style={styles.percentSucceed}>
             Thành công: {hookProps.state.totalSucceed}/{' '}
@@ -366,8 +288,8 @@ export const WriteBookCodeScreen = () => {
                   color: Colors.primary,
                   fontSize: normalize(16),
                 }}
-                dropdownStyle={{ maxHeight: '100%' }}
-                rowTextStyle={{ fontSize: normalize(18) }}
+                dropdownStyle={{maxHeight: '100%'}}
+                rowTextStyle={{fontSize: normalize(18)}}
                 //rowTextStyle={{ color: Colors.primary }}
                 onSelect={onSelectedItemDropdown}
                 buttonTextAfterSelection={selectedItem => {
@@ -437,7 +359,7 @@ export const WriteBookCodeScreen = () => {
             )}
         </View>
       </View>
-      <View style={{ flex: 1 }}>
+      <View style={{flex: 1}}>
         {hookProps.state.isReading && (
           <View style={styles.bigLoading}>
             <Pie progress={0.4} size={sizeChartWaiting} indeterminate={true} />
@@ -445,8 +367,8 @@ export const WriteBookCodeScreen = () => {
           </View>
         )}
         <ScrollView
-          ref={refScroll}
-          onScroll={({ nativeEvent }) => {
+          // ref={refScroll}
+          onScroll={({nativeEvent}) => {
             if (isCloseToBottom(nativeEvent)) {
               //enableSomeButton();
               //console.log('to end');
@@ -561,5 +483,42 @@ const styles = StyleSheet.create({
     zIndex: 10000000,
 
     backgroundColor: 'white',
+  },
+});
+
+export const styleItemRow = StyleSheet.create({
+  container: {
+    paddingVertical: 20,
+    paddingHorizontal: 5,
+    backgroundColor: 'white',
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  textImpress: {
+    fontWeight: 'bold',
+    fontSize: normalize(20),
+    //color: Colors.primary,
+    color: 'black',
+  },
+  textNormal: {
+    fontSize: normalize(18),
+    color: 'black',
+    //color: Colors.primary,
+  },
+  pencil: {
+    width: 50,
+    height: 50,
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    //backgroundColor: 'pink',
+    top: 5,
+    right: 15,
+    zIndex: 15,
   },
 });

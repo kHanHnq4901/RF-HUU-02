@@ -1,5 +1,5 @@
-import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
+import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import throttle from 'lodash.throttle';
 import React from 'react';
 import {
@@ -11,8 +11,8 @@ import {
 } from 'react-native';
 import TextInput from 'react-native-text-input-interactive';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { Button } from '../../component/button/button';
-import { StackWriteDataByBookCodeList } from '../../navigation/model/model';
+import {Button} from '../../component/button/button';
+import {StackWriteDataByBookCodeList} from '../../navigation/model/model';
 import Theme, {
   Colors,
   CommonFontSize,
@@ -20,13 +20,8 @@ import Theme, {
   normalize,
   scale,
 } from '../../theme';
-import {
-  GetHook,
-  getTableContent,
-  hookProps,
-  onBeforeInit,
-} from './controller';
-import { checkCondition, onWriteByHandDone } from './handleButton';
+import {GetHook, getTableContent, hookProps, onBeforeInit} from './controller';
+import {checkCondition, onWriteByHandDone} from './handleButton';
 
 type Props = {
   label: string;
@@ -87,8 +82,8 @@ export const WriteDataByHandScreen = () => {
               content={item.content}
             />
           ))}
-          <View style={{ marginTop: 15 }} />
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+          <View style={{marginTop: 15}} />
+          <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
             <View style={styles.itemInputContainer}>
               <Text style={styles.title4}>Chỉ số mới:(kWh)</Text>
               <TextInput
@@ -96,7 +91,7 @@ export const WriteDataByHandScreen = () => {
                 onChangeText={text => {
                   hookProps.setState(state => {
                     state.CS_Moi = text;
-                    return { ...state };
+                    return {...state};
                   });
                 }}
                 editable={hookProps.state.allowWrite}
@@ -114,7 +109,7 @@ export const WriteDataByHandScreen = () => {
                   onChangeText={text => {
                     hookProps.setState(state => {
                       state.Pmax = text;
-                      return { ...state };
+                      return {...state};
                     });
                   }}
                   editable={hookProps.state.allowWrite}
@@ -147,7 +142,7 @@ export const WriteDataByHandScreen = () => {
                             state.datePick = new Date(
                               date.nativeEvent.timestamp as number,
                             );
-                            return { ...state };
+                            return {...state};
                           });
                         }
                       },
@@ -178,7 +173,7 @@ export const WriteDataByHandScreen = () => {
               onChangeText={text => {
                 hookProps.setState(state => {
                   state.ghichu = text;
-                  return { ...state };
+                  return {...state};
                 });
               }}
               //keyboardType="numeric"
@@ -207,7 +202,7 @@ export const WriteDataByHandScreen = () => {
         <View style={styles.buttonArea}>
           <Button
             label={hookProps.state.isWriting ? 'Đang ghi' : 'Ghi'}
-            style={{ width: '50%', alignSelf: 'center', height: 55 }}
+            style={{width: '50%', alignSelf: 'center', height: 55}}
             onPress={throttle(() => {
               const ok = checkCondition(props.data.isManyPrice);
               if (ok) {

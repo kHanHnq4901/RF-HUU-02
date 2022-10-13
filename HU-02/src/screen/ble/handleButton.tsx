@@ -4,6 +4,7 @@ import {hookProps, requestGps, setStatus, store} from './controller';
 import * as Ble from '../../util/ble';
 import {BleFunc_SaveStorage} from '../../service/hhu/Ble/bleHhuFunc';
 import {ObjSend, readVersion, ShakeHand} from '../../service/hhu/Ble/hhuFunc';
+import { checkUpdateHHU } from '../../service/api';
 
 const TAG = 'handleBtn Ble:';
 
@@ -58,7 +59,9 @@ export const connectHandle = async (id: string) => {
               state.hhu.shortVersion = shortVersion;
               return {...state};
             });
-            console.log('Read version succeed');
+            console.log('Read version succeed:' + version);
+            console.log('Short version:' + shortVersion);
+            checkUpdateHHU();
             break;
           } else {
             console.log('Read version failed');

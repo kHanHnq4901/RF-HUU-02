@@ -1,7 +1,7 @@
 import {hookProps, setStatus, store, variable} from './controller';
 
 import KeepAwake from 'react-native-keep-awake';
-import {getStringFirmware, getVersion} from '../../service/api';
+import {checkUpdateHHU, getStringFirmware, getVersion} from '../../service/api';
 import {FillFlash, SendFlashPage} from '../../service/boardRF/bootloader';
 import {
   readVersion,
@@ -133,6 +133,7 @@ export const onCheckUpdateBtnPress = async () => {
       (response.priority === 'Bình thường'
         ? ''
         : '.\nMức độ: ' + response.priority);
+    checkUpdateHHU(response);
   } else {
     status = response.message;
   }

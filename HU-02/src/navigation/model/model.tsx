@@ -1,7 +1,6 @@
 import {DrawerNavigationProp} from '@react-navigation/drawer';
 import {NavigatorScreenParams} from '@react-navigation/native';
 import type {StackNavigationProp} from '@react-navigation/stack';
-import {PropsDatatable} from '../../screen/writeDataByBookCode/controller';
 export type StackRootList = {
   SignIn: undefined;
   SignUp: undefined;
@@ -40,9 +39,9 @@ export type StackWriteDataByBookCodeList = {
     data: PropsDatatable;
   };
 };
-export type StackWriteDataByColumnCodeList = {
-  SelectColumn: ParamsDrawerProps;
-  WriteColumn: PropsRouteParamsWriteColumn;
+export type StackWriteDataByStationCodeList = {
+  SelectStation: ParamsDrawerProps;
+  WriteStation: PropsRouteParamsWriteColumn;
   WriteByHand: {
     // navigation: StackWriteBookCodeNavigationProp;
     data: PropsDatatable;
@@ -64,8 +63,8 @@ export type StackViewDataNavigationProp =
 
 export type StackWriteBookCodeNavigationProp =
   StackNavigationProp<StackWriteDataByBookCodeList>;
-export type StackWriteColumnCodeNavigationProp =
-  StackNavigationProp<StackWriteDataByColumnCodeList>;
+export type StackWriteStationCodeNavigationProp =
+  StackNavigationProp<StackWriteDataByStationCodeList>;
 
 export type DrawerNavigationProps = DrawerNavigationProp<DrawerParamsList>;
 
@@ -77,10 +76,8 @@ export type ParamsDrawerProps = {
 export type DrawerParamsList = {
   Overview: ParamsDrawerProps;
   ViewData: NavigatorScreenParams<StackViewDataNavigationProp>;
-  WriteData: NavigatorScreenParams<StackWiteDataNavigationProp>;
   ViewDataByVolatge: ParamsDrawerProps;
-  WriteDataByColumnCode: NavigatorScreenParams<StackWriteColumnCodeNavigationProp>;
-  WriteDataByBookCode: NavigatorScreenParams<StackWriteBookCodeNavigationProp>;
+  WriteDataByStationCode: NavigatorScreenParams<StackWriteStationCodeNavigationProp>;
   WriteDataByPosition: ParamsDrawerProps;
   ReadParameter: ParamsDrawerProps;
   DeclareMeter: ParamsDrawerProps;

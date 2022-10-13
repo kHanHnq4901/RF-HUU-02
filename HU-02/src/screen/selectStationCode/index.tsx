@@ -1,5 +1,5 @@
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import {useNavigation} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
 import React from 'react';
 import {
   Text,
@@ -9,7 +9,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
-import { Colors, normalize, scaleHeight, sizeScreen } from '../../theme';
+import {Colors, normalize, scaleHeight, sizeScreen} from '../../theme';
 import {
   GetHookProps,
   hookProps,
@@ -19,17 +19,17 @@ import {
 } from './controller';
 import {
   StackWriteBookCodeNavigationProp,
-  StackWriteColumnCodeNavigationProp,
+  StackWriteStationCodeNavigationProp,
 } from '../../navigation/model/model';
 import SelectDropdown from 'react-native-select-dropdown';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { Checkbox } from 'react-native-paper';
+import {Checkbox} from 'react-native-paper';
 import {
   onChangeTextSearch,
   onDropdownSelected,
   onOKPress,
 } from './handleButton';
-import { Button } from '../../component/button/button';
+import {Button} from '../../component/button/button';
 import throttle from 'lodash.throttle';
 
 type PropsRowHeader = {
@@ -46,10 +46,10 @@ const RowHeader = (props: PropsRowHeader) => {
             let checked = state.dataTabel[0].checked;
             state.dataTabel = state.dataTabel.map(item => {
               item.checked = !checked;
-              return { ...item };
+              return {...item};
             });
 
-            return { ...state };
+            return {...state};
           });
         }}
         style={styles.checkTabel}>
@@ -75,9 +75,9 @@ const Row = (item: PropsTabel) => {
               if (itm.id === item.id) {
                 itm.checked = !itm.checked;
               }
-              return { ...itm };
+              return {...itm};
             });
-            return { ...state };
+            return {...state};
           });
         }}
         style={styles.containerRowTable}>
@@ -89,7 +89,7 @@ const Row = (item: PropsTabel) => {
         </View>
         <View style={styles.contentTable}>
           <Text style={styles.title}>{item.columnCode}</Text>
-          <View style={{ height: 10 }} />
+          <View style={{height: 10}} />
           <Text style={styles.subTitle}>
             Đọc thành công: {item.succeedMeter}/ {item.totalMeter}
           </Text>
@@ -102,9 +102,9 @@ const Row = (item: PropsTabel) => {
   );
 };
 
-export const SelectColumnCodeScreen = () => {
+export const SelectStationCodeScreen = () => {
   GetHookProps();
-  const navigation = useNavigation<StackWriteColumnCodeNavigationProp>();
+  const navigation = useNavigation<StackWriteStationCodeNavigationProp>();
 
   const ref = React.useRef<SelectDropdown>(null);
 
@@ -120,7 +120,7 @@ export const SelectColumnCodeScreen = () => {
       <Text style={styles.status}>{hookProps.state.status}</Text>
       <View style={styles.selectSationAndInfo}>
         <View style={styles.containerSelectedStation}>
-          <Text style={styles.titleStation}>Chọn trạm biến áp</Text>
+          <Text style={styles.titleStation}>Chọn trạm</Text>
           <View style={styles.dropdown}>
             <SelectDropdown
               data={hookProps.state.dropdownStationCode}
@@ -137,8 +137,8 @@ export const SelectColumnCodeScreen = () => {
                 // if data array is an array of objects then return selectedItem.property to render after item is selected
                 return selectedItem;
               }}
-              buttonTextStyle={{ color: Colors.primary }}
-              rowTextStyle={{ color: Colors.primary }}
+              buttonTextStyle={{color: Colors.primary}}
+              rowTextStyle={{color: Colors.primary}}
               buttonStyle={styles.buttonDropDown}
               renderDropdownIcon={() => {
                 return <Ionicons name="chevron-down" size={20} />;

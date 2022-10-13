@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import RNFS from 'react-native-fs';
-import { KHCMISRepository } from '../../database/repository';
-import { getLastPathImport } from '../../service/storage';
+import {KHCMISRepository} from '../../database/repository';
+import {getLastPathImport} from '../../service/storage';
 import {
   loadXmlFromStorage,
   PropsFileInfo,
   writeXmlFile,
 } from '../../shared/file';
-import { PATH_EXPORT_XML } from '../../shared/path';
-import { getFilExtension, showToast } from '../../util';
-import { PropsCreateXML } from '../../xml';
-import { exportDB2Xml } from '../../xml/xmlUtil';
+import {PATH_EXPORT_XML} from '../../shared/path';
+import {getFilExtension, showToast} from '../../util';
+import {PropsCreateXML} from '../../xml';
+import {exportDB2Xml} from '../../xml/xmlUtil';
 
 export type HookState = {
   xmlList: PropsFileInfo[];
@@ -67,7 +67,7 @@ export const updateXmlFile = async () => {
   const xmlList = await loadXmlFromStorage(PATH_EXPORT_XML);
   hookProps.setState(state => {
     state.xmlList = xmlList;
-    return { ...state };
+    return {...state};
   });
 };
 

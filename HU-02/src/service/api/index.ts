@@ -1,4 +1,6 @@
 import axios from 'axios';
+import {showAlert, showToast} from '../../util/index';
+import {store} from '../../component/drawer/drawerContent/controller';
 
 type PropsReturnGetVerion = {
   bResult: boolean;
@@ -107,3 +109,31 @@ export const getStringFirmware = async (): Promise<PropsReturnGetFirmware> => {
 
   return ret;
 };
+
+export async function checkUpdateHHU(props?: PropsReturnGetVerion) {
+  try {
+    if (store.state.hhu.shortVersion !== '') {
+      let currentVersion = store.state.hhu.shortVersion;
+      let restVersion = {} as PropsReturnGetVerion;
+      if (props) {
+        restVersion = props;
+      } else {
+        restVersion = await getVersion();
+      }
+      if (restVersion.bResult === true) {
+        if (currentVersion !== restVersion.version) {
+          let status = `Đã có phiên bản mới cho thiết bị cầm tay ${restVersion.version}\r\n`;
+          if (restVersion.priority === 'Cao') {
+            status += '(Quan trọng)';
+          }
+          showAlert(status);
+        } else {
+          showToast('Không có bản cập nhật nào');
+        }
+      }
+      //console.log('rest version:', rest);
+    }
+  } catch (err: any) {
+    console.log(TAG, err.message);
+  }
+}

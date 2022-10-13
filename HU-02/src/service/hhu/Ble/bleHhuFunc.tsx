@@ -1,9 +1,10 @@
 import AsyncStorage from '@react-native-community/async-storage';
-import { PropsStore } from '../../../store';
+import {PropsStore} from '../../../store';
 import * as Ble from '../../../util/ble';
 import BleManager from '../../../util/BleManager';
-import { showToast, sleep } from '../../../util';
-import { HhuObj, ObjSend, readVersion, ShakeHand } from './hhuFunc';
+import {showToast, sleep} from '../../../util';
+import {HhuObj, ObjSend, readVersion, ShakeHand} from './hhuFunc';
+import {checkUpdateHHU} from '../../api';
 
 const KEY_STORAGE = 'BLE_INFO';
 const TAG = 'Ble Func:';
@@ -81,14 +82,14 @@ export const BleFunc_TryConnectToLatest = async (): Promise<{
         await sleep(500);
       }
 
-      return { result: result, id: data.id };
+      return {result: result, id: data.id};
     } else {
-      return { result: false, id: null };
+      return {result: false, id: null};
     }
   } catch (err) {
     console.log(TAG, String(err) + new Error().stack);
   }
-  return { result: false, id: null };
+  return {result: false, id: null};
 };
 
 export const connectLatestBLE = async (store: PropsStore) => {
@@ -96,9 +97,9 @@ export const connectLatestBLE = async (store: PropsStore) => {
   showToast('Đang thử kết nối với thiết bị Bluetooth trước đó ...');
   store.setState(state => {
     state.hhu.connect = 'CONNECTING';
-    return { ...state };
+    return {...state};
   });
-  await BleManager.start({ showAlert: false });
+  await BleManager.start({showAlert: false});
   await BleManager.enableBluetooth();
   let data = await BleFunc_TryConnectToLatest();
   //console.log('k');
@@ -106,7 +107,7 @@ export const connectLatestBLE = async (store: PropsStore) => {
     store.setState(state => {
       state.hhu.connect = 'CONNECTED';
       state.hhu.idConnected = data.id;
-      return { ...state };
+      return {...state};
     });
     ObjSend.id = data.id;
     let result;
@@ -142,9 +143,10 @@ export const connectLatestBLE = async (store: PropsStore) => {
             store.setState(state => {
               state.hhu.version = version;
               state.hhu.shortVersion = shortVersion;
-              return { ...state };
+              return {...state};
             });
             console.log('Read version succeed');
+            checkUpdateHHU();
             break;
           } else {
             console.log('Read version failed');
@@ -156,7 +158,7 @@ export const connectLatestBLE = async (store: PropsStore) => {
   } else {
     store.setState(state => {
       state.hhu.connect = 'DISCONNECTED';
-      return { ...state };
+      return {...state};
     });
     console.log(TAG + 'hhu:', data);
     showToast('Kết nối bluetooth thất bại');

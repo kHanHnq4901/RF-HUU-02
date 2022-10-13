@@ -1,7 +1,7 @@
 import { Alert } from 'react-native';
 import {
   StackWriteBookCodeNavigationProp,
-  StackWriteColumnCodeNavigationProp,
+  StackWriteStationCodeNavigationProp,
 } from '../../navigation/model/model';
 import { TYPE_READ_RF } from '../../service/hhu/defineEM';
 import { hookProps, PropsTabel } from './controller';
@@ -73,7 +73,7 @@ export const onChangeTextSearch = (value: string) => {
   });
 };
 
-export const onOKPress = (navigation: StackWriteColumnCodeNavigationProp) => {
+export const onOKPress = (navigation: StackWriteStationCodeNavigationProp) => {
   if (!hookProps.state.selectedStationCode) {
     Alert.alert('', 'Chưa chọn mã trạm');
     return;

@@ -1,9 +1,9 @@
-import { Buffer } from 'buffer';
-import { aes_128_dec, aes_128_en } from '../../../util/aes128';
-import { crc16_offset } from '../../../util/crc16';
+import {Buffer} from 'buffer';
+import {aes_128_dec, aes_128_en} from '../../../util/aes128';
+import {crc16_offset} from '../../../util/crc16';
 import struct from '../../../util/cstruct';
-import { int8_t, uint8_t } from '../../../util/custom_typedef';
-import { HhuObj, TYPE_OBJ } from '../Ble/hhuFunc';
+import {int8_t, uint8_t} from '../../../util/custom_typedef';
+import {HhuObj, TYPE_OBJ} from '../Ble/hhuFunc';
 import {
   Array2Struct,
   sizeof,
@@ -38,8 +38,8 @@ import {
   RP_TYPE_PACKET,
   SIZE_SERIAL,
 } from './radioProtocol';
-import { PropsLabel } from '../defineWM';
-import { SimpleTimeToSTring } from '../util/utilFunc';
+import {PropsLabel} from '../defineWM';
+import {SimpleTimeToSTring} from '../util/utilFunc';
 
 const TAG = 'Rf Func';
 
@@ -179,7 +179,7 @@ export async function AnalysisRF(payload: Buffer): Promise<PropsResponse> {
           let time = {} as RP_TimeFirstDataProps;
 
           time.u8Year = dateTime.getFullYear() - 2000;
-          time.u8Month = dateTime.getMonth();
+          time.u8Month = dateTime.getMonth() + 1;
           time.u8Date = dateTime.getDate();
           time.u8Hour = dateTime.getHours();
           let record: RecordDetailProps = {
@@ -334,7 +334,7 @@ type PropsRead = {
 };
 
 export type PropsModelRadio = {
-  info: { [key in PropsLabel]: string };
+  info: {[key in PropsLabel]: string};
   data: {
     [key in PropsLabel]?: string;
   }[];
