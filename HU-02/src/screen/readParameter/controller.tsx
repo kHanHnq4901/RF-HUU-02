@@ -1,20 +1,21 @@
-import React, { useContext, useState } from 'react';
+import React, {useContext, useState} from 'react';
 import {
   getMeterSpeciesDropDownProps,
   PropsCheckBox,
   PropsDropdown,
   TYPE_METER,
 } from '../../service/hhu/defineEM';
-import { TypeReadRF } from '../../service/hhu/RF/RfFunc';
-import { getArrSeri, saveArrSeri } from '../../service/storage';
-import { PropsStore, storeContext } from '../../store';
-import { arrSeri, setArrSeri } from './handleButton';
+import {TypeReadRF} from '../../service/hhu/RF/RfFunc';
+import {getArrSeri, saveArrSeri} from '../../service/storage';
+import {PropsStore, storeContext} from '../../store';
+import {arrSeri, setArrSeri} from './handleButton';
 
 type StateProps = {
   status: string;
   requestStop: boolean;
   seri: string;
   typeRead: TypeReadRF;
+  is0h: boolean;
   typeMeter: TYPE_METER;
   dataTable: RowTableProps;
   isReading: boolean;
@@ -48,7 +49,7 @@ type RowTableProps = string[][]; //[[string, string]];
 export const dataHeaderTable = ['Thông số', 'Giá trị'];
 
 export const hookProps = {} as HookProps;
-export let store = {} as PropsStore | null;
+export let store = {} as PropsStore;
 
 function GetInitialState(): StateProps {
   const dateEnd = new Date();
@@ -65,6 +66,7 @@ function GetInitialState(): StateProps {
       ['Điện áp', '0 (V)'],
       ['Dữ liệu', '0 (lít)'],
     ],
+    is0h: false,
     isReading: false,
     numberRetries: '1',
     dateStart: dateStart,

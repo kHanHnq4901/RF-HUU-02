@@ -1,16 +1,21 @@
+import {useNavigation} from '@react-navigation/native';
 import React from 'react';
 import {ScrollView, StyleSheet, View} from 'react-native';
 import {Avatar, TextInput} from 'react-native-paper';
+import {BackButton} from '../../component/backButton';
 
-import {normalize, scale, sizeScreen} from '../../theme';
+import {Colors, normalize, scale, sizeScreen} from '../../theme';
 import {store, UpdateHook} from './controller';
 
 export function UserInfoScreen() {
   UpdateHook();
   //console.log(store.state.userInfo);
 
+  const navigation = useNavigation();
+
   return (
-    <>
+    <View style={styles.container}>
+      <BackButton onPress={navigation.goBack} />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.containerImage}>
           <Avatar.Image
@@ -52,11 +57,15 @@ export function UserInfoScreen() {
           underlineColor="transparent"
         />
       </ScrollView>
-    </>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: Colors.backgroundColor,
+  },
   containerImage: {
     height: 0.2 * sizeScreen.height,
     alignItems: 'center',

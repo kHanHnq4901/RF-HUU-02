@@ -1,6 +1,6 @@
 import struct from '../../../util/cstruct';
-import { Buffer } from 'buffer';
-import { uint16_t, uint8_t } from '../../../util/custom_typedef';
+import {Buffer} from 'buffer';
+import {uint16_t, uint8_t} from '../../../util/custom_typedef';
 
 export const SIZE_SERIAL = 4;
 
@@ -11,7 +11,9 @@ export enum RP_TYPE_PACKET {
   RP_PACKET_TYPE_GATEWAY_CONFIG = 0x03,
 
   RP_PACKET_TYPE_HHU_GET_ONE_DATA = 0x0a,
-  RP_PACKET_TYPE_HHU_GET_ALL_DATA = 0x0b,
+  RP_PACKET_TYPE_HHU_GET_ONE_DATA_0H = 0x0b,
+  RP_PACKET_TYPE_HHU_GET_ALL_DATA = 0x0c,
+  RP_PACKET_TYPE_HHU_GET_ALL_DATA_0H = 0x0d,
 }
 
 export enum RP_TYPE_HOST {

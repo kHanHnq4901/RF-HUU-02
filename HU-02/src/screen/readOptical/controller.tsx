@@ -45,6 +45,7 @@ export type HookState = {
     items: PropsCheckBox[];
   };
   requestStop: boolean;
+  is0h: boolean;
 };
 
 export type HookProps = {
@@ -88,6 +89,7 @@ function getInitialState(): HookState {
       ],
     },
     requestStop: false,
+    is0h: false,
   };
 }
 

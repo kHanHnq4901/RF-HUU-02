@@ -1,15 +1,23 @@
+import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
 import {useNavigation} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import React from 'react';
+import throttle from 'lodash.throttle';
+import React, {useMemo} from 'react';
 import {
-  Text,
-  StyleSheet,
-  View,
-  TextInput,
   ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
   TouchableOpacity,
+  View,
 } from 'react-native';
+import {Checkbox} from 'react-native-paper';
+import SelectDropdown from 'react-native-select-dropdown';
+import {Button} from '../../component/button/button';
+import {CheckboxButton} from '../../component/checkbox/checkbox';
+import {RadioButton} from '../../component/radioButton/radioButton';
+import {StackWriteStationCodeNavigationProp} from '../../navigation/model/model';
 import {Colors, normalize, scaleHeight, sizeScreen} from '../../theme';
+import {dataReadRadioButton} from '../readParameter/controller';
 import {
   GetHookProps,
   hookProps,
@@ -17,20 +25,7 @@ import {
   onInit,
   PropsTabel,
 } from './controller';
-import {
-  StackWriteBookCodeNavigationProp,
-  StackWriteStationCodeNavigationProp,
-} from '../../navigation/model/model';
-import SelectDropdown from 'react-native-select-dropdown';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import {Checkbox} from 'react-native-paper';
-import {
-  onChangeTextSearch,
-  onDropdownSelected,
-  onOKPress,
-} from './handleButton';
-import {Button} from '../../component/button/button';
-import throttle from 'lodash.throttle';
+import {onChangeTextSearch, onOKPress} from './handleButton';
 
 type PropsRowHeader = {
   checked: boolean;
@@ -115,70 +110,195 @@ export const SelectStationCodeScreen = () => {
     };
   }, []);
 
+  const RenderRadioButton = ({e}: {e: any}) => {
+    return useMemo(() => {
+      return (
+        <RadioButton
+          key={e}
+          label={e}
+          value={e}
+          checked={hookProps.state.typeRead === e ? true : false}
+          onPress={() => {
+            hookProps.setState(state => ({...state, typeRead: e}));
+          }}
+        />
+      );
+    }, [hookProps.state.typeRead]);
+  };
+
+  const styleSelectDate = {...styles.selectDate};
+  //console.log('hookProps.state.typeRead:', hookProps.state.typeRead);
+  styleSelectDate.color =
+    hookProps.state.typeRead === 'Dữ liệu gần nhất'
+      ? Colors.caption
+      : Colors.primary;
+
   return (
     <View style={styles.container}>
       <Text style={styles.status}>{hookProps.state.status}</Text>
-      <View style={styles.selectSationAndInfo}>
-        <View style={styles.containerSelectedStation}>
-          <Text style={styles.titleStation}>Chọn trạm</Text>
-          <View style={styles.dropdown}>
-            <SelectDropdown
-              data={hookProps.state.dropdownStationCode}
-              ref={ref}
-              defaultButtonText=" "
-              //defaultValue=" "
-              //defaultValueByIndex={0}
-              onSelect={selectedItem => {
-                //console.log(selectedItem, index);
-                onDropdownSelected(selectedItem);
-              }}
-              buttonTextAfterSelection={(selectedItem, index) => {
-                // text represented after item is selected
-                // if data array is an array of objects then return selectedItem.property to render after item is selected
-                return selectedItem;
-              }}
-              buttonTextStyle={{color: Colors.primary}}
-              rowTextStyle={{color: Colors.primary}}
-              buttonStyle={styles.buttonDropDown}
-              renderDropdownIcon={() => {
-                return <Ionicons name="chevron-down" size={20} />;
-              }}
-              rowTextForSelection={(item, index) => {
-                // text represented for each item in dropdown
-                // if data array is an array of objects then return item.property to represent item in dropdown
-                return item;
-              }}
-            />
-          </View>
+      <View style={styles.normalRow}>
+        <View>
+          <CheckboxButton
+            checked={hookProps.state.is0h}
+            label="0h"
+            onPress={() => {
+              hookProps.setState(state => {
+                state.is0h = !state.is0h;
+                return {...state};
+              });
+            }}
+          />
         </View>
-        <View style={styles.containerInfo}>
-          <View style={styles.containerSubInfo}>
-            <Text style={styles.textInfo}>
-              Tổng công tơ: {hookProps.state.totalMeter}
-            </Text>
-            <Text style={styles.textInfo}>
-              Tổng BCS: {hookProps.state.totalBCS}
-            </Text>
+        <View style={styles.rowSelectDate}>
+          <View style={styles.conatinerSelectDate}>
+            <Text style={styles.labelSelectDate}>Bắt đầu</Text>
+            <TouchableOpacity
+              onPress={() => {
+                if (hookProps.state.typeRead === 'Dữ liệu gần nhất') {
+                  return;
+                }
+                DateTimePickerAndroid.open({
+                  value: hookProps.state.dateStart,
+                  mode: 'time',
+                  display: 'clock',
+                  onChange: date => {
+                    //console.log(JSON.stringify(date));
+
+                    if (date.type === 'set') {
+                      hookProps.setState(state => {
+                        state.dateStart = new Date(
+                          date.nativeEvent.timestamp as string | number,
+                        );
+                        console.log(state.dateStart.toLocaleString());
+                        return {...state};
+                      });
+                    }
+                  },
+                });
+              }}>
+              <TextInput
+                // label="Chọn ngày"
+                value={hookProps.state.dateStart.toLocaleTimeString()}
+                onChangeText={() => {}}
+                //style={styles.searchText}
+                editable={false}
+                style={styleSelectDate}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                if (hookProps.state.typeRead === 'Dữ liệu gần nhất') {
+                  return;
+                }
+                DateTimePickerAndroid.open({
+                  value: hookProps.state.dateStart,
+                  mode: 'date',
+                  display: 'calendar',
+                  onChange: date => {
+                    //console.log(JSON.stringify(date));
+
+                    if (date.type === 'set') {
+                      hookProps.setState(state => {
+                        state.dateStart = new Date(
+                          date.nativeEvent.timestamp as string | number,
+                        );
+                        console.log(state.dateStart.toLocaleString());
+                        return {...state};
+                      });
+                    }
+                  },
+                });
+              }}>
+              <TextInput
+                // label="Chọn ngày"
+                value={hookProps.state.dateStart.toLocaleDateString()}
+                onChangeText={() => {}}
+                //style={styles.searchText}
+                editable={false}
+                style={styleSelectDate}
+              />
+            </TouchableOpacity>
           </View>
-          <View style={styles.containerSubInfo}>
-            <Text style={styles.textInfo}>
-              Tổng công tơ trạm: {hookProps.state.totalMeterStation}/{' '}
-              {hookProps.state.totalMeter}
-            </Text>
-            <Text style={styles.textInfo}>
-              Tổng BCS trạm: {hookProps.state.totalBCSStation}/{' '}
-              {hookProps.state.totalBCS}
-            </Text>
-          </View>
-          <View style={styles.containerSubInfo}>
-            <Text style={styles.textInfo}>
-              Sản lượng trạm: {hookProps.state.capacityStation} kWh
-            </Text>
+          <View style={styles.conatinerSelectDate}>
+            <Text style={styles.labelSelectDate}>Kết thúc</Text>
+            <TouchableOpacity
+              onPress={() => {
+                if (hookProps.state.typeRead === 'Dữ liệu gần nhất') {
+                  return;
+                }
+                DateTimePickerAndroid.open({
+                  value: hookProps.state.dateEnd,
+                  mode: 'time',
+                  display: 'clock',
+                  onChange: date => {
+                    //console.log(JSON.stringify(date));
+
+                    if (date.type === 'set') {
+                      hookProps.setState(state => {
+                        state.dateEnd = new Date(
+                          date.nativeEvent.timestamp as string | number,
+                        );
+                        console.log(state.dateEnd.toLocaleString());
+                        return {...state};
+                      });
+                    }
+                  },
+                });
+              }}>
+              <TextInput
+                // label="Chọn ngày"
+                value={hookProps.state.dateEnd.toLocaleTimeString()}
+                onChangeText={() => {}}
+                //style={styles.searchText}
+                editable={false}
+                style={styleSelectDate}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                if (hookProps.state.typeRead === 'Dữ liệu gần nhất') {
+                  return;
+                }
+                DateTimePickerAndroid.open({
+                  value: hookProps.state.dateEnd,
+                  mode: 'date',
+                  display: 'calendar',
+                  onChange: date => {
+                    console.log(JSON.stringify(date));
+
+                    if (date.type === 'set') {
+                      hookProps.setState(state => {
+                        state.dateEnd = new Date(
+                          date.nativeEvent.timestamp as string | number,
+                        );
+                        return {...state};
+                      });
+                    }
+                  },
+                });
+              }}>
+              <TextInput
+                // label="Chọn ngày"
+                value={hookProps.state.dateEnd.toLocaleDateString()}
+                onChangeText={() => {}}
+                //style={styles.searchText}
+                editable={false}
+                style={styleSelectDate}
+              />
+            </TouchableOpacity>
           </View>
         </View>
       </View>
+
+      <View style={styles.rowRadioButton}>
+        {dataReadRadioButton.map(e => {
+          // console.log('state', hookProps.state.typeRead);
+          // console.log('e', e);
+          return <RenderRadioButton e={e} key={e} />;
+        })}
+      </View>
       <View style={styles.searchArea}>
-        <Text style={styles.commonTitle}>Chọn mã quyển</Text>
+        <Text style={styles.commonTitle}>Tìm mã trạm</Text>
         <TextInput
           style={styles.input}
           //value={hookProps.state.searchText}
@@ -195,7 +315,7 @@ export const SelectStationCodeScreen = () => {
       <View style={styles.containerTable}>
         <RowHeader
           checked={hookProps.state.checkAll}
-          title="Danh sách mã cột"
+          title="Danh sách mã trạm"
         />
         <ScrollView>
           {hookProps.state.dataTabel.map(item => {
@@ -217,10 +337,49 @@ export const SelectStationCodeScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  normalRow: {flexDirection: 'row', alignItems: 'center'},
+  selectDate: {
+    //width: '80%',
+    maxWidth: normalize(120),
+    marginLeft: 10,
+    minWidth: 100,
+    //height: 38,
+    color: Colors.primary,
+    fontSize: normalize(18),
+    height: 35 * scaleHeight,
+    borderRadius: 15,
+    backgroundColor: '#ebeef5',
+    paddingHorizontal: 10,
+    // position: 'absolute',
+    // zIndex: 1,
+  },
+  rowRadioButton: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    flexWrap: 'wrap',
+  },
+  conatinerSelectDate: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 5,
+  },
+  rowSelectDate: {
+    //borderRadius: 15,
+    flexDirection: 'row',
+
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    flexWrap: 'wrap',
+  },
+  labelSelectDate: {
+    color: Colors.text,
+    fontSize: normalize(15),
+  },
   container: {
     flex: 1,
     //paddingHorizontal: 10,
     paddingVertical: 5,
+    backgroundColor: Colors.backgroundColor,
   },
   btnArea: {
     flexDirection: 'row',

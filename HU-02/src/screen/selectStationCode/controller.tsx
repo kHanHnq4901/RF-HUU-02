@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { PropsKHCMISModel } from '../../database/model';
-import { CMISKHServices } from '../../database/service';
-import { PropsStore, storeContext } from '../../store';
+import React, {useState} from 'react';
+import {PropsKHCMISModel} from '../../database/model';
+import {CMISKHServices} from '../../database/service';
+import {TypeReadRF} from '../../service/hhu/RF/RfFunc';
+import {PropsStore, storeContext} from '../../store';
 
 // type PropsDataDB = {
 //   item: PropsKHCMISModel;
@@ -22,17 +23,17 @@ export type HookState = {
   isLoading: boolean;
   status: string;
   totalMeter: string;
-  totalBCS: string;
   totalMeterStation: string;
-  totalBCSStation: string;
   capacityStation: string;
-  //searchText: string;
   dataDB: PropsKHCMISModel[];
-  dropdownStationCode: string[];
-  //selectedDropdown: string | null;
   dataTabel: PropsTabel[];
   checkAll: boolean;
   selectedStationCode: string | null;
+
+  typeRead: TypeReadRF;
+  is0h: boolean;
+  dateStart: Date;
+  dateEnd: Date;
 };
 
 export type HookProps = {
@@ -46,22 +47,28 @@ export const hookProps = {} as HookProps;
 export let store = {} as PropsStore;
 
 export const GetHookProps = (): HookProps => {
+  const dateEnd = new Date();
+  dateEnd.setSeconds(0);
+  const dateStart = new Date();
+  dateStart.setSeconds(0);
+  dateStart.setDate(dateEnd.getDate() - 5);
   const [state, setState] = useState<HookState>({
     isBusy: false,
     isLoading: false,
     status: '',
     totalMeter: '',
-    totalBCS: '',
     totalMeterStation: '',
-    totalBCSStation: '',
     capacityStation: '',
     //searchText: '',
     dataDB: [],
-    dropdownStationCode: [],
     //selectedDropdown: null,
     dataTabel: [],
     checkAll: false,
     selectedStationCode: null,
+    typeRead: 'Theo thời gian',
+    is0h: true,
+    dateStart: dateStart,
+    dateEnd: dateEnd,
   });
   hookProps.state = state;
   hookProps.setState = setState;
@@ -91,10 +98,8 @@ const getDataDb = async ref => {
     console.log('arrStationCode:', arrStationCode);
     hookProps.setState(state => {
       state.dataDB = dataDB;
-      state.dropdownStationCode = arrStationCode;
       state.totalMeter = totalMeterDBSet.size.toString();
-      state.totalBCS = dataDB.length.toString();
-      return { ...state };
+      return {...state};
     });
     if (arrStationCode.length > 0) {
       ref?.current?.openDropdown();

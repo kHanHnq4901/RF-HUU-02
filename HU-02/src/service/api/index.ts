@@ -122,6 +122,9 @@ export async function checkUpdateHHU(props?: PropsReturnGetVerion) {
       }
       if (restVersion.bResult === true) {
         if (currentVersion !== restVersion.version) {
+          console.log('currentVersion:', currentVersion);
+          console.log('restVersion.version:', restVersion.version);
+
           let status = `Đã có phiên bản mới cho thiết bị cầm tay ${restVersion.version}\r\n`;
           if (restVersion.priority === 'Cao') {
             status += '(Quan trọng)';

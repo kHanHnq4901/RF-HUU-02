@@ -4,7 +4,7 @@ import { NativeScrollEvent } from 'react-native';
 import { PropsKHCMISModel } from '../../database/model';
 import { CMISKHServices } from '../../database/service';
 import {
-  PropsRouteParamsWriteColumn,
+  PropsRouteParamsWriteStation,
   StackWriteStationCodeNavigationProp,
 } from '../../navigation/model/model';
 import {
@@ -165,7 +165,7 @@ export const GetHookProps = (): HookProps => {
   return hookProps;
 };
 
-const getDataDb = async (ref, routeParams: PropsRouteParamsWriteColumn) => {
+const getDataDb = async (ref, routeParams: PropsRouteParamsWriteStation) => {
   let items: PropsKHCMISModel[];
   let dataDB: PropsKHCMISModel[] = [];
   let columnCodeSet = new Set<string>();
@@ -257,7 +257,7 @@ const getDataDb = async (ref, routeParams: PropsRouteParamsWriteColumn) => {
   }
 };
 
-export const onInit = async (routeParams: PropsRouteParamsWriteColumn, ref) => {
+export const onInit = async (routeParams: PropsRouteParamsWriteStation, ref) => {
   navigation.addListener('focus', () => {
     getDataDb(ref, routeParams);
   });

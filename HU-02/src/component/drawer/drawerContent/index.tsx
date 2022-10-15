@@ -6,6 +6,7 @@ import {
   BackHandler,
   Image,
   ImageBackground,
+  Linking,
   StatusBar,
   StyleSheet,
   View,
@@ -112,6 +113,35 @@ export const DrawerContent = props => {
                 return null;
               }
             })}
+
+            <DrawerItem
+              lable="Hướng dẫn sử dụng"
+              icon="help-circle"
+              onPress={async () => {
+                //navigation.navigate('GuideBook');
+
+                const url = `http://${store.state.appSetting.server.host}:${
+                  store.state.appSetting.server.port
+                }/HU_01/HDSD_HU_02.pdf?timestamp=${new Date().getTime()}`;
+                const supported = await Linking.canOpenURL(url);
+
+                if (supported) {
+                  // Opening the link with some app, if the URL scheme is "http" the web link should be opened
+                  // by some browser in the mobile
+                  await Linking.openURL(url);
+                } else {
+                  //Alert.alert('Không thể mở trang web này');
+                  try {
+                    navigation.navigate('GuideBook');
+                  } catch (e) {
+                    Alert.alert('Không thể mở trang web này');
+                    console.log(TAG, e.message);
+                  }
+                }
+              }}
+              colorIcon={Theme.Colors.primary}
+              // style={{ color: Theme.Colors.primary }}
+            />
 
             <Divider />
             <Image

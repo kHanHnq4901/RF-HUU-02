@@ -21,10 +21,17 @@ import {
   connectLatestBLE,
   handleUpdateValueForCharacteristic,
 } from '../../../service/hhu/Ble/bleHhuFunc';
+import {getMeterByAccount} from '../../../service/user';
+import {showAlert} from '../../../util';
+import {useNavigation} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {StackRootList} from '../../../navigation/model/model';
 
 const TAG = 'controllerDrawerContent:';
 
 export let store = {} as PropsStore;
+
+let navigationStackRoot = {} as StackNavigationProp<StackRootList>;
 
 let hhuDisconnectListener: any = null;
 let hhuReceiveDataListener: any = null;
@@ -33,6 +40,7 @@ let updateFWListener: EmitterSubscription | undefined;
 
 export const GetHookProps = () => {
   store = useContext(storeContext);
+  navigationStackRoot = useNavigation<StackNavigationProp<StackRootList>>();
 };
 
 const hhuHandleDisconnectedPeripheral = data => {
@@ -44,6 +52,18 @@ const hhuHandleDisconnectedPeripheral = data => {
   });
   ObjSend.id = null;
 };
+
+function checkTokenValidInterval() {
+  setInterval(() => {
+    if (
+      new Date().getTime() >=
+      (store.state.userInfo.TOKEN_EXPIRED as Date).getTime()
+    ) {
+      showAlert('Phiên làm việc đã hết hạn, vui lòng đăng nhập lại');
+      navigationStackRoot.push('SignIn');
+    }
+  }, 10000);
+}
 
 export const onInit = async navigation => {
   let appSetting = await updateValueAppSettingFromNvm();
@@ -76,6 +96,10 @@ export const onInit = async navigation => {
       return {...state};
     });
   }
+
+  await getMeterByAccount();
+
+  checkTokenValidInterval();
 
   try {
     let result = await requestPermissionWriteExternalStorage();

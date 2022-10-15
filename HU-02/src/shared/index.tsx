@@ -9,8 +9,9 @@ import {ReadOpticalScreen} from '../screen/readOptical';
 import {ReadParameterScreen} from '../screen/readParameter';
 import {SettingAndAlarmScreen} from '../screen/settingAndAlarm';
 import {StackWriteStationCodeNavigator} from '../navigation/StackWriteBySatationCode';
+import {GuideBookScreen} from '../screen/guideBook';
 
-export const version = '1.0.0';
+export const version = '1.0.1';
 
 // export const widthScreen = Dimensions.get('screen').width;
 // export const heighScreen = Dimensions.get('screen').height;
@@ -44,15 +45,6 @@ export const screenDatas: DataScreensProps = [
     component: null, //StackViewDataNavigator,
   },
   {
-    title: 'Ghi chỉ số',
-    info: ` Ghi chỉ số theo cột, trạm ...
-    Double click vào tiêu đề 'Đọc' của bảng dữ liệu để chọn hoặc bỏ chọn tất cả
-    Nhấn giữ vào dòng bất kỳ để ghi dữ liệu bằng tay. Chế độ ghi tay chỉ cho phép khi đọc dữ liệu RF bị lỗi`,
-    id: 'WriteData',
-    icon: 'ios-pencil',
-    component: null, //StackWriteDataNavigator,
-  },
-  {
     title: 'Khai báo đồng hồ',
     info: 'Khai báo đồng hồ kèm vị trí GPS của đồng hồ',
     id: 'DeclareMeter',
@@ -65,28 +57,14 @@ export const screenDatas: DataScreensProps = [
   //   id: 'WriteRegister',
   //   icon: 'md-speedometer',
   //   component: null,
-  // },
-  {
-    title: 'Ghi theo mã quyển',
-    info: `
-    Ghi chỉ số theo mã quyển
+  // }
 
-    B1: Chọn trạm biến áp
-    B2: Chọn các quyển muốn ghi chỉ số
-        Ghi tất cả quyển nếu không quyển nào được chọn
-    B3: Chọn công tơ cần ghi chỉ số
-    B4: Ấn phím đọc
-    `,
-    id: 'WriteDataByBookCode',
-    icon: 'ios-pencil',
-    component: null, //StackWriteBookCodeNavigator,
-  },
   {
     title: 'Ghi theo mã trạm',
     info: `
     
     `,
-    id: 'WriteDataByColumnCode',
+    id: 'WriteDataByStationCode',
     icon: 'ios-pencil',
     component: StackWriteStationCodeNavigator,
   },

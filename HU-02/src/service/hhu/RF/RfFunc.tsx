@@ -54,6 +54,7 @@ enum TYPE_EFFECT {
 type HhuEncodeProps = {
   typePacket: RP_HhuTypeReadData;
   destAddr: string;
+  is0h: boolean;
   dateStart?: Date;
   dateEnd?: Date;
   numNearest?: uint8_t;
@@ -66,11 +67,11 @@ type RecordDetailProps = {
 
 type PropsResponseRadio = {
   header: RP_HeaderProps;
-  transient: RP_TransientProps;
+  transient?: RP_TransientProps;
   timeLatchFirst: RP_TimeFirstDataProps;
   data: DataManager_DataProps[];
   detailedRecord: RecordDetailProps[];
-  configNode2Gateway: RP_ConfigNode2GatewayProps;
+  configNode2Gateway?: RP_ConfigNode2GatewayProps;
 };
 
 export type PropsObjAnalysishRf = {
@@ -135,18 +136,20 @@ export async function AnalysisRF(payload: Buffer): Promise<PropsResponse> {
   responseRadio.header.au8Addr = Buffer.from(responseRadio.header.au8Addr);
 
   index += sizeof(RP_HeaderType);
+  let lengthForTimeAndData: number = 0;
+  let numRecord: number = 0;
 
   switch (responseRadio.header.u8TypePacket) {
     case RP_TYPE_PACKET.RP_PACKET_TYPE_HHU_GET_ONE_DATA:
       responseRadio.data = [];
       responseRadio.detailedRecord = [];
 
-      let lengthForTimeAndData =
+      lengthForTimeAndData =
         responseRadio.header.u8LengthPayload -
         sizeof(RP_ConfigNode2GatewayType) -
         sizeof(RP_TransientType);
 
-      let numRecord = 0;
+      numRecord = 0;
 
       if (lengthForTimeAndData > sizeof(RP_TimeFirstDataType)) {
         numRecord =
@@ -215,6 +218,70 @@ export async function AnalysisRF(payload: Buffer): Promise<PropsResponse> {
       //console.log(TAG, JSON.stringify(response));
 
       break;
+    case RP_TYPE_PACKET.RP_PACKET_TYPE_HHU_GET_ONE_DATA_0H:
+      responseRadio.data = [];
+      responseRadio.detailedRecord = [];
+
+      lengthForTimeAndData = responseRadio.header.u8LengthPayload;
+
+      numRecord = 0;
+
+      if (lengthForTimeAndData > sizeof(RP_TimeFirstDataType)) {
+        numRecord =
+          (lengthForTimeAndData - sizeof(RP_TimeFirstDataType)) /
+          sizeof(RP_DataType);
+
+        let timeFistData: RP_TimeFirstDataProps = Array2Struct(
+          payload,
+          index,
+          RP_TimeFirstDataType,
+        );
+
+        responseRadio.timeLatchFirst = timeFistData;
+
+        let dateTime = new Date();
+        dateTime.setFullYear(timeFistData.u8Year + 2000);
+        dateTime.setMonth(timeFistData.u8Month - 1);
+        dateTime.setDate(timeFistData.u8Date);
+        dateTime.setHours(timeFistData.u8Hour);
+
+        index += sizeof(RP_TimeFirstDataType);
+
+        console.log('timeFistData:', timeFistData);
+        console.log('dateTime:', dateTime.toLocaleString());
+
+        for (let k = 0; k < numRecord; k++) {
+          let dataRP: RP_DataProps = Array2Struct(payload, index, RP_DataType);
+          dataRP.Data.au8CwData = Buffer.from(dataRP.Data.au8CwData);
+          dataRP.Data.au8UcwData = Buffer.from(dataRP.Data.au8UcwData);
+          let time = {} as RP_TimeFirstDataProps;
+
+          time.u8Year = dateTime.getFullYear() - 2000;
+          time.u8Month = dateTime.getMonth() + 1;
+          time.u8Date = dateTime.getDate();
+          time.u8Hour = dateTime.getHours();
+          let record: RecordDetailProps = {
+            data: dataRP,
+            time: time,
+          };
+          responseRadio.data.push(dataRP.Data);
+          responseRadio.detailedRecord.push(record);
+          index += sizeof(RP_DataType);
+
+          dateTime.setHours(dateTime.getHours() - 1);
+        }
+      }
+
+      if (numRecord < 0) {
+        throw new Error('numRecord < 0');
+      }
+      response.obj.radio = responseRadio;
+
+      response.bSucceed = true;
+
+      //console.log(TAG, JSON.stringify(response));
+
+      break;
     case RP_TYPE_PACKET.RP_PACKET_TYPE_ACK:
       break;
     default:
@@ -240,7 +307,10 @@ export const RfFunc_EncodePayloadRadio = (
 
   headerGetData.au8NoModule.writeUintLE(addr, 0, SIZE_SERIAL);
 
-  headerGetData.u8Cmd = props.typePacket;
+  headerGetData.u8Cmd = props.typePacket & 0x7f;
+  if (props.is0h === true) {
+    headerGetData.u8Cmd |= (1 << 7) & 0xff;
+  }
 
   switch (props.typePacket) {
     case RP_HhuTypeReadData.HHU_APS_CMD_READ_NEAREST_DATA:
@@ -328,6 +398,7 @@ type PropsRead = {
   seri: string;
   typeRead: TypeReadRF;
   typeAffect: TypeEfectRF;
+  is0h: boolean;
   numNearest?: number;
   dateStatrt?: Date;
   dateEnd?: Date;
@@ -352,6 +423,7 @@ export async function RfFunc_Read(props: PropsRead): Promise<PropsResponse> {
       props.typeRead === 'Dữ liệu gần nhất'
         ? RP_HhuTypeReadData.HHU_APS_CMD_READ_NEAREST_DATA
         : RP_HhuTypeReadData.HHU_APS_CMD_READ_DATA_BY_TIME,
+    is0h: props.is0h,
     dateEnd: props.dateEnd,
     dateStart: props.dateStatrt,
     numNearest: props.numNearest,
@@ -435,9 +507,11 @@ export async function RfFunc_Read(props: PropsRead): Promise<PropsResponse> {
 
               modelRadio.info.Rssi = dataRadio.infoGet.s8Rssi.toString();
 
-              modelRadio.info['Điện áp'] = (
-                dataRadio.radio.transient.u8Voltage / 40
-              ).toFixed(2);
+              if (dataRadio.radio.transient) {
+                modelRadio.info['Điện áp'] = (
+                  dataRadio.radio.transient.u8Voltage / 40
+                ).toFixed(2);
+              }
 
               const rtcSimpleTime = dataRadio.radio.header.Time;
 

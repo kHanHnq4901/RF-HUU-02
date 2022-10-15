@@ -2,14 +2,14 @@ import {Dimensions, PixelRatio, Platform} from 'react-native';
 import StyleCommon from './styleCommon';
 import Color from 'color';
 export const Colors = {
-  primary: '#f71336',
+  primary: '#f71336', //'#1e55fc', //
   secondary: '#0ef76c',
   tertiary: 'white',
   backgroundIcon: '#e6ebeb',
   colorIcon: '#929492',
   text: '#1e1f1e',
   backgroundColor: 'white',
-  pink: '#fc8598',
+  pink: '#fc8598', //'#9ab2fa', //
   border: '#dadadd',
   blurPrmiary: Color('#f71336').lighten(0.35).toString(),
   caption: Color('#929492').darken(0.2).toString(),

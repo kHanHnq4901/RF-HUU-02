@@ -219,6 +219,9 @@ async function readData() {
         header.u8Length = 1 /*type get */ + 2 * sizeof(Rtc_CalendarType);
         payload = Buffer.alloc(header.u8Length);
         payload[index] = OPTICAL_TYPE_GET_DATA_DAILY.TYPE_GET_BY_TIME;
+        if (hookProps.state.is0h === true) {
+          payload[index] |= (1 << 7) & 0xff;
+        }
         index++;
 
         calendar.u16Year = hookProps.state.dateStart.getFullYear();
@@ -244,6 +247,9 @@ async function readData() {
         header.u8Length = 2;
         payload = Buffer.alloc(header.u8Length);
         payload[index] = OPTICAL_TYPE_GET_DATA_DAILY.TYPE_GET_BY_NEAREST;
+        if (hookProps.state.is0h === true) {
+          payload[index] |= (1 << 7) & 0xff;
+        }
         index++;
         payload[index] = 10;
         index++;

@@ -1,5 +1,7 @@
+import {useNavigation} from '@react-navigation/native';
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
+import {BackButton} from '../../component/backButton';
 import {ButtonList} from '../../component/buttonList';
 import FormButton from '../../component/formButton';
 import {ModalTextInput} from '../../component/modalTextInput';
@@ -14,8 +16,10 @@ import {
 
 export function SettingUserScreen() {
   UpdateHook();
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
+      <BackButton onPress={navigation.goBack} />
       <ModalTextInput
         label="Nhập lại mật khẩu"
         onOkPress={onModalOkEnterPasswordPress}

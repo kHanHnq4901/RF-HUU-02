@@ -1,6 +1,11 @@
 import React, {Dispatch, useState} from 'react';
 import {getDefaultStorageValue, PropsAppSetting} from '../service/storage';
-import {PropsInfoUser} from '../service/user';
+import {PropsInfoUser, PropsInfoWM} from '../service/user';
+
+export type PropsStoreMeter = {
+  listLine: string[];
+  data: PropsInfoWM[];
+};
 
 type PropsState = {
   hhu: {
@@ -34,6 +39,7 @@ type PropsState = {
   };
   user: 'customer' | 'admin';
   userInfo: PropsInfoUser;
+  meter: PropsStoreMeter;
 };
 
 export type PropsStore = {
@@ -77,6 +83,10 @@ export const StoreProvider = ({children}) => {
     },
     user: 'customer',
     userInfo: userInfo,
+    meter: {
+      listLine: [],
+      data: [],
+    },
   });
 
   const initialValue: PropsStore = {

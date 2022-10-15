@@ -7,6 +7,7 @@ import {Fonts, scale} from '../theme';
 import {DrawerParamsList} from './model/model';
 import {UserInfoScreen} from '../screen/userInfoScreen';
 import {SettingUserScreen} from '../screen/settingUser';
+import {GuideBookScreen} from '../screen/guideBook';
 
 const Drawer = createDrawerNavigator<DrawerParamsList>();
 
@@ -45,6 +46,11 @@ export const DrawerNavigator = () => {
       <Drawer.Screen
         name="SettingUser"
         component={SettingUserScreen}
+        options={{headerShown: false}}
+      />
+      <Drawer.Screen
+        name="GuideBook"
+        component={GuideBookScreen}
         options={{headerShown: false}}
       />
     </Drawer.Navigator>

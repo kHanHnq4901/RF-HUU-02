@@ -1,23 +1,11 @@
-import { Keyboard } from 'react-native';
-import { ObjSend } from '../../service/hhu/Ble/hhuFunc';
-import { PropsLabel } from '../../service/hhu/defineWM';
-import { PropsModelRadio, RfFunc_Read } from '../../service/hhu/RF/RfFunc';
-import {
-  getUnitByLabel,
-  getUnitByLabelOptical,
-  PropsLabelOptical,
-} from '../../service/hhu/util/utilFunc';
-import {
-  isAllNumeric,
-  showToast,
-  sleep,
-  ByteArrayToString,
-  BufferToString,
-} from '../../util';
+import {Keyboard} from 'react-native';
+import {ObjSend} from '../../service/hhu/Ble/hhuFunc';
+import {PropsLabel} from '../../service/hhu/defineWM';
+import {PropsModelRadio, RfFunc_Read} from '../../service/hhu/RF/RfFunc';
+import {getUnitByLabel} from '../../service/hhu/util/utilFunc';
+import {isAllNumeric, showToast} from '../../util';
 import * as controller from './controller';
-import { hookProps, store } from './controller';
-import { Buffer } from 'buffer';
-import { aes_128_dec } from '../../util/aes128';
+import {hookProps, store} from './controller';
 
 const TAG = 'handleButton ReadParams';
 
@@ -99,6 +87,7 @@ const readData = async () => {
         seri: hookProps.state.seri,
         typeAffect: 'Đọc 1',
         typeRead: hookProps.state.typeRead,
+        is0h: hookProps.state.is0h,
         numNearest: 10,
         dateStatrt: hookProps.state.dateStart,
         dateEnd: hookProps.state.dateEnd,
@@ -138,7 +127,7 @@ const readData = async () => {
           state.status = 'Đọc thành công ' + controller.hookProps.state.seri;
           state.dataTable = [...state.dataTable, ...rows];
           //console.log('ok here');
-          return { ...state };
+          return {...state};
         });
         break;
       } else {
@@ -160,7 +149,7 @@ const readData = async () => {
           //result.message;
           //state.dataTable = rows;
           //console.log('ok here');
-          return { ...state };
+          return {...state};
         });
       }
     }
@@ -197,7 +186,7 @@ export const onBtnReadPress = async () => {
     state.requestStop = false;
     state.status = 'Đang đọc ...';
     state.dataTable = [];
-    return { ...state };
+    return {...state};
   });
 
   //init: 0x73 , reset 0x74, search 0x72, data
@@ -208,7 +197,7 @@ export const onBtnReadPress = async () => {
     if (state.status === 'Đang đọc ...') {
       state.status = '';
     }
-    return { ...state };
+    return {...state};
   });
   return;
 };

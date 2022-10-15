@@ -12,8 +12,8 @@ export const SettingAndAlarmScreen = () => {
   GetHookProps();
 
   return (
-    <>
-      <ScrollView style={styles.conatiner}>
+    <View style={styles.contain}>
+      <ScrollView style={styles.container}>
         {/* <Text style={styles.title}>Ngưỡng cảnh báo điện năng:</Text>
         <View style={styles.row}>
           {controller.typeAlarmRegister.map(item => {
@@ -167,12 +167,16 @@ export const SettingAndAlarmScreen = () => {
       <View style={styles.btnBottom}>
         <Button style={styles.button} label="Lưu" onPress={onSavePress} />
       </View>
-    </>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  conatiner: {
+  contain: {
+    backgroundColor: Colors.backgroundColor,
+    flex: 1,
+  },
+  container: {
     flex: 1,
     marginHorizontal: 10,
     paddingTop: 15,

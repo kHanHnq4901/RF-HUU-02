@@ -40,7 +40,7 @@ export const BleFunc_Send = async (id: string, data: any[]) => {
 
     await Ble.send(id, dumy);
 
-    //console.log(dumy);
+    // console.log(dumy);
     // console.log(data);
   } catch (err) {
     console.log(err);

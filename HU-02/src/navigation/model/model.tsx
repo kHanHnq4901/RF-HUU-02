@@ -26,9 +26,8 @@ export type PropsRouteParamsWriteBook = {
   stationCode: string;
   bookCode: string[];
 };
-export type PropsRouteParamsWriteColumn = {
-  stationCode: string;
-  columnCode: string[];
+export type PropsRouteParamsWriteStation = {
+  litStationCode: string[];
 };
 
 export type StackWriteDataByBookCodeList = {
@@ -41,7 +40,7 @@ export type StackWriteDataByBookCodeList = {
 };
 export type StackWriteDataByStationCodeList = {
   SelectStation: ParamsDrawerProps;
-  WriteStation: PropsRouteParamsWriteColumn;
+  WriteStation: PropsRouteParamsWriteStation;
   WriteByHand: {
     // navigation: StackWriteBookCodeNavigationProp;
     data: PropsDatatable;
@@ -97,4 +96,5 @@ export type DrawerParamsList = {
   About: ParamsDrawerProps;
   UserInfo: undefined;
   SettingUser: undefined;
+  GuideBook: undefined;
 };
