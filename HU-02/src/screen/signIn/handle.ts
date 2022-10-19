@@ -6,6 +6,7 @@ import {Keyboard} from 'react-native';
 import {saveUserStorage} from '../../service/storage/user';
 import TouchID from 'react-native-touch-id';
 import * as Keychain from 'react-native-keychain';
+import {sha256} from 'react-native-sha256';
 
 const TAG = 'Handle Sigin:';
 
@@ -37,40 +38,20 @@ export async function onLoginPress(props?: PropsLogin) {
   });
 
   try {
-    const url =
-      'http://' +
-      store.state.appSetting.server.host +
-      ':' +
-      store.state.appSetting.server.port +
-      '/api' +
-      '/Login';
+    // check admin
+    const hashUser = await sha256(store.state.userInfo.USER_ACCOUNT.trim());
+    const hashPassword = await sha256(hook.state.password.trim());
 
-    const result = await axios.get(url, {
-      params: {
-        UserAccount: props?.userAccount ?? store.state.userInfo.USER_ACCOUNT,
-        Password: props?.password ?? hook.state.password,
-      },
-    });
-    //console.log('result: ', JSON.stringify(result));
-
-    const userInfo: PropsInfoUser = result.data;
-
-    //console.log('userInfo:', userInfo);
-
-    userInfo.TOKEN_EXPIRED = new Date(userInfo.TOKEN_EXPIRED);
-
-    if (userInfo.CODE === '1') {
+    if (
+      store.state.appSetting.userAdmin === hashUser &&
+      store.state.appSetting.passwordAdmin === hashPassword
+    ) {
       store.setState(state => {
-        state.userInfo = userInfo;
+        state.user = 'admin';
+        state.userInfo = {} as PropsInfoUser;
         return {...state};
       });
       console.log('Đăng nhập thành công');
-
-      saveUserStorage({
-        userAccount: props?.userAccount ?? store.state.userInfo.USER_ACCOUNT,
-        code: '',
-        pwd: '',
-      });
 
       navigation.push('Drawer', {
         screen: 'Overview',
@@ -79,10 +60,55 @@ export async function onLoginPress(props?: PropsLogin) {
           info: 'Hiển thị tỉ lệ thu lập dữ liệu của thiết bị HHU',
         },
       });
-
-      //navigation.navigate('Home');
     } else {
-      showAlert('Tài khoản hoặc mật khẩu không chính xác');
+      const url =
+        'http://' +
+        store.state.appSetting.server.host +
+        ':' +
+        store.state.appSetting.server.port +
+        '/api' +
+        '/Login';
+
+      const result = await axios.get(url, {
+        params: {
+          UserAccount: props?.userAccount ?? store.state.userInfo.USER_ACCOUNT,
+          Password: props?.password ?? hook.state.password,
+        },
+      });
+      //console.log('result: ', JSON.stringify(result));
+
+      const userInfo: PropsInfoUser = result.data;
+
+      //console.log('userInfo:', userInfo);
+
+      userInfo.TOKEN_EXPIRED = new Date(userInfo.TOKEN_EXPIRED);
+
+      if (userInfo.CODE === '1') {
+        store.setState(state => {
+          state.userInfo = userInfo;
+          state.user = 'customer';
+          return {...state};
+        });
+        console.log('Đăng nhập thành công');
+
+        saveUserStorage({
+          userAccount: props?.userAccount ?? store.state.userInfo.USER_ACCOUNT,
+          code: '',
+          pwd: '',
+        });
+
+        navigation.push('Drawer', {
+          screen: 'Overview',
+          params: {
+            title: 'Tổng quan',
+            info: 'Hiển thị tỉ lệ thu lập dữ liệu của thiết bị HHU',
+          },
+        });
+
+        //navigation.navigate('Home');
+      } else {
+        showAlert('Tài khoản hoặc mật khẩu không chính xác');
+      }
     }
   } catch (e: any) {
     showAlert('Lỗi: ' + e.message);

@@ -16,7 +16,7 @@ export type PropsSettingAndAlarm = {
 };
 
 export type PropsAppSetting = {
-  password: string;
+  userAdmin: string;
   passwordAdmin: string;
   numRetriesRead: string;
   CMISPath: string;
@@ -31,13 +31,12 @@ export const getDefaultStorageValue = (): PropsAppSetting => {
 
   storageVariable.CMISPath = '';
   storageVariable.numRetriesRead = '1';
-  storageVariable.password = '123456';
   storageVariable.server = {
     host: '222.252.14.147',
     port: '6060',
   };
-  storageVariable.password =
-    '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92';
+  storageVariable.userAdmin =
+    '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918';
   storageVariable.passwordAdmin =
     'fa656a64a169bd0f37f44fc4c42e62f8b533827eff4af4f2050b238da70b0bf3';
   // storageVariable.showResultOKInWriteData = false;
@@ -62,7 +61,8 @@ export const updateValueAppSettingFromNvm =
 
         storageVariable.CMISPath = storageVar.CMISPath;
         storageVariable.numRetriesRead = storageVar.numRetriesRead;
-        storageVariable.password = storageVar.password;
+        storageVariable.userAdmin = storageVar.userAdmin;
+        storageVariable.passwordAdmin = storageVar.passwordAdmin;
         storageVariable.server = {
           host: storageVar.server.host,
           port: storageVar.server.port,

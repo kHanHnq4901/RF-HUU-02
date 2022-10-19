@@ -100,11 +100,11 @@ export function SignInScreen() {
         <Ionicons name="finger-print" color={Colors.secondary} size={25} />
       </TouchableOpacity>
 
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={styles.forgotButton}
         onPress={() => navigation.navigate('SignUp')}>
         <Text style={styles.navButtonText}>Không có tài khoản? Đăng ký</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </ScrollView>
   );
 }

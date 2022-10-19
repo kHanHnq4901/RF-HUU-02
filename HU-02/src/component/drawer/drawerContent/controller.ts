@@ -21,7 +21,7 @@ import {
   connectLatestBLE,
   handleUpdateValueForCharacteristic,
 } from '../../../service/hhu/Ble/bleHhuFunc';
-import {getMeterByAccount} from '../../../service/user';
+import {getLineList, getMeterByAccount} from '../../../service/user';
 import {showAlert} from '../../../util';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -96,10 +96,17 @@ export const onInit = async navigation => {
       return {...state};
     });
   }
+  if (store.state.user === 'customer') {
+    try {
+      //await getMeterByAccount();
 
-  await getMeterByAccount();
+      await getLineList();
 
-  checkTokenValidInterval();
+      checkTokenValidInterval();
+    } catch (err) {
+      console.log(TAG, err.message);
+    }
+  }
 
   try {
     let result = await requestPermissionWriteExternalStorage();

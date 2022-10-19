@@ -112,7 +112,25 @@ const getDataDb = async ref => {
 
 export const onInit = async (navigation, ref) => {
   navigation.addListener('focus', () => {
-    getDataDb(ref);
+    //getDataDb(ref);
+    const listLine: PropsTabel[] = [];
+    for (let line of store.state.meter.listLine) {
+      const item = {} as PropsTabel;
+      item.checked = false;
+      item.id = line;
+      item.totalMeter = '10';
+      item.capacityStation = '100';
+      item.columnCode = line;
+      item.show = true;
+      item.succeedMeter = '30';
+
+      listLine.push(item);
+    }
+
+    hookProps.setState(state => {
+      state.dataTabel = listLine;
+      return {...state};
+    });
   });
 };
 

@@ -131,7 +131,7 @@ export async function checkUpdateHHU(props?: PropsReturnGetVerion) {
           }
           showAlert(status);
         } else {
-          showToast('Không có bản cập nhật nào');
+          //showToast('Không có bản cập nhật nào');
         }
       }
       //console.log('rest version:', rest);

@@ -67,11 +67,11 @@ type RecordDetailProps = {
 
 type PropsResponseRadio = {
   header: RP_HeaderProps;
-  transient?: RP_TransientProps;
+  //transient?: RP_TransientProps;
   timeLatchFirst: RP_TimeFirstDataProps;
   data: DataManager_DataProps[];
   detailedRecord: RecordDetailProps[];
-  configNode2Gateway?: RP_ConfigNode2GatewayProps;
+  //configNode2Gateway?: RP_ConfigNode2GatewayProps;
 };
 
 export type PropsObjAnalysishRf = {
@@ -144,10 +144,10 @@ export async function AnalysisRF(payload: Buffer): Promise<PropsResponse> {
       responseRadio.data = [];
       responseRadio.detailedRecord = [];
 
-      lengthForTimeAndData =
-        responseRadio.header.u8LengthPayload -
-        sizeof(RP_ConfigNode2GatewayType) -
-        sizeof(RP_TransientType);
+      lengthForTimeAndData = responseRadio.header.u8LengthPayload;
+      //  -
+      // sizeof(RP_ConfigNode2GatewayType) -
+      // sizeof(RP_TransientType);
 
       numRecord = 0;
 
@@ -201,15 +201,15 @@ export async function AnalysisRF(payload: Buffer): Promise<PropsResponse> {
         throw new Error('numRecord < 0');
       }
 
-      responseRadio.configNode2Gateway = Array2Struct(
-        payload,
-        index,
-        RP_ConfigNode2GatewayType,
-      );
+      // responseRadio.configNode2Gateway = Array2Struct(
+      //   payload,
+      //   index,
+      //   RP_ConfigNode2GatewayType,
+      // );
 
       index += sizeof(RP_ConfigNode2GatewayType);
 
-      responseRadio.transient = Array2Struct(payload, index, RP_TransientType);
+      //responseRadio.transient = Array2Struct(payload, index, RP_TransientType);
 
       response.obj.radio = responseRadio;
 
@@ -268,7 +268,7 @@ export async function AnalysisRF(payload: Buffer): Promise<PropsResponse> {
           responseRadio.detailedRecord.push(record);
           index += sizeof(RP_DataType);
 
-          dateTime.setHours(dateTime.getHours() - 1);
+          dateTime.setDate(dateTime.getDate() - 1);
         }
       }
 
@@ -369,8 +369,8 @@ export const RfFunc_EncodePayloadRadio = (
       Struct2Array(RP_HhuTime5byteType, endTime, PayloadRadio, index);
       index += sizeof(RP_HhuTime5byteType);
 
-      console.log('start time:', startTime);
-      console.log('end time:', endTime);
+      // console.log('start time:', startTime);
+      // console.log('end time:', endTime);
 
       break;
     default:
@@ -412,6 +412,8 @@ export type PropsModelRadio = {
 };
 
 export async function RfFunc_Read(props: PropsRead): Promise<PropsResponse> {
+  console.log(TAG, props);
+
   let response = {} as PropsResponse;
   response.bSucceed = false;
   response.message = '';
@@ -507,11 +509,11 @@ export async function RfFunc_Read(props: PropsRead): Promise<PropsResponse> {
 
               modelRadio.info.Rssi = dataRadio.infoGet.s8Rssi.toString();
 
-              if (dataRadio.radio.transient) {
-                modelRadio.info['Điện áp'] = (
-                  dataRadio.radio.transient.u8Voltage / 40
-                ).toFixed(2);
-              }
+              // if (dataRadio.radio.transient) {
+              //   modelRadio.info['Điện áp'] = (
+              //     dataRadio.radio.transient.u8Voltage / 40
+              //   ).toFixed(2);
+              // }
 
               const rtcSimpleTime = dataRadio.radio.header.Time;
 
@@ -541,6 +543,8 @@ export async function RfFunc_Read(props: PropsRead): Promise<PropsResponse> {
               response.bSucceed = true;
 
               if (headerHHu.u16FSN === 0xffff) {
+                modelRadio.info['Số bản tin chốt'] =
+                  modelRadio.data.length.toString();
                 return response;
               } else {
                 console.log('FSN:', headerHHu.u16FSN);
