@@ -117,10 +117,10 @@ export const onInit = async (navigation, ref) => {
     for (let line of store.state.meter.listLine) {
       const item = {} as PropsTabel;
       item.checked = false;
-      item.id = line;
+      item.id = line.LINE_ID;
       item.totalMeter = '10';
       item.capacityStation = '100';
-      item.columnCode = line;
+      item.columnCode = line.LINE_NAME;
       item.show = true;
       item.succeedMeter = '30';
 

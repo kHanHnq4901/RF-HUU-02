@@ -1,9 +1,9 @@
-import { PropsLabel } from '../defineWM';
+import {PropsLabel} from '../defineWM';
 import {
   FieldOpticalResponseProps,
   OpticalDailyProps,
 } from '../Optical/opticalFunc';
-import { Rtc_SimpleTimeProps } from '../RF/radioProtocol';
+import {Rtc_SimpleTimeProps} from '../RF/radioProtocol';
 
 export const getUnitByLabel = (label: PropsLabel) => {
   let unit = '';

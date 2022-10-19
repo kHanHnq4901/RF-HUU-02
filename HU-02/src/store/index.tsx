@@ -1,9 +1,9 @@
 import React, {Dispatch, useState} from 'react';
 import {getDefaultStorageValue, PropsAppSetting} from '../service/storage';
-import {PropsInfoUser, PropsInfoWM} from '../service/user';
+import {PropsInfoUser, PropsInfoWM, PropsLineServer} from '../service/user';
 
 export type PropsStoreMeter = {
-  listLine: string[];
+  listLine: PropsLineServer[];
   data: PropsInfoWM[];
 };
 

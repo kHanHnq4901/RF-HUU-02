@@ -49,7 +49,7 @@ export function SignInScreen() {
         keyboardType="email-address"
         autoCapitalize="none"
         autoCorrect={false}
-        placeholder="Số điện thoại"
+        placeholder="Tài khoản"
       />
 
       <FormInput

@@ -25,7 +25,7 @@ import {
   onInit,
   PropsTabel,
 } from './controller';
-import {onChangeTextSearch, onOKPress} from './handleButton';
+import {onChangeTextSearch, onOKPress, upDateMissData} from './handleButton';
 
 type PropsRowHeader = {
   checked: boolean;
@@ -150,7 +150,7 @@ export const SelectStationCodeScreen = () => {
           />
         </View>
         <View style={styles.rowSelectDate}>
-          <View style={styles.conatinerSelectDate}>
+          {/* <View style={styles.conatinerSelectDate}>
             <Text style={styles.labelSelectDate}>Bắt đầu</Text>
             <TouchableOpacity
               onPress={() => {
@@ -218,10 +218,10 @@ export const SelectStationCodeScreen = () => {
                 style={styleSelectDate}
               />
             </TouchableOpacity>
-          </View>
+          </View> */}
           <View style={styles.conatinerSelectDate}>
-            <Text style={styles.labelSelectDate}>Kết thúc</Text>
-            <TouchableOpacity
+            <Text style={styles.labelSelectDate}>Chọn ngày</Text>
+            {/* <TouchableOpacity
               onPress={() => {
                 if (hookProps.state.typeRead === 'Dữ liệu gần nhất') {
                   return;
@@ -253,7 +253,7 @@ export const SelectStationCodeScreen = () => {
                 editable={false}
                 style={styleSelectDate}
               />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <TouchableOpacity
               onPress={() => {
                 if (hookProps.state.typeRead === 'Dữ liệu gần nhất') {
@@ -267,20 +267,23 @@ export const SelectStationCodeScreen = () => {
                     console.log(JSON.stringify(date));
 
                     if (date.type === 'set') {
+                      const selectDate = new Date(
+                        date.nativeEvent.timestamp as string | number,
+                      );
                       hookProps.setState(state => {
-                        state.dateEnd = new Date(
-                          date.nativeEvent.timestamp as string | number,
-                        );
+                        state.dateEnd = selectDate;
+                        //state.dateStart = new Date(state.dateEnd);
                         return {...state};
                       });
+                      upDateMissData(selectDate);
                     }
                   },
                 });
               }}>
               <TextInput
                 // label="Chọn ngày"
-                value={hookProps.state.dateEnd.toLocaleDateString()}
-                onChangeText={() => {}}
+                value={hookProps.state.dateEnd.toLocaleDateString('vi')}
+                //onChangeText={() => {}}
                 //style={styles.searchText}
                 editable={false}
                 style={styleSelectDate}
@@ -337,7 +340,11 @@ export const SelectStationCodeScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  normalRow: {flexDirection: 'row', alignItems: 'center'},
+  normalRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
   selectDate: {
     //width: '80%',
     maxWidth: normalize(120),
@@ -372,7 +379,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   labelSelectDate: {
-    color: Colors.text,
+    color: Colors.caption,
     fontSize: normalize(15),
   },
   container: {
@@ -413,7 +420,7 @@ const styles = StyleSheet.create({
   },
   commonTitle: {
     fontSize: normalize(16),
-    color: Colors.blurPrmiary,
+    color: Colors.caption,
   },
   selectSationAndInfo: {
     flexDirection: 'row',
