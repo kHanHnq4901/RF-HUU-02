@@ -31,8 +31,9 @@ export const checkTabelDBIfExist = async (): Promise<boolean> => {
       query += i;
     }
     query += ')';
-    const results = await db?.executeSql(query);
-    console.log('create table if exist: ', results);
+    //const results =
+    await db?.executeSql(query);
+    console.log('create table if exist');
   } catch (e) {
     console.log(TAG, 'err tabel exist: ', e.message);
   }
@@ -46,8 +47,8 @@ export const deleteDataDB = async (): Promise<boolean> => {
     }
     //const query = `SELECT name FROM sqlite_master WHERE type='table' AND name=${TABLE_NAME}`;
     let query = `DELETE FROM ${TABLE_NAME};`;
-    const results = await db?.executeSql(query);
-    console.log('deletedb: ', results);
+    await db?.executeSql(query);
+    console.log('deletedb ');
     return true;
   } catch (e) {
     console.log(TAG, 'err tabel exist: ', e.message);
@@ -88,14 +89,16 @@ export const getDBConnection = async (): Promise<boolean> => {
 
 export type PropsCondition = {
   data: {[key: string]: any} | {[key: string]: any}[];
-  logic: '=' | '!=' | '<=' | '>=';
-  operator: 'AND' | 'OR' | 'LIKE' | '';
+  logic: '=' | '!=' | '<=' | '>=' | 'LIKE';
+  behindOperator: 'AND' | 'OR' | '';
 };
+
+export type PropsConditions = PropsCondition[];
 
 export interface ICMISKHRepository {
   findAll: (
     pagination?: PropsPagination,
-    condition?: PropsCondition,
+    condition?: PropsConditions,
   ) => Promise<PropsKHCMISEntity[]>;
   findByColumn: (
     filter: PropsFilter,
@@ -108,9 +111,10 @@ export interface ICMISKHRepository {
     sort?: PropsSorting,
   ) => Promise<any[]>;
   update: (
-    condition: PropsCondition,
+    condition: PropsConditions,
     valueSet: {[key: string]: any},
   ) => Promise<boolean>;
+  delete: (condition: PropsConditions) => Promise<boolean>;
   save: (item: PropsKHCMISEntity) => Promise<boolean>;
   getPercentRead: () => Promise<PropsPercentRead>;
 }
@@ -140,9 +144,46 @@ const filterArr = (items: any[], pagination: PropsPagination): any[] => {
   return items;
 };
 
+function getQueryCondition(condition?: PropsConditions): string | null {
+  let query: string | null = null;
+  if (condition) {
+    query = '';
+    let first = true;
+    query += `
+    WHERE 
+    `;
+    for (let con of condition) {
+      if (Array.isArray(con.data) === false) {
+        for (let i in con.data) {
+          if (first === true) {
+            first = false;
+          } else {
+            query += ' ' + con.behindOperator + ' ';
+          }
+
+          query +=
+            i + ' ' + con.logic + ' ' + convertStringSpecial(con.data[i]);
+        }
+      } else {
+        for (let obj of con.data as {[key: string]: any}[]) {
+          for (let i in obj) {
+            if (first === true) {
+              first = false;
+            } else {
+              query += ' ' + con.behindOperator + ' ';
+            }
+
+            query += i + ' ' + con.logic + ' ' + convertStringSpecial(obj[i]);
+          }
+        }
+      }
+    }
+  }
+  return query;
+}
 KHCMISRepository.findAll = async (
   pagination?: PropsPagination,
-  condition?: PropsCondition,
+  condition?: PropsConditions,
 ) => {
   let items: PropsKHCMISEntity[] = [];
   try {
@@ -150,43 +191,11 @@ KHCMISRepository.findAll = async (
       return items;
     }
     let query = `SELECT * FROM ${TABLE_NAME}`;
-    if (condition) {
-      let first = true;
-      query += `
-      WHERE 
-      `;
-      if (Array.isArray(condition.data) === false) {
-        for (let i in condition.data) {
-          if (first === true) {
-            first = false;
-          } else {
-            query += ' ' + condition.operator + ' ';
-          }
-
-          query +=
-            i +
-            ' ' +
-            condition.logic +
-            ' ' +
-            convertStringSpecial(condition.data[i]);
-        }
-      } else {
-        for (let obj of condition.data as {[key: string]: any}[]) {
-          for (let i in obj) {
-            if (first === true) {
-              first = false;
-            } else {
-              query += ' ' + condition.operator + ' ';
-            }
-
-            query +=
-              i + ' ' + condition.logic + ' ' + convertStringSpecial(obj[i]);
-          }
-        }
-      }
-
-      query += ';';
+    let conditionQuery = getQueryCondition(condition);
+    if (conditionQuery) {
+      query += conditionQuery;
     }
+    query += ';';
     //console.log('query:', query);
     const results = await db?.executeSql(query);
     console.log(results);
@@ -308,7 +317,7 @@ const convertStringSpecial = (value): string => {
 };
 
 KHCMISRepository.update = async (
-  condition: PropsCondition,
+  condition: PropsConditions,
   valueSet: {[key: string]: any},
 ): Promise<boolean> => {
   if ((await getDBConnection()) === false) {
@@ -327,39 +336,10 @@ KHCMISRepository.update = async (
 
     query += i + ' = ' + convertStringSpecial(valueSet[i]);
   }
-  query += `
-  WHERE `;
-  first = true;
-
-  if (Array.isArray(condition.data) === false) {
-    for (let i in condition.data) {
-      if (first === true) {
-        first = false;
-      } else {
-        query += ' ' + condition.operator + ' ';
-      }
-
-      query +=
-        i +
-        ' ' +
-        condition.logic +
-        ' ' +
-        convertStringSpecial(condition.data[i]);
-    }
-  } else {
-    for (let obj of condition.data as {[key: string]: any}[]) {
-      for (let i in obj) {
-        if (first === true) {
-          first = false;
-        } else {
-          query += ' ' + condition.operator + ' ';
-        }
-
-        query += i + ' ' + condition.logic + ' ' + convertStringSpecial(obj[i]);
-      }
-    }
+  let conditionQuery = getQueryCondition(condition);
+  if (conditionQuery) {
+    query += conditionQuery;
   }
-
   query += ';';
   //console.log(query);
   // return;
@@ -373,6 +353,36 @@ KHCMISRepository.update = async (
     }
   } catch (e) {
     console.log(TAG, 'result update: ', e.message);
+    return false;
+  }
+
+  return false;
+};
+KHCMISRepository.delete = async (
+  condition: PropsConditions,
+): Promise<boolean> => {
+  if ((await getDBConnection()) === false) {
+    return false;
+  }
+  let query: string = `DELETE FROM ${TABLE_NAME} 
+   `;
+  let conditionQuery = getQueryCondition(condition);
+  if (conditionQuery) {
+    query += conditionQuery;
+  }
+  query += ';';
+  //console.log(query);
+  // return;
+  try {
+    const results = (await db?.executeSql(query)) as [
+      {rows: {length: number}; rowsAffected: number},
+    ];
+    //console.log('result update: ' + JSON.stringify(results));
+    if (results[0]?.rowsAffected > 0) {
+      return true;
+    }
+  } catch (e) {
+    console.log(TAG, 'result delete: ', e.message);
     return false;
   }
 

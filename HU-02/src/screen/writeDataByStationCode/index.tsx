@@ -26,7 +26,7 @@ import {
   onDeInit,
   onInit,
   onScrollToEnd,
-  PropsDatatable,
+  PropsDataTable,
   variable,
 } from './controller';
 import {
@@ -41,7 +41,7 @@ import {
 } from './handleButton';
 import Entypo from 'react-native-vector-icons/Entypo';
 import _ from 'lodash';
-
+import {hookProps as selectStationCodeHook} from '../selectStationCode/controller';
 export const SubRow1Memo = React.memo(
   (props: {
     MA_QUYEN: string;
@@ -134,7 +134,7 @@ export const SubRow3Memo = React.memo(
   (prev, next) => _.isEqual(prev, next),
 );
 
-const IconPencilMemo = React.memo((props: {item: PropsDatatable}) => {
+const IconPencilMemo = React.memo((props: {item: PropsDataTable}) => {
   function _PencilPress() {
     //console.log('pencil press');
     onPencilPress({
@@ -149,7 +149,7 @@ const IconPencilMemo = React.memo((props: {item: PropsDatatable}) => {
 });
 
 //ListRenderItemInfo<PropsDatatable>
-function ItemStock(item: PropsDatatable) {
+function ItemStock(item: PropsDataTable) {
   //const item = props.item;
   if (item.show !== true) {
     return null;
@@ -213,7 +213,7 @@ function ItemStock(item: PropsDatatable) {
   );
 }
 
-function areEqual(prev: PropsDatatable, next: PropsDatatable) {
+function areEqual(prev: PropsDataTable, next: PropsDataTable) {
   if (
     prev.checked !== next.checked ||
     prev.data.CS_MOI !== next.data.CS_MOI ||
@@ -264,6 +264,10 @@ export const WriteStationCodeScreen = () => {
           <Text style={styles.percentSucceed}>
             Thành công: {hookProps.state.totalSucceed}/{' '}
             {hookProps.state.totalBCS}
+          </Text>
+          <Text style={styles.label}>
+            {selectStationCodeHook.state.dateEnd.toLocaleDateString('vi')}
+            {selectStationCodeHook.state.is0h ? ', 0h' : ''}
           </Text>
         </View>
 
@@ -416,7 +420,8 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: normalize(15),
-    color: Colors.blurPrmiary,
+    color: Colors.caption,
+    paddingHorizontal: 5,
   },
   titleColumn: {
     fontSize: normalize(18),

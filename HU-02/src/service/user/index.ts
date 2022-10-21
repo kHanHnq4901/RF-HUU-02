@@ -142,7 +142,7 @@ export async function getLineList(): Promise<PropsResponse> {
       return {...state};
     });
 
-    //console.log('dat:', dat);
+    //console.log('dat:', data);
   } catch (err: any) {
     console.log(TAG, 'Lỗi:', err.message);
   }
@@ -168,12 +168,12 @@ export async function getMeterListMissByLine(
       store.state.appSetting.server.port +
       '/api' +
       '/GetMeterListByLine';
-    //console.log('store.state.userInfo.USER_ID:', store.state.userInfo.USER_ID);
-    // console.log('tets:', {
-    //   LineID: lineID,
-    //   DateMiss: GetFormatDate(dateMiss),
-    //   Token: store.state.userInfo.TOKEN,
-    // });
+    console.log('store.state.userInfo.USER_ID:', store.state.userInfo.USER_ID);
+    console.log('tets:', {
+      LineID: lineID,
+      DateMiss: GetFormatDate(dateMiss),
+      Token: store.state.userInfo.TOKEN,
+    });
 
     const {data}: {data: {CODE: string; MESSAGE: string}} = await axios.get(
       url,
@@ -189,10 +189,12 @@ export async function getMeterListMissByLine(
     if (data.CODE === '0') {
       console.log(TAG, 'Lỗi:', data.MESSAGE);
       return ret;
+    } else {
+      console.log(TAG, 'abc:', data);
     }
 
     ret.succeed = true;
-    ret.data = data;
+    ret.data = data as unknown as PropsInfoWM[];
 
     //console.log('dat:', data);
   } catch (err: any) {

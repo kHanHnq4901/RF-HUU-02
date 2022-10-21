@@ -1,16 +1,17 @@
-import { PropsKHCMISEntity } from '../entity';
+import {PropsKHCMISEntity} from '../entity';
 import {
+  dataDBTable,
   KHCMISModelFields,
   PropsKHCMISModel,
   PropsPercentRead,
   PropsTypeOf,
 } from '../model';
-import { KHCMISRepository, PropsCondition } from '../repository';
+import {KHCMISRepository, PropsConditions} from '../repository';
 
 interface ICMISKHServices {
   findAll: (
     pagination?: PropsPagination,
-    condition?: PropsCondition,
+    condition?: PropsConditions,
   ) => Promise<PropsKHCMISModel[]>;
   findByColumn: (
     filter: PropsFilter,
@@ -23,10 +24,12 @@ interface ICMISKHServices {
     sort?: PropsSorting,
   ) => Promise<any[]>;
   update: (
-    condition: PropsCondition,
-    valueSet: { [key: string]: any },
+    condition: PropsConditions,
+    valueSet: {[key: string]: any},
   ) => Promise<boolean>;
+  delete: (condition: PropsConditions) => Promise<boolean>;
   getPercentRead: () => Promise<PropsPercentRead>;
+  save: (item: PropsKHCMISModel) => Promise<boolean>;
 }
 
 export type PropsPagination = {
@@ -56,7 +59,7 @@ export const CMISKHServices = {} as ICMISKHServices;
 
 CMISKHServices.findAll = async (
   pagination?: PropsPagination,
-  condition?: PropsCondition,
+  condition?: PropsConditions,
 ) => {
   const items: PropsKHCMISModel[] = [];
   const entity = await KHCMISRepository.findAll(pagination, condition);
@@ -92,14 +95,28 @@ CMISKHServices.findUniqueValuesInColumn = async (
 };
 
 CMISKHServices.update = async (
-  condition: PropsCondition,
-  valueSet: { [key: string]: any },
+  condition: PropsConditions,
+  valueSet: {[key: string]: any},
 ): Promise<boolean> => {
   return await KHCMISRepository.update(condition, valueSet);
+};
+CMISKHServices.delete = async (
+  condition: PropsConditions,
+): Promise<boolean> => {
+  return await KHCMISRepository.delete(condition);
 };
 
 CMISKHServices.getPercentRead = async () => {
   const result = await KHCMISRepository.getPercentRead();
   //console.log('resultbb:', result);
   return result;
+};
+CMISKHServices.save = async (item: PropsKHCMISModel) => {
+  const entity = {} as PropsKHCMISEntity;
+
+  for (let key in dataDBTable) {
+    entity[key] = item[key];
+  }
+
+  return await KHCMISRepository.save(entity);
 };

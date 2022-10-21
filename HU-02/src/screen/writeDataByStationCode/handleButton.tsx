@@ -14,7 +14,7 @@ import {
   addMoreItemToRender,
   hookProps,
   navigation,
-  PropsDatatable,
+  PropsDataTable,
   PropsTable,
   store,
 } from './controller';
@@ -50,7 +50,7 @@ export function onSelectAllPress() {
   });
 }
 
-export function onItemPress(item: PropsDatatable) {
+export function onItemPress(item: PropsDataTable) {
   hookProps.setState(state => {
     for (let key in state.dataTable) {
       state.dataTable[key] = state.dataTable[key].map(itm => {
@@ -87,7 +87,7 @@ const funcFilter = (
   console.log('filter', filter);
   let totalBCS = 0;
   let totalSucceed = 0;
-  let totalData: PropsDatatable[] = [];
+  let totalData: PropsDataTable[] = [];
   //console.log('dataTable.render:', dataTable.render.length);
   for (let row of dataTable.render) {
     totalData.push(row);
@@ -313,7 +313,7 @@ export function onChangeTextSearch(searchText: string) {
 }
 
 type PropsPencil = {
-  data: PropsDatatable;
+  data: PropsDataTable;
 };
 
 export function onPencilPress(props: PropsPencil) {

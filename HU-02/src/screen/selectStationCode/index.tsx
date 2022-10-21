@@ -14,8 +14,10 @@ import {Checkbox} from 'react-native-paper';
 import SelectDropdown from 'react-native-select-dropdown';
 import {Button} from '../../component/button/button';
 import {CheckboxButton} from '../../component/checkbox/checkbox';
+import Loader3 from '../../component/loader3';
 import {RadioButton} from '../../component/radioButton/radioButton';
 import {StackWriteStationCodeNavigationProp} from '../../navigation/model/model';
+import {TypeReadRF} from '../../service/hhu/RF/RfFunc';
 import {Colors, normalize, scaleHeight, sizeScreen} from '../../theme';
 import {dataReadRadioButton} from '../readParameter/controller';
 import {
@@ -25,7 +27,12 @@ import {
   onInit,
   PropsTabel,
 } from './controller';
-import {onChangeTextSearch, onOKPress, upDateMissData} from './handleButton';
+import {
+  onChangeTextSearch,
+  onOKPress,
+  onTestPress,
+  upDateMissData,
+} from './handleButton';
 
 type PropsRowHeader = {
   checked: boolean;
@@ -83,13 +90,10 @@ const Row = (item: PropsTabel) => {
           />
         </View>
         <View style={styles.contentTable}>
-          <Text style={styles.title}>{item.columnCode}</Text>
+          <Text style={styles.title}>{item.meterLine.line.LINE_NAME}</Text>
           <View style={{height: 10}} />
           <Text style={styles.subTitle}>
-            Đọc thành công: {item.succeedMeter}/ {item.totalMeter}
-          </Text>
-          <Text style={styles.subTitle}>
-            Sản lượng: {item.capacityStation} kWh
+            Dữ liệu thiếu: {item.meterLine.listMeter.length}
           </Text>
         </View>
       </TouchableOpacity>
@@ -110,7 +114,7 @@ export const SelectStationCodeScreen = () => {
     };
   }, []);
 
-  const RenderRadioButton = ({e}: {e: any}) => {
+  const RenderRadioButton = ({e}: {e: TypeReadRF}) => {
     return useMemo(() => {
       return (
         <RadioButton
@@ -119,7 +123,14 @@ export const SelectStationCodeScreen = () => {
           value={e}
           checked={hookProps.state.typeRead === e ? true : false}
           onPress={() => {
-            hookProps.setState(state => ({...state, typeRead: e}));
+            if (hookProps.state.typeRead !== e) {
+              hookProps.setState(state => ({...state, typeRead: e}));
+              if (e === 'Dữ liệu gần nhất') {
+                upDateMissData(new Date());
+              } else {
+                upDateMissData(hookProps.state.dateEnd);
+              }
+            }
           }}
         />
       );
@@ -315,31 +326,51 @@ export const SelectStationCodeScreen = () => {
           onChangeText={throttle(text => onChangeTextSearch(text), 250)}
         />
       </View>
-      <View style={styles.containerTable}>
-        <RowHeader
-          checked={hookProps.state.checkAll}
-          title="Danh sách mã trạm"
-        />
-        <ScrollView>
-          {hookProps.state.dataTabel.map(item => {
-            return <Row key={item.id} {...item} />;
-          })}
-        </ScrollView>
-      </View>
-      <View style={styles.btnArea}>
-        <Button
-          style={styles.btn}
-          label="OK"
-          onPress={() => {
-            onOKPress(navigation);
-          }}
-        />
+      <View style={{flex: 1}}>
+        {hookProps.state.isLoading && (
+          <View style={styles.containerLoader}>
+            <Loader3 />
+          </View>
+        )}
+
+        <View style={styles.containerTable}>
+          <RowHeader
+            checked={hookProps.state.checkAll}
+            title="Danh sách mã trạm"
+          />
+          <ScrollView>
+            {hookProps.state.dataTabel.map(item => {
+              return <Row key={item.id} {...item} />;
+            })}
+          </ScrollView>
+        </View>
+        <View style={styles.btnArea}>
+          <Button
+            style={styles.btn}
+            label="OK"
+            onPress={() => {
+              onOKPress(navigation);
+            }}
+          />
+          <Button style={styles.btn} label="Test" onPress={onTestPress} />
+        </View>
       </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  containerLoader: {
+    backgroundColor: 'transparent',
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    left: 0,
+    right: 0,
+    zIndex: 1000000,
+  },
   normalRow: {
     flexDirection: 'row',
     alignItems: 'center',

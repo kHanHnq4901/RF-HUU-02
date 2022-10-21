@@ -6,16 +6,16 @@ import {
   PropsXmlReturnFromFile,
   startHeadXml,
 } from './index';
-import xml2js, { parseString } from 'react-native-xml2js';
-import { deleteDataDB, KHCMISRepository } from '../database/repository';
-import { dumyEntity, PropsKHCMISEntity } from '../database/entity';
+import xml2js, {parseString} from 'react-native-xml2js';
+import {deleteDataDB, KHCMISRepository} from '../database/repository';
+import {dumyEntity, PropsKHCMISEntity} from '../database/entity';
 import {
   getRFCodeByRangeSeriAndCodeMeter,
   TYPE_READ_RF,
 } from '../service/hhu/defineEM';
-import { Alert } from 'react-native';
+import {Alert} from 'react-native';
 import RNFS from 'react-native-fs';
-import { savePathImport } from '../service/storage/index';
+import {savePathImport} from '../service/storage/index';
 
 const TAG = 'UTIL_XML';
 

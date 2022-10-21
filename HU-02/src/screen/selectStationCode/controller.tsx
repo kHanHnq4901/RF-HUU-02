@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {PropsKHCMISModel} from '../../database/model';
 import {CMISKHServices} from '../../database/service';
 import {TypeReadRF} from '../../service/hhu/RF/RfFunc';
+import {PropsInfoWM, PropsLineServer} from '../../service/user';
 import {PropsStore, storeContext} from '../../store';
 
 // type PropsDataDB = {
@@ -13,11 +14,14 @@ export type PropsTabel = {
   id: string;
   checked: boolean;
   show: boolean;
-  columnCode: string;
-  succeedMeter: string;
-  totalMeter: string;
-  capacityStation: string;
+  meterLine: PropsMeterLine;
 };
+
+export type PropsMeterLine = {
+  listMeter: PropsInfoWM[];
+  line: PropsLineServer;
+};
+
 export type HookState = {
   isBusy: boolean;
   isLoading: boolean;
@@ -113,22 +117,22 @@ const getDataDb = async ref => {
 export const onInit = async (navigation, ref) => {
   navigation.addListener('focus', () => {
     //getDataDb(ref);
-    const listLine: PropsTabel[] = [];
+    const dataTable: PropsTabel[] = [];
     for (let line of store.state.meter.listLine) {
-      const item = {} as PropsTabel;
+      const item = {
+        meterLine: {},
+      } as PropsTabel;
       item.checked = false;
       item.id = line.LINE_ID;
-      item.totalMeter = '10';
-      item.capacityStation = '100';
-      item.columnCode = line.LINE_NAME;
       item.show = true;
-      item.succeedMeter = '30';
+      item.meterLine.line = line;
+      item.meterLine.listMeter = [];
 
-      listLine.push(item);
+      dataTable.push(item);
     }
 
     hookProps.setState(state => {
-      state.dataTabel = listLine;
+      state.dataTabel = dataTable;
       return {...state};
     });
   });

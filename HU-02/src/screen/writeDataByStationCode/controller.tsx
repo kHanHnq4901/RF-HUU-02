@@ -1,8 +1,8 @@
-import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
-import { NativeScrollEvent } from 'react-native';
-import { PropsKHCMISModel } from '../../database/model';
-import { CMISKHServices } from '../../database/service';
+import {useNavigation} from '@react-navigation/native';
+import React, {useState} from 'react';
+import {NativeScrollEvent} from 'react-native';
+import {PropsKHCMISModel} from '../../database/model';
+import {CMISKHServices} from '../../database/service';
 import {
   PropsRouteParamsWriteStation,
   StackWriteStationCodeNavigationProp,
@@ -11,8 +11,9 @@ import {
   getLabelAndIsManyPriceBy3Character,
   TYPE_READ_RF,
 } from '../../service/hhu/defineEM';
-import { PropsStore, storeContext } from '../../store';
-import { sizeScreen } from '../../theme';
+import {PropsInfoWM} from '../../service/user';
+import {PropsStore, storeContext} from '../../store';
+import {sizeScreen} from '../../theme';
 
 type PropsCheckBox = {
   checked: boolean;
@@ -31,13 +32,12 @@ export const variable = {
   },
 };
 
-export type PropsDatatable = {
+export type PropsDataTable = {
   id: string;
   show: boolean;
   stt: string;
   checked: boolean;
-  data: PropsKHCMISModel;
-  isManyPrice: boolean;
+  data: PropsInfoWM;
   labelMeter: string;
 };
 
@@ -61,8 +61,8 @@ export type HookProps = {
 };
 
 export type PropsTable = {
-  render: PropsDatatable[];
-  noRender: PropsDatatable[];
+  render: PropsDataTable[];
+  noRender: PropsDataTable[];
 };
 
 const TAG = ' Controller: ';
@@ -95,7 +95,7 @@ export function onScrollToEnd() {
   if (hookProps.state.dataTable.noRender.length > 0) {
     hookProps.setState(state => {
       state.dataTable = addMoreItemToRender(state.dataTable);
-      return { ...state };
+      return {...state};
     });
   }
 }
@@ -117,7 +117,7 @@ export function addMoreItemToRender(dataTable: PropsTable): PropsTable {
       break;
     }
   }
-  return { ...dataTable };
+  return {...dataTable};
 }
 
 export const GetHookProps = (): HookProps => {
@@ -139,6 +139,7 @@ export const GetHookProps = (): HookProps => {
       },
       {
         label: 'Ghi tay',
+
         //value: 'Ghi tay',
         checked: false,
       },
@@ -183,7 +184,7 @@ const getDataDb = async (ref, routeParams: PropsRouteParamsWriteStation) => {
   hookProps.setState(state => {
     state.status = 'Đang cập nhật dữ liệu ...';
 
-    return { ...state };
+    return {...state};
   });
 
   //console.log(TAG, 'routeParams', routeParams);
@@ -245,7 +246,7 @@ const getDataDb = async (ref, routeParams: PropsRouteParamsWriteStation) => {
       state.totalSucceed = totalSucceed.toString();
       state.dataTable = dataTable;
       state.status = '';
-      return { ...state };
+      return {...state};
     });
     if (firstTime) {
       ref?.current?.openDropdown();
@@ -257,9 +258,12 @@ const getDataDb = async (ref, routeParams: PropsRouteParamsWriteStation) => {
   }
 };
 
-export const onInit = async (routeParams: PropsRouteParamsWriteStation, ref) => {
+export const onInit = async (
+  routeParams: PropsRouteParamsWriteStation,
+  ref,
+) => {
   navigation.addListener('focus', () => {
-    getDataDb(ref, routeParams);
+    //getDataDb(ref, routeParams);
   });
 };
 
