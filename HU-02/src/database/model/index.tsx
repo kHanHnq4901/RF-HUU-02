@@ -1,4 +1,4 @@
-import {PropsAddMoreEntity} from '../entity';
+import {dumyEntity, PropsAddMoreEntity, PropsKHCMISEntity} from '../entity';
 
 type PropsCell = {
   id: keyof PropsTable;
@@ -6,10 +6,14 @@ type PropsCell = {
 
 type PropsTable = {
   seriModule: PropsCell;
+  seriMeter: PropsCell;
   lineId: PropsCell;
   lineName: PropsCell;
   customerName: PropsCell;
   customerCode: PropsCell;
+  phone: PropsCell;
+  email: PropsCell;
+  meterName: PropsCell;
   pointCodeMeasurement: PropsCell;
   address: PropsCell;
   dateCreated: PropsCell;
@@ -26,6 +30,9 @@ export const dataDBTable: PropsTable = {
   seriModule: {
     id: 'seriModule',
   },
+  seriMeter: {
+    id: 'seriMeter',
+  },
   lineId: {
     id: 'lineId',
   },
@@ -37,6 +44,15 @@ export const dataDBTable: PropsTable = {
   },
   customerCode: {
     id: 'customerCode',
+  },
+  phone: {
+    id: 'phone',
+  },
+  email: {
+    id: 'email',
+  },
+  meterName: {
+    id: 'meterName',
   },
   pointCodeMeasurement: {
     id: 'pointCodeMeasurement',
@@ -78,23 +94,36 @@ export type PropsDataModel = {
 
 export type PropsKHCMISModel = {
   seriModule: string;
+  seriMeter: string;
   lineId: string;
   lineName: string;
   customerName: string;
   customerCode: string;
+  phone: string;
+  email: string;
+  meterName: string;
   pointCodeMeasurement: string;
   address: string;
   dateCreated: string;
   dateQuery: string;
   data: PropsDataModel;
-} & PropsAddMoreEntity;
+  stt: number;
+  id: string;
+  typeRead: string;
+  isSent: boolean | null;
+  note: string;
+};
 
 const dumy: PropsKHCMISModel = {
   seriModule: '',
+  seriMeter: '',
   lineId: '',
   lineName: '',
   customerName: '',
   customerCode: '',
+  phone: '',
+  email: '',
+  meterName: '',
   pointCodeMeasurement: '',
   address: '',
   dateCreated: '',
@@ -103,7 +132,7 @@ const dumy: PropsKHCMISModel = {
   stt: 0,
   id: '',
   typeRead: '',
-  isSent: '',
+  isSent: false,
   note: '',
 };
 

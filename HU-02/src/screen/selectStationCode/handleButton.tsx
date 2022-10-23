@@ -1,5 +1,5 @@
 import {Alert} from 'react-native';
-import {dataDBTable} from '../../database/model';
+import {dataDBTable, PropsKHCMISModel} from '../../database/model';
 import {
   KHCMISRepository,
   PropsCondition,
@@ -10,6 +10,7 @@ import {TYPE_READ_RF} from '../../service/hhu/defineEM';
 import {getMeterListMissByLine} from '../../service/user';
 import {hookProps, PropsMeterLine, PropsTabel, store} from './controller';
 import {dummyDataTable} from '../overview/controller';
+import {CMISKHServices} from '../../database/service';
 
 const TAG = 'handlebutton Select station code';
 
@@ -96,6 +97,7 @@ export async function upDateMissData(date: Date) {
 }
 
 export async function onTestPress() {
+  let res: boolean = false;
   // delete
   const dateQuery = hookProps.state.dateEnd;
   for (let data of hookProps.state.dataTabel) {
@@ -127,7 +129,7 @@ export async function onTestPress() {
 
     conditions.push(condition);
 
-    const res = KHCMISRepository.delete(conditions);
+    res = await KHCMISRepository.delete(conditions);
 
     console.log('res delete:', res);
   }
@@ -135,8 +137,17 @@ export async function onTestPress() {
   // save
 
   for (let data of hookProps.state.dataTabel) {
-    const item = 
-    const res = KHCMISRepository.save(conditions);
+    const station = data.meterLine;
+
+    for (let meter of station.listMeter) {
+      const item = {} as PropsKHCMISModel;
+
+      item.address = meter.ADDRESS;
+      item.customerCode = meter.customerCode;
+      item.customerName = meter.customerName;
+      item.data = [];
+      item.res = await CMISKHServices.save(item);
+    }
 
     console.log('res delete:', res);
   }

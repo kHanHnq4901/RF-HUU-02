@@ -2,6 +2,7 @@ import {store} from '../../component/drawer/drawerContent/controller';
 import {PropsStoreMeter} from '../../store';
 import axios from 'axios';
 import {GetFormatDate} from './util';
+import NetInfo from '@react-native-community/netinfo';
 
 const TAG = 'USER Service:';
 
@@ -202,4 +203,17 @@ export async function getMeterListMissByLine(
   }
 
   return ret;
+}
+
+export async function checkNetworkStatus(): Promise<boolean> {
+  try {
+    const state = await NetInfo.fetch();
+
+    console.log('Connection type', state.type);
+    console.log('Is connected?', state.isConnected);
+
+    return state.isConnected ?? false;
+  } catch (err) {
+    return false;
+  }
 }

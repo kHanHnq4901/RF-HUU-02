@@ -68,36 +68,37 @@ const RowHeader = (props: PropsRowHeader) => {
 };
 
 const Row = (item: PropsTabel) => {
+  if (item.show !== true) {
+    return null;
+  }
   return (
-    item.show && (
-      <TouchableOpacity
-        onPress={() => {
-          hookProps.setState(state => {
-            state.dataTabel = state.dataTabel.map(itm => {
-              if (itm.id === item.id) {
-                itm.checked = !itm.checked;
-              }
-              return {...itm};
-            });
-            return {...state};
+    <TouchableOpacity
+      onPress={() => {
+        hookProps.setState(state => {
+          state.dataTabel = state.dataTabel.map(itm => {
+            if (itm.id === item.id) {
+              itm.checked = !itm.checked;
+            }
+            return {...itm};
           });
-        }}
-        style={styles.containerRowTable}>
-        <View style={styles.checkTabel}>
-          <Checkbox
-            uncheckedColor={Colors.primary}
-            status={item.checked ? 'checked' : 'unchecked'}
-          />
-        </View>
-        <View style={styles.contentTable}>
-          <Text style={styles.title}>{item.meterLine.line.LINE_NAME}</Text>
-          <View style={{height: 10}} />
-          <Text style={styles.subTitle}>
-            Dữ liệu thiếu: {item.meterLine.listMeter.length}
-          </Text>
-        </View>
-      </TouchableOpacity>
-    )
+          return {...state};
+        });
+      }}
+      style={styles.containerRowTable}>
+      <View style={styles.checkTabel}>
+        <Checkbox
+          uncheckedColor={Colors.primary}
+          status={item.checked ? 'checked' : 'unchecked'}
+        />
+      </View>
+      <View style={styles.contentTable}>
+        <Text style={styles.title}>{item.meterLine.line.LINE_NAME}</Text>
+        <View style={{height: 10}} />
+        <Text style={styles.subTitle}>
+          Dữ liệu thiếu: {item.meterLine.listMeter.length}
+        </Text>
+      </View>
+    </TouchableOpacity>
   );
 };
 
