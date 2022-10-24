@@ -37,7 +37,7 @@ export type PropsDataTable = {
   show: boolean;
   stt: string;
   checked: boolean;
-  data: PropsInfoWM;
+  data: PropsKHCMISModel;
   labelMeter: string;
 };
 
@@ -192,38 +192,36 @@ const getDataDb = async (ref, routeParams: PropsRouteParamsWriteStation) => {
     //if (store.state.appSetting.showResultOKInWriteData === true) {
     items = await CMISKHServices.findAll();
     dataDB = items;
+    //console.log('index0:', dataDB[0]);
+
     for (let item of dataDB) {
-      if (item.MA_TRAM === routeParams.stationCode) {
+      if (true) {
         let ok = false;
-        if (routeParams.columnCode.length > 0) {
-          if (routeParams.columnCode.includes(item.MA_COT)) {
+        if (routeParams.litStationCode.length > 0) {
+          if (routeParams.litStationCode.includes(item.LINE_ID)) {
             ok = true;
           }
         } else {
           ok = true;
         }
         if (ok) {
-          columnCodeSet.add(item.MA_COT);
+          columnCodeSet.add(item.LINE_ID);
           //totalMeterDBSet.add(item.SERY_CTO);
           totalBCS++;
           if (
-            item.LoaiDoc === TYPE_READ_RF.READ_SUCCEED ||
-            item.LoaiDoc === TYPE_READ_RF.WRITE_BY_HAND
+            item.TYPE_READ === TYPE_READ_RF.READ_SUCCEED ||
+            item.TYPE_READ === TYPE_READ_RF.WRITE_BY_HAND
           ) {
             totalSucceed++;
           }
 
-          const labelAndIsManyPrice = getLabelAndIsManyPriceBy3Character(
-            item.MA_CTO.substring(0, 3),
-          );
           dataTable.noRender.push({
             checked: false,
             data: item,
-            id: item.id,
+            id: item.ID,
             show: true,
-            stt: item.TT.toString(),
-            isManyPrice: labelAndIsManyPrice.isManyPrice,
-            labelMeter: labelAndIsManyPrice.label,
+            stt: item.STT.toString(),
+            labelMeter: '',
           });
         }
         //console.log('item:', item);
@@ -263,7 +261,7 @@ export const onInit = async (
   ref,
 ) => {
   navigation.addListener('focus', () => {
-    //getDataDb(ref, routeParams);
+    getDataDb(ref, routeParams);
   });
 };
 

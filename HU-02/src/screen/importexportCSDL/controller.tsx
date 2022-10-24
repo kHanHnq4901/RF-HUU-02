@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import RNFS from 'react-native-fs';
-import { getFilExtension, showToast } from '../../util';
-import { PropsFileInfo } from '../../shared/file';
-import { PATH_IMPORT_CSDL, PATH_EXECUTE_CSDL } from '../../shared/path';
-import { DeviceEventEmitter, EmitterSubscription } from 'react-native';
-import { RECEIVE_FILE_CSDL } from '../../service/event/constant';
+import {getFilExtension, showToast} from '../../util';
+import {PropsFileInfo} from '../../shared/file';
+import {PATH_IMPORT_CSDL, PATH_EXECUTE_CSDL} from '../../shared/path';
+import {DeviceEventEmitter, EmitterSubscription} from 'react-native';
+import {RECEIVE_FILE_CSDL} from '../../service/event/constant';
 
 export type PropsXml = PropsFileInfo;
 
@@ -65,7 +65,7 @@ export const loadFileCsdlFromStorage = () => {
         });
         state.csdlList.sort((a, b) => b.time - a.time);
         //console.log('b');
-        return { ...state };
+        return {...state};
       });
     })
     .catch(err => {

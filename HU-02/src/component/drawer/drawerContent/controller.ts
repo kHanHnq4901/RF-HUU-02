@@ -123,6 +123,11 @@ export const onInit = async navigation => {
           console.log('create folder for excecute csdl');
           await RNFS.mkdir(PATH_EXECUTE_CSDL);
         }
+        folderExist = await RNFS.exists(PATH_EXPORT_CSDL);
+        if (folderExist !== true) {
+          console.log('create folder for export csdl');
+          await RNFS.mkdir(PATH_EXPORT_CSDL);
+        }
 
         folderExist = await RNFS.exists(PATH_IMPORT_XML);
         if (folderExist !== true) {

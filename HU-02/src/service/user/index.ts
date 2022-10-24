@@ -191,7 +191,7 @@ export async function getMeterListMissByLine(
       console.log(TAG, 'Lỗi:', data.MESSAGE);
       return ret;
     } else {
-      console.log(TAG, 'abc:', data);
+      //console.log(TAG, 'abc:', data);
     }
 
     ret.succeed = true;

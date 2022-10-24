@@ -1,6 +1,9 @@
 import {Alert} from 'react-native';
 import {dataDBTable, PropsKHCMISModel} from '../../database/model';
 import {
+  checkTabelDBIfExist,
+  deleteDataDB,
+  deleteDB,
   KHCMISRepository,
   PropsCondition,
   PropsConditions,
@@ -10,7 +13,7 @@ import {TYPE_READ_RF} from '../../service/hhu/defineEM';
 import {getMeterListMissByLine} from '../../service/user';
 import {hookProps, PropsMeterLine, PropsTabel, store} from './controller';
 import {dummyDataTable} from '../overview/controller';
-import {CMISKHServices} from '../../database/service';
+import {CMISKHServices, PropsKHCMISModelSave} from '../../database/service';
 
 const TAG = 'handlebutton Select station code';
 
@@ -97,6 +100,10 @@ export async function upDateMissData(date: Date) {
 }
 
 export async function onTestPress() {
+  // await deleteDB();
+  // await checkTabelDBIfExist();
+  // await CMISKHServices.findAll();
+  // return;
   let res: boolean = false;
   // delete
   const dateQuery = hookProps.state.dateEnd;
@@ -105,7 +112,7 @@ export async function onTestPress() {
     let condition = {
       data: {},
     } as PropsCondition;
-    condition.data[dataDBTable.dateQuery.id] = dateQuery;
+    condition.data[dataDBTable.DATE_QUERY.id] = dateQuery;
     condition.logic = '=';
     condition.behindOperator = 'AND';
 
@@ -114,7 +121,7 @@ export async function onTestPress() {
     condition = {
       data: {},
     } as PropsCondition;
-    condition.data[dataDBTable.lineId.id] = data.meterLine.line.LINE_ID;
+    condition.data[dataDBTable.LINE_ID.id] = data.meterLine.line.LINE_ID;
     condition.logic = '=';
     condition.behindOperator = 'AND';
 
@@ -123,7 +130,7 @@ export async function onTestPress() {
     condition = {
       data: {},
     } as PropsCondition;
-    condition.data[dataDBTable.isSent.id] = 'false';
+    condition.data[dataDBTable.IS_SENT.id] = 'false';
     condition.logic = '!=';
     condition.behindOperator = 'AND';
 
@@ -138,17 +145,28 @@ export async function onTestPress() {
 
   for (let data of hookProps.state.dataTabel) {
     const station = data.meterLine;
-
+    let stt = 0;
     for (let meter of station.listMeter) {
-      const item = {} as PropsKHCMISModel;
-
-      item.address = meter.ADDRESS;
-      item.customerCode = meter.customerCode;
-      item.customerName = meter.customerName;
-      item.data = [];
-      item.res = await CMISKHServices.save(item);
+      stt++;
+      const item: PropsKHCMISModelSave = {
+        ADDRESS: meter.ADDRESS,
+        CUSTOMER_CODE: meter.CUSTOMER_CODE,
+        CUSTOMER_NAME: meter.CUSTOMER_NAME,
+        DATA: [],
+        DATE_QUERY: hookProps.state.dateEnd.toLocaleDateString('vi'),
+        EMAIL: meter.EMAIL,
+        LINE_ID: station.line.LINE_ID,
+        LINE_NAME: station.line.LINE_NAME,
+        METER_NAME: meter.METER_NAME,
+        PHONE: meter.PHONE,
+        POINT_CODE_MEASUREMENT: '',
+        NO_METER: meter.METER_NO,
+        NO_MODULE: meter.MODULE_NO,
+        STT: stt,
+      };
+      res = await CMISKHServices.save(item);
     }
 
-    console.log('res delete:', res);
+    console.log('res save:', res);
   }
 }

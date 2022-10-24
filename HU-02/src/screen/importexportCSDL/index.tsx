@@ -1,12 +1,11 @@
-import React, { useEffect, useMemo } from 'react';
-import { Text, StyleSheet, View, ScrollView, FlatList } from 'react-native';
+import React, {useEffect} from 'react';
+import {FlatList, StyleSheet, Text, View} from 'react-native';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {Caption, Checkbox, Divider} from 'react-native-paper';
+import {Button} from '../../component/button/button';
+import Theme, {CommonHeight, normalize} from '../../theme';
 import * as controller from './controller';
-import Theme, { CommonHeight, normalize } from '../../theme';
-import { Button } from '../../component/button/button';
-import { Caption, Checkbox, Divider } from 'react-native-paper';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import * as handleButton from './handleButton';
-import { Alert } from '../../component/alert';
 
 export const ImportExportCSDLScreen = () => {
   const hookProps = controller.GetHookProps();
@@ -16,7 +15,7 @@ export const ImportExportCSDLScreen = () => {
     return controller.onDeInit;
   }, []);
 
-  const RenderItem = ({ item }: { item: controller.PropsXml }) => {
+  const RenderItem = ({item}: {item: controller.PropsXml}) => {
     // return useMemo(
     //   () => (
 
@@ -30,7 +29,7 @@ export const ImportExportCSDLScreen = () => {
                 //console.log(state);
               }
             });
-            return { ...state };
+            return {...state};
           });
         }}>
         {/* <Divider /> */}
@@ -40,8 +39,8 @@ export const ImportExportCSDLScreen = () => {
             status={item.checked ? 'checked' : 'unchecked'}
             onPress={() => {}}
           />
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: normalize(20) }}>{item.name}</Text>
+          <View style={{flex: 1}}>
+            <Text style={{fontSize: normalize(20)}}>{item.name}</Text>
           </View>
           <View style={styles.dateTimeItem}>
             <Caption
@@ -80,9 +79,8 @@ export const ImportExportCSDLScreen = () => {
         />
       </View>
       {hookProps.state.csdlList.length === 0 ? (
-        <View
-          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Text style={{ fontSize: 45, fontWeight: 'bold' }}>Trống</Text>
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <Text style={{fontSize: 45, fontWeight: 'bold'}}>Trống</Text>
         </View>
       ) : (
         <FlatList
@@ -95,7 +93,7 @@ export const ImportExportCSDLScreen = () => {
         <Button
           label="Xóa"
           onPress={handleButton.onDeleteFilePress}
-          style={{ flex: 1, height: 50, maxWidth: 150 }}
+          style={{flex: 1, height: 50, maxWidth: 150}}
         />
         <Button
           style={{
@@ -108,7 +106,6 @@ export const ImportExportCSDLScreen = () => {
           onPress={handleButton.onImportPress}
         />
       </View>
-      <Alert />
     </View>
   );
 };
@@ -131,5 +128,5 @@ const styles = StyleSheet.create({
     height: CommonHeight,
     justifyContent: 'center',
   },
-  buttonExport: { width: '35%', alignSelf: 'flex-end', marginBottom: 30 },
+  buttonExport: {width: '35%', alignSelf: 'flex-end', marginBottom: 30},
 });

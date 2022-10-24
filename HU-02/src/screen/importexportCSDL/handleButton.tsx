@@ -1,20 +1,15 @@
+import RNFS from 'react-native-fs';
 import Share from 'react-native-share';
-import * as controller from './controller';
-import { hookProps } from './controller';
-import { showToast } from '../../util';
-import { showAlertDanger } from '../../service/alert';
+import {closeConnection} from '../../database/repository';
+import {deleteFile} from '../../shared/file';
 import {
   NAME_CSDL,
   PATH_EXECUTE_CSDL,
   PATH_EXPORT_CSDL,
-  PATH_IMPORT_CSDL,
 } from '../../shared/path';
-import { showAlertWarning } from '../../service/alert/index';
-import RNFS from 'react-native-fs';
-import { deleteFile } from '../../shared/file';
-import { closeConnection } from '../../database/repository';
-import { onInit as onInitViewRegister } from '../../screen/ViewRegister/controller';
-import { onInit as onInitWriteRegister } from '../../screen/WriteRegister/controller';
+import {showToast} from '../../util';
+import * as controller from './controller';
+import {hookProps} from './controller';
 
 const TAG = 'Handle Btn Import Export CSDL';
 
@@ -47,39 +42,27 @@ export const onImportPress = async () => {
     return;
   }
 
-  showAlertWarning({
-    title: 'Nhập CSDL ?',
-    subtitle: 'Bạn có muốn nhập CSDL mới ? CSDL cũ sẽ bị mất',
-    onOkPress: async () => {
-      try {
-        await closeConnection();
-        RNFS.copyFile(listUrl[0], PATH_EXECUTE_CSDL + '/' + NAME_CSDL);
-        showToast('Cập nhật CSDL mới thành công');
-        hookProps.setState(state => {
-          for (let item of state.csdlList) {
-            item.checked = false;
-          }
-          return { ...state };
-        });
-        // try {
-        //   //console.log('here');
-        //   await onInitViewRegister(null);
-        // } catch (err) {
-        //   console.log(TAG, err);
-        // }
-        // try {
-        //   //console.log('here');
-        //   await onInitWriteRegister(null);
-        // } catch (err) {
-        //   console.log(TAG, err);
-        // }
-      } catch (err) {
-        showToast('Cập nhật CSDL mới thất bại');
-        console.log(TAG, err.message);
-      }
-    },
-    onCancelPress: () => {},
-  });
+  // showAlertWarning({
+  //   title: 'Nhập CSDL ?',
+  //   subtitle: 'Bạn có muốn nhập CSDL mới ? CSDL cũ sẽ bị mất',
+  //   onOkPress: async () => {
+  //     try {
+  //       await closeConnection();
+  //       RNFS.copyFile(listUrl[0], PATH_EXECUTE_CSDL + '/' + NAME_CSDL);
+  //       showToast('Cập nhật CSDL mới thành công');
+  //       hookProps.setState(state => {
+  //         for (let item of state.csdlList) {
+  //           item.checked = false;
+  //         }
+  //         return {...state};
+  //       });
+  //     } catch (err) {
+  //       showToast('Cập nhật CSDL mới thất bại');
+  //       console.log(TAG, err.message);
+  //     }
+  //   },
+  //   onCancelPress: () => {},
+  // });
 
   //console.log('filenames:', filenames);
 };
@@ -118,23 +101,23 @@ export const onExportPress = async () => {
   } catch (err) {
     console.log(TAG, 'Err: ' + err.message);
   }
-  try {
-    Share.open({
-      title: 'Chia sẻ qua',
-      url: 'file://' + PATH_EXECUTE_CSDL + '/' + NAME_CSDL,
-      //filenames: filenames,
-      type: 'application/db',
-      showAppsToView: true,
-    })
-      .then(res => {
-        console.log(res);
-      })
-      .catch(err => {
-        err && console.log(err);
-      });
-  } catch (err) {
-    console.log(TAG, err.message);
-  }
+  // try {
+  //   Share.open({
+  //     title: 'Chia sẻ qua',
+  //     url: 'file://' + PATH_EXECUTE_CSDL + '/' + NAME_CSDL,
+  //     //filenames: filenames,
+  //     type: 'application/db',
+  //     showAppsToView: true,
+  //   })
+  //     .then(res => {
+  //       console.log(res);
+  //     })
+  //     .catch(err => {
+  //       err && console.log(err);
+  //     });
+  // } catch (err) {
+  //   console.log(TAG, err.message);
+  // }
 };
 
 export const onDeleteFilePress = async () => {
@@ -147,20 +130,20 @@ export const onDeleteFilePress = async () => {
     }
   }
   if (hasItem) {
-    showAlertDanger({
-      title: 'Xóa',
-      subtitle: 'Bạn có muốn xóa ' + selectedItem + ' file ?',
-      onOkPress: async () => {
-        for (let i = 0; i < hookProps.state.csdlList.length; i++) {
-          if (hookProps.state.csdlList[i].checked === true) {
-            await deleteFile(hookProps.state.csdlList[i].path);
-          }
-        }
-        if (hasItem) {
-          controller.loadFileCsdlFromStorage();
-        }
-      },
-      onCancelPress: () => {},
-    });
+    // showAlertDanger({
+    //   title: 'Xóa',
+    //   subtitle: 'Bạn có muốn xóa ' + selectedItem + ' file ?',
+    //   onOkPress: async () => {
+    //     for (let i = 0; i < hookProps.state.csdlList.length; i++) {
+    //       if (hookProps.state.csdlList[i].checked === true) {
+    //         await deleteFile(hookProps.state.csdlList[i].path);
+    //       }
+    //     }
+    //     if (hasItem) {
+    //       controller.loadFileCsdlFromStorage();
+    //     }
+    //   },
+    //   onCancelPress: () => {},
+    // });
   }
 };

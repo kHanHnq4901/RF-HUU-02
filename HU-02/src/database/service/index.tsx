@@ -7,6 +7,13 @@ import {
   PropsTypeOf,
 } from '../model';
 import {KHCMISRepository, PropsConditions} from '../repository';
+import uuid from 'react-native-uuid';
+import {TYPE_READ_RF} from '../../service/hhu/defineEM';
+
+export type PropsKHCMISModelSave = Omit<
+  PropsKHCMISModel,
+  'ID' | 'DATE_CREATED' | 'IS_SENT' | 'TYPE_READ' | 'NOTE'
+>;
 
 interface ICMISKHServices {
   findAll: (
@@ -29,7 +36,7 @@ interface ICMISKHServices {
   ) => Promise<boolean>;
   delete: (condition: PropsConditions) => Promise<boolean>;
   getPercentRead: () => Promise<PropsPercentRead>;
-  save: (item: PropsKHCMISModel) => Promise<boolean>;
+  save: (item: PropsKHCMISModelSave) => Promise<boolean>;
 }
 
 export type PropsPagination = {
@@ -50,7 +57,11 @@ export type PropsFilter = {
 const convertEntity2Model = (entity: PropsKHCMISEntity): PropsKHCMISModel => {
   const model = {} as PropsKHCMISModel;
   for (let i = 0; i < KHCMISModelFields.length; i++) {
-    model[KHCMISModelFields[i]] = entity[KHCMISModelFields[i]];
+    if (KHCMISModelFields[i] === dataDBTable.DATA.id) {
+      model[KHCMISModelFields[i]] = JSON.parse(entity[KHCMISModelFields[i]]);
+    } else {
+      model[KHCMISModelFields[i]] = entity[KHCMISModelFields[i]];
+    }
   }
   return model;
 };
@@ -111,12 +122,19 @@ CMISKHServices.getPercentRead = async () => {
   //console.log('resultbb:', result);
   return result;
 };
-CMISKHServices.save = async (item: PropsKHCMISModel) => {
+CMISKHServices.save = async (item: PropsKHCMISModelSave) => {
   const entity = {} as PropsKHCMISEntity;
 
   for (let key in dataDBTable) {
     entity[key] = item[key];
   }
+  //'id' | 'dateCreated' | 'isSent' | 'typeRead' | 'note'
+  entity.DATA = JSON.stringify(item.DATA);
+  entity.DATE_CREATED = new Date().toLocaleString('vi');
+  entity.ID = uuid.v4().toString();
+  entity.IS_SENT = null;
+  entity.NOTE = '';
+  entity.TYPE_READ = TYPE_READ_RF.HAVE_NOT_READ;
 
   return await KHCMISRepository.save(entity);
 };

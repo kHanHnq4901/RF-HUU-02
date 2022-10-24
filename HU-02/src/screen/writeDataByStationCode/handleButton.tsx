@@ -3,13 +3,12 @@ import {
   getRFCodeBySeriAndStockRFCode,
   TYPE_READ_RF,
 } from '../../service/hhu/defineEM';
-import {sleep} from '../../util';
 import {
-  convertApsResponse2PropsInsertDb,
-  PropsUpdateDb,
-  updateDataToDB,
-  updateReadFailToDb,
-} from '../writeDataByBookCode/handleButton';
+  PropsModelRadio,
+  RfFunc_Read,
+  TypeReadRF,
+} from '../../service/hhu/RF/RfFunc';
+import {sleep} from '../../util';
 import {
   addMoreItemToRender,
   hookProps,
@@ -18,6 +17,13 @@ import {
   PropsTable,
   store,
 } from './controller';
+import {hookProps as selectStationCodeHook} from '../selectStationCode/controller';
+import {PropsDataModel} from '../../database/model';
+import {
+  PropsUpdateData2DB,
+  updateDataToDB,
+  updateReadFailToDb,
+} from '../../service/database';
 
 const TAG = 'Handle Btn Write Data By Column Code';
 
@@ -34,9 +40,9 @@ export function onSelectAllPress() {
     for (let key in state.dataTable) {
       state.dataTable[key] = state.dataTable[key].map(item => {
         if (
-          item.data.LoaiDoc === TYPE_READ_RF.READ_SUCCEED ||
-          item.data.LoaiDoc === TYPE_READ_RF.ABNORMAL_CAPACITY ||
-          item.data.LoaiDoc === TYPE_READ_RF.WRITE_BY_HAND
+          item.data.TYPE_READ === TYPE_READ_RF.READ_SUCCEED ||
+          item.data.TYPE_READ === TYPE_READ_RF.ABNORMAL_CAPACITY ||
+          item.data.TYPE_READ === TYPE_READ_RF.WRITE_BY_HAND
         ) {
           item.checked = false;
         } else {
@@ -54,10 +60,10 @@ export function onItemPress(item: PropsDataTable) {
   hookProps.setState(state => {
     for (let key in state.dataTable) {
       state.dataTable[key] = state.dataTable[key].map(itm => {
-        if (itm.data.SERY_CTO === item.data.SERY_CTO) {
+        if (itm.data.NO_MODULE === item.data.NO_MODULE) {
           if (
-            item.data.LoaiDoc === TYPE_READ_RF.READ_SUCCEED ||
-            item.data.LoaiDoc === TYPE_READ_RF.WRITE_BY_HAND
+            item.data.TYPE_READ === TYPE_READ_RF.READ_SUCCEED ||
+            item.data.TYPE_READ === TYPE_READ_RF.WRITE_BY_HAND
           ) {
             itm.checked = false;
           } else {
@@ -101,11 +107,11 @@ const funcFilter = (
       itm.show = true;
       //console.log('a');
     } else {
-      if (itm.data.MA_COT === filter.column) {
-        itm.show = true;
-      } else {
-        itm.show = false;
-      }
+      // if (itm.data.MA_COT === filter.column) {
+      //   itm.show = true;
+      // } else {
+      //   itm.show = false;
+      // }
     }
     if (itm.show === true) {
       if (
@@ -117,25 +123,25 @@ const funcFilter = (
         itm.show = false;
         for (let i = 0; i < 1; i++) {
           if (filter.isNoRead) {
-            if (itm.data.LoaiDoc === TYPE_READ_RF.HAVE_NOT_READ) {
+            if (itm.data.TYPE_READ === TYPE_READ_RF.HAVE_NOT_READ) {
               itm.show = true;
               break;
             }
           }
           if (filter.isAbnormal) {
-            if (itm.data.LoaiDoc === TYPE_READ_RF.ABNORMAL_CAPACITY) {
+            if (itm.data.TYPE_READ === TYPE_READ_RF.ABNORMAL_CAPACITY) {
               itm.show = true;
               break;
             }
           }
           if (filter.isReadFailed) {
-            if (itm.data.LoaiDoc === TYPE_READ_RF.READ_FAILED) {
+            if (itm.data.TYPE_READ === TYPE_READ_RF.READ_FAILED) {
               itm.show = true;
               break;
             }
           }
           if (filter.isWriteHand) {
-            if (itm.data.LoaiDoc === TYPE_READ_RF.WRITE_BY_HAND) {
+            if (itm.data.TYPE_READ === TYPE_READ_RF.WRITE_BY_HAND) {
               itm.show = true;
               break;
             }
@@ -156,31 +162,25 @@ const funcFilter = (
             itm.show = true;
             break;
           }
-          if (itm.data.SERY_CTO.toLowerCase().includes(searchText)) {
+          if (itm.data.NO_MODULE.toLowerCase().includes(searchText)) {
             itm.show = true;
             break;
           }
-          if (itm.data.LOAI_BCS.toLowerCase().includes(searchText)) {
+
+          if (itm.data.LINE_ID.toLowerCase().includes(searchText)) {
             itm.show = true;
             break;
           }
-          if (itm.data.MA_QUYEN.toLowerCase().includes(searchText)) {
+
+          if (itm.data.CUSTOMER_NAME.toLowerCase().includes(searchText)) {
             itm.show = true;
             break;
           }
-          if (itm.data.MA_COT.toLowerCase().includes(searchText)) {
+          if (itm.data.CUSTOMER_CODE.toLowerCase().includes(searchText)) {
             itm.show = true;
             break;
           }
-          if (itm.data.TEN_KHANG.toLowerCase().includes(searchText)) {
-            itm.show = true;
-            break;
-          }
-          if (itm.data.MA_KHANG.toLowerCase().includes(searchText)) {
-            itm.show = true;
-            break;
-          }
-          if (itm.data.DIA_CHI.toLowerCase().includes(searchText)) {
+          if (itm.data.ADDRESS.toLowerCase().includes(searchText)) {
             itm.show = true;
             break;
           }
@@ -191,8 +191,8 @@ const funcFilter = (
     if (itm.show === true) {
       totalBCS++;
       if (
-        itm.data.LoaiDoc === TYPE_READ_RF.READ_SUCCEED ||
-        itm.data.LoaiDoc === TYPE_READ_RF.WRITE_BY_HAND
+        itm.data.TYPE_READ === TYPE_READ_RF.READ_SUCCEED ||
+        itm.data.TYPE_READ === TYPE_READ_RF.WRITE_BY_HAND
       ) {
         totalSucceed++;
       }
@@ -324,245 +324,247 @@ export function onPencilPress(props: PropsPencil) {
 }
 
 const readData = async () => {
-  // let numRetries = Number(store.state.appSetting.numRetriesRead);
-  // if (numRetries <= 0) {
-  //   numRetries = 1;
-  // }
-  // console.log('numRetries:', numRetries);
-  // for (
-  //   let index = 0;
-  //   index < hookProps.state.dataTable.render.length;
-  //   index++
-  // ) {
-  //   const item = hookProps.state.dataTable.render[index];
-  //   if (item.checked === true && item.show === true) {
-  //     if (hookProps.state.requestStop === true) {
-  //       break;
-  //     } else {
-  //       await sleep(150);
-  //     }
-  //     try {
-  //       for (let j = 0; j < 1; j++) {
-  //         let strSeri: string = item.data.SERY_CTO;
-  //         let codeMeterInDb = item.data.MA_CTO;
-  //         let strRFCode: string = item.data.RF;
-  //         let optinalRFCode = getRFCodeBySeriAndStockRFCode(strSeri, strRFCode);
-  //         // let iDate: Date = hookProps.state.is0h
-  //         //   ? hookProps.state.dateLatch
-  //         //   : new Date();
-  //         let iDate: Date = new Date();
-  //         console.log('not done');
-  //         console.log('strSeri:', strSeri);
-  //         setStatus('Đang đọc ' + strSeri + ' ...');
-  //         let result = await apsReadRfGCS({
-  //           seri: strSeri,
-  //           codeMeterInDB: codeMeterInDb,
-  //           is0h: false,
-  //           dateLatch: iDate,
-  //           rfCode: strRFCode,
-  //           numRetries: numRetries,
-  //           setStatus: setStatus,
-  //         });
-  //         console.log(TAG, 'result:', JSON.stringify(result));
-  //         if (result.bSucceed === false) {
-  //           if (store.state.hhu.connect !== 'CONNECTED') {
-  //             return;
-  //           }
-  //           if (optinalRFCode !== strRFCode && optinalRFCode !== '') {
-  //             console.log('try with new RF code: ', optinalRFCode);
-  //             console.log('stock RF code: ', strRFCode);
-  //             strRFCode = optinalRFCode;
-  //             result = await apsReadRfGCS({
-  //               seri: strSeri,
-  //               codeMeterInDB: codeMeterInDb,
-  //               is0h: false,
-  //               dateLatch: iDate,
-  //               rfCode: strRFCode,
-  //               numRetries: numRetries,
-  //               setStatus: setStatus,
-  //             });
-  //           }
-  //         }
-  //         if (result.bSucceed === true) {
-  //           const dataConverted = convertApsResponse2PropsInsertDb(result);
-  //           // find all element arr of this seri
-  //           const listUpdate: PropsUpdateDb[] = [];
-  //           let totalUpdateFailed: number = 0;
-  //           // only get curent dât, no need updae hook
-  //           hookProps.setState(state => {
-  //             for (let key in state.dataTable) {
-  //               state.dataTable[key] = state.dataTable[key].map(itm => {
-  //                 if (itm.data.SERY_CTO === strSeri) {
-  //                   // get BCS, rfcode
-  //                   const strBCS = itm.data.LOAI_BCS as string;
-  //                   const RfcodeNow = itm.data.RF as string;
-  //                   if (dataConverted[strBCS]) {
-  //                     const newCapacity =
-  //                       Number(dataConverted[strBCS].power) -
-  //                       Number(itm.data.CS_CU);
-  //                     listUpdate.push({
-  //                       seri: strSeri,
-  //                       BCSCMIS: strBCS,
-  //                       date: dataConverted[strBCS].datePower ?? iDate,
-  //                       RfCode: RfcodeNow,
-  //                       T0: dataConverted[strBCS].power,
-  //                       newCapacity: newCapacity,
-  //                       oldCapacity: Number(itm.data.SL_CU),
-  //                       Pmax: dataConverted[strBCS].pmax,
-  //                       datePmax: dataConverted[strBCS].datePmax,
-  //                     });
-  //                   }
-  //                 }
-  //                 return itm;
-  //               });
-  //             }
-  //             return state;
-  //           });
-  //           let bcsReadSucced = '';
-  //           let statusWriteFailed = '';
-  //           for (let itemUpdate of listUpdate) {
-  //             bcsReadSucced += ' ' + itemUpdate.BCSCMIS + ',';
-  //             let updateDbSucceess = await updateDataToDB(itemUpdate);
-  //             if (updateDbSucceess) {
-  //               itemUpdate.updateSucced = true;
-  //             } else {
-  //               totalUpdateFailed++;
-  //               itemUpdate.updateSucced = false;
-  //               statusWriteFailed += ' ' + itemUpdate.BCSCMIS + ',';
-  //             }
-  //           }
-  //           let status =
-  //             'Đọc thành công ' +
-  //             listUpdate.length +
-  //             ' chỉ mục: ' +
-  //             bcsReadSucced +
-  //             ' của seri: ' +
-  //             strSeri;
-  //           if (totalUpdateFailed > 0) {
-  //             status +=
-  //               ' Ghi Lỗi ' +
-  //               totalUpdateFailed +
-  //               ':' +
-  //               statusWriteFailed +
-  //               ' của seri: ' +
-  //               strSeri;
-  //           }
-  //           // let node = null;
-  //           hookProps.setState(state => {
-  //             state.status = status;
-  //             for (let key in state.dataTable) {
-  //               for (let itemUpdate of listUpdate) {
-  //                 const indexCurRow = state.dataTable[key].findIndex(
-  //                   itm =>
-  //                     itm.data.SERY_CTO === strSeri &&
-  //                     itm.data.LOAI_BCS === itemUpdate.BCSCMIS &&
-  //                     itm.data.RF === itemUpdate.RfCode,
-  //                 );
-  //                 //console.log('indexrow:', indexCurRow);
-  //                 if (indexCurRow !== -1) {
-  //                   state.dataTable[key][indexCurRow] = {
-  //                     ...state.dataTable[key][indexCurRow],
-  //                   };
-  //                   state.dataTable[key][indexCurRow].data = {
-  //                     ...state.dataTable[key][indexCurRow].data,
-  //                   };
-  //                   state.dataTable[key][indexCurRow].checked = false;
-  //                   if (itemUpdate.isAbnormal !== true) {
-  //                     state.dataTable[key][indexCurRow].data.LoaiDoc =
-  //                       TYPE_READ_RF.READ_SUCCEED;
-  //                   } else {
-  //                     state.dataTable[key][indexCurRow].data.LoaiDoc =
-  //                       TYPE_READ_RF.ABNORMAL_CAPACITY;
-  //                   }
-  //                   if (
-  //                     itemUpdate.isAbnormal !== true ||
-  //                     (itemUpdate.isAbnormal &&
-  //                       itemUpdate.stillSaveWhenAbnormal)
-  //                   ) {
-  //                     state.dataTable[key][indexCurRow].data.CS_MOI = Number(
-  //                       itemUpdate.T0,
-  //                     );
-  //                     state.dataTable[key][indexCurRow].data.NGAY_MOI =
-  //                       formatDateTimeDB(itemUpdate.date);
-  //                     if (itemUpdate.Pmax) {
-  //                       state.dataTable[key][indexCurRow].data.PMAX = Number(
-  //                         itemUpdate.Pmax,
-  //                       );
-  //                     }
-  //                     if (itemUpdate.datePmax) {
-  //                       state.dataTable[key][indexCurRow].data.NGAY_PMAX =
-  //                         itemUpdate.datePmax;
-  //                     }
-  //                     if (itemUpdate.ghiChu) {
-  //                       state.dataTable[key][indexCurRow].data.GhiChu =
-  //                         itemUpdate.ghiChu;
-  //                     }
-  //                   }
-  //                   // node = state.dataTable[key][indexCurRow];
-  //                 }
-  //               }
-  //             }
-  //             let totalSucceed = 0;
-  //             for (let key in state.dataTable) {
-  //               for (let itm of state.dataTable[key]) {
-  //                 if (
-  //                   itm.data.LoaiDoc === TYPE_READ_RF.READ_SUCCEED ||
-  //                   itm.data.LoaiDoc === TYPE_READ_RF.WRITE_BY_HAND ||
-  //                   (itm.data.LoaiDoc === TYPE_READ_RF.ABNORMAL_CAPACITY &&
-  //                     Number(itm.data.CS_MOI) !== 0)
-  //                 ) {
-  //                   totalSucceed++;
-  //                 }
-  //               }
-  //             }
-  //             state.totalSucceed = totalSucceed.toString();
-  //             return {...state};
-  //           });
-  //           // if (node) {
-  //           //   refScroll.current?.scrollResponderScrollTo({
-  //           //     x: 0,
-  //           //     y: findNodeHandle(node),
-  //           //     animated: true,
-  //           //   });
-  //           // }
-  //           //}
-  //           index = -1; // reset index -1 ++ = 0
-  //           break;
-  //         } else {
-  //           if (store.state.hhu.connect !== 'CONNECTED') {
-  //             return;
-  //           }
-  //           hookProps.setState(state => {
-  //             state.status =
-  //               'Đọc thất bại seri ' + strSeri + ': ' + result.strMessage;
-  //             for (let key in state.dataTable) {
-  //               state.dataTable[key] = state.dataTable[key].map(itm => {
-  //                 if (itm.data.SERY_CTO === strSeri) {
-  //                   itm = {...itm};
-  //                   itm.data = {...itm.data};
-  //                   itm.checked = false;
-  //                   itm.data.LoaiDoc =
-  //                     itm.data.LoaiDoc === TYPE_READ_RF.HAVE_NOT_READ
-  //                       ? TYPE_READ_RF.READ_FAILED
-  //                       : itm.data.LoaiDoc;
-  //                 }
-  //                 return itm;
-  //               });
-  //             }
-  //             return {...state};
-  //           });
-  //           let writeFailed = await updateReadFailToDb(strSeri);
-  //           if (writeFailed !== true) {
-  //             console.log('Update Read failed to DB is Failed');
-  //           }
-  //         }
-  //       }
-  //     } catch (err) {
-  //       console.log(TAG, err.message);
-  //       return;
-  //     }
-  //   }
-  // }
+  let numRetries = Number(store.state.appSetting.numRetriesRead);
+  if (numRetries <= 0) {
+    numRetries = 1;
+  }
+  console.log('numRetries:', numRetries);
+  for (
+    let index = 0;
+    index < hookProps.state.dataTable.render.length;
+    index++
+  ) {
+    const item = hookProps.state.dataTable.render[index];
+    if (item.checked === true && item.show === true) {
+      if (hookProps.state.requestStop === true) {
+        break;
+      } else {
+        await sleep(150);
+      }
+      try {
+        for (let j = 0; j < 1; j++) {
+          let strSeri: string = item.data.NO_METER;
+          let iDate: Date = new Date();
+          const typeReadRf: TypeReadRF = selectStationCodeHook.state.typeRead;
+          const is0h = selectStationCodeHook.state.is0h;
+          const dateEnd = selectStationCodeHook.state.dateEnd;
+          const dateStart = new Date();
+          dateStart.setDate(dateEnd.getDate() - 8);
+          console.log('strSeri:', strSeri);
+          setStatus('Đang đọc ' + strSeri + ' ...');
+          let result = await RfFunc_Read({
+            seri: strSeri,
+            typeAffect: 'Đọc 1',
+            typeRead: typeReadRf,
+            is0h: is0h,
+            numNearest: 10,
+            dateStatrt: dateStart,
+            dateEnd: dateEnd,
+          });
+          console.log(TAG, 'result:', JSON.stringify(result));
+
+          if (result.bSucceed === true) {
+            const modelRadio: PropsModelRadio = result.obj;
+
+            // for (let key in modelRadio.info) {
+            //   if (modelRadio.info[key]) {
+            //     row = [];
+            //     row.push(key);
+            //     row.push(modelRadio.info[key] + getUnitByLabel(key as PropsLabel));
+            //     //console.log(row);
+            //     rows.push(row);
+            //   }
+            // }
+
+            //console.log('modelRadio.data:', modelRadio.data);
+
+            if (!modelRadio.data.length) {
+              console.log('len data = 0');
+
+              result.bSucceed = false;
+            }
+            if (result.bSucceed === true) {
+              const data: PropsDataModel = [];
+              for (let dat of modelRadio.data) {
+                data.push({
+                  time: dat['Thời điểm chốt'] as unknown as string,
+                  cwRegister: Number(dat.Xuôi),
+                  uCwRegister: Number(dat.Ngược),
+                });
+              }
+              const listUpdate: PropsUpdateData2DB[] = [];
+
+              // only get curent dât, no need updae hook
+              hookProps.setState(state => {
+                for (let key in state.dataTable) {
+                  state.dataTable[key] = state.dataTable.render.map(itm => {
+                    if (itm.data.NO_MODULE === strSeri) {
+                      const newCapacity =
+                        Number(dataConverted[strBCS].power) -
+                        Number(itm.data.CS_CU);
+                      listUpdate.push({
+                        seri: strSeri,
+                        BCSCMIS: strBCS,
+                        date: dataConverted[strBCS].datePower ?? iDate,
+                        RfCode: RfcodeNow,
+                        T0: dataConverted[strBCS].power,
+                        newCapacity: newCapacity,
+                        oldCapacity: Number(itm.data.SL_CU),
+                        Pmax: dataConverted[strBCS].pmax,
+                        datePmax: dataConverted[strBCS].datePmax,
+                      });
+                    }
+                    return itm;
+                  });
+                }
+                return state;
+              });
+              let bcsReadSucced = '';
+              let statusWriteFailed = '';
+              for (let itemUpdate of listUpdate) {
+                bcsReadSucced += ' ' + itemUpdate.BCSCMIS + ',';
+                let updateDbSucceess = await updateDataToDB(itemUpdate);
+                if (updateDbSucceess) {
+                  itemUpdate.updateSucced = true;
+                } else {
+                  totalUpdateFailed++;
+                  itemUpdate.updateSucced = false;
+                  statusWriteFailed += ' ' + itemUpdate.BCSCMIS + ',';
+                }
+              }
+              let status =
+                'Đọc thành công ' +
+                listUpdate.length +
+                ' chỉ mục: ' +
+                bcsReadSucced +
+                ' của seri: ' +
+                strSeri;
+              if (totalUpdateFailed > 0) {
+                status +=
+                  ' Ghi Lỗi ' +
+                  totalUpdateFailed +
+                  ':' +
+                  statusWriteFailed +
+                  ' của seri: ' +
+                  strSeri;
+              }
+              // let node = null;
+              hookProps.setState(state => {
+                state.status = status;
+                for (let key in state.dataTable) {
+                  for (let itemUpdate of listUpdate) {
+                    const indexCurRow = state.dataTable[key].findIndex(
+                      itm =>
+                        itm.data.SERY_CTO === strSeri &&
+                        itm.data.LOAI_BCS === itemUpdate.BCSCMIS &&
+                        itm.data.RF === itemUpdate.RfCode,
+                    );
+                    //console.log('indexrow:', indexCurRow);
+                    if (indexCurRow !== -1) {
+                      state.dataTable[key][indexCurRow] = {
+                        ...state.dataTable[key][indexCurRow],
+                      };
+                      state.dataTable[key][indexCurRow].data = {
+                        ...state.dataTable[key][indexCurRow].data,
+                      };
+                      state.dataTable[key][indexCurRow].checked = false;
+                      if (itemUpdate.isAbnormal !== true) {
+                        state.dataTable[key][indexCurRow].data.TYPE_READ =
+                          TYPE_READ_RF.READ_SUCCEED;
+                      } else {
+                        state.dataTable[key][indexCurRow].data.TYPE_READ =
+                          TYPE_READ_RF.ABNORMAL_CAPACITY;
+                      }
+                      if (
+                        itemUpdate.isAbnormal !== true ||
+                        (itemUpdate.isAbnormal &&
+                          itemUpdate.stillSaveWhenAbnormal)
+                      ) {
+                        state.dataTable[key][indexCurRow].data.CS_MOI = Number(
+                          itemUpdate.T0,
+                        );
+                        state.dataTable[key][indexCurRow].data.NGAY_MOI =
+                          formatDateTimeDB(itemUpdate.date);
+                        if (itemUpdate.Pmax) {
+                          state.dataTable[key][indexCurRow].data.PMAX = Number(
+                            itemUpdate.Pmax,
+                          );
+                        }
+                        if (itemUpdate.datePmax) {
+                          state.dataTable[key][indexCurRow].data.NGAY_PMAX =
+                            itemUpdate.datePmax;
+                        }
+                        if (itemUpdate.ghiChu) {
+                          state.dataTable[key][indexCurRow].data.GhiChu =
+                            itemUpdate.ghiChu;
+                        }
+                      }
+                      // node = state.dataTable[key][indexCurRow];
+                    }
+                  }
+                }
+                let totalSucceed = 0;
+                for (let key in state.dataTable) {
+                  for (let itm of state.dataTable[key]) {
+                    if (
+                      itm.data.TYPE_READ === TYPE_READ_RF.READ_SUCCEED ||
+                      itm.data.TYPE_READ === TYPE_READ_RF.WRITE_BY_HAND ||
+                      (itm.data.TYPE_READ === TYPE_READ_RF.ABNORMAL_CAPACITY &&
+                        Number(itm.data.CS_MOI) !== 0)
+                    ) {
+                      totalSucceed++;
+                    }
+                  }
+                }
+                state.totalSucceed = totalSucceed.toString();
+                return {...state};
+              });
+              // if (node) {
+              //   refScroll.current?.scrollResponderScrollTo({
+              //     x: 0,
+              //     y: findNodeHandle(node),
+              //     animated: true,
+              //   });
+              // }
+              //}
+              index = -1; // reset index -1 ++ = 0
+              break;
+            } else {
+              if (store.state.hhu.connect !== 'CONNECTED') {
+                return;
+              }
+              hookProps.setState(state => {
+                state.status =
+                  'Đọc thất bại seri ' + strSeri + ': ' + result.strMessage;
+                for (let key in state.dataTable) {
+                  state.dataTable[key] = state.dataTable[key].map(itm => {
+                    if (itm.data.SERY_CTO === strSeri) {
+                      itm = {...itm};
+                      itm.data = {...itm.data};
+                      itm.checked = false;
+                      itm.data.TYPE_READ =
+                        itm.data.TYPE_READ === TYPE_READ_RF.HAVE_NOT_READ
+                          ? TYPE_READ_RF.READ_FAILED
+                          : itm.data.TYPE_READ;
+                    }
+                    return itm;
+                  });
+                }
+                return {...state};
+              });
+              let writeFailed = await updateReadFailToDb(strSeri);
+              if (writeFailed !== true) {
+                console.log('Update Read failed to DB is Failed');
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.log(TAG, err.message);
+        return;
+      }
+    }
+  }
 };
 
 const checkCondition = (): boolean => {

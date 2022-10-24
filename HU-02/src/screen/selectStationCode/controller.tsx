@@ -97,8 +97,8 @@ const getDataDb = async () => {
     items = await CMISKHServices.findAll();
     dataDB = items;
     for (let item of dataDB) {
-      stationCodeSet.add(item.lineId);
-      totalMeterDBSet.add(item.seriModule);
+      stationCodeSet.add(item.LINE_ID);
+      totalMeterDBSet.add(item.NO_MODULE);
     }
     //console.log('set:', stationCodeSet);
 
@@ -120,20 +120,20 @@ const getDataDb = async () => {
       };
       item.meterLine.listMeter = [];
       for (let row of hookProps.state.dataDB) {
-        if (row.lineId === lineId && row.isSent !== false) {
-          item.meterLine.line.LINE_NAME = row.lineName;
+        if (row.LINE_ID === lineId && row.IS_SENT !== false) {
+          item.meterLine.line.LINE_NAME = row.LINE_NAME;
           item.meterLine.listMeter.push({
-            ADDRESS: row.address,
+            ADDRESS: row.ADDRESS,
             CREATED: '',
-            CUSTOMER_CODE: row.customerCode,
-            CUSTOMER_NAME: row.customerName,
-            EMAIL: row.email,
-            LINE_NAME: row.lineName,
+            CUSTOMER_CODE: row.CUSTOMER_CODE,
+            CUSTOMER_NAME: row.CUSTOMER_NAME,
+            EMAIL: row.EMAIL,
+            LINE_NAME: row.LINE_NAME,
             METER_MODEL_DESC: '',
-            METER_NAME: row.meterName,
-            METER_NO: row.seriMeter,
-            MODULE_NO: row.seriModule,
-            PHONE: row.phone,
+            METER_NAME: row.METER_NAME,
+            METER_NO: row.NO_METER,
+            MODULE_NO: row.NO_MODULE,
+            PHONE: row.PHONE,
           });
         }
       }

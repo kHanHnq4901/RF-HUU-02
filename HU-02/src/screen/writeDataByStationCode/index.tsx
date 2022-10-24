@@ -44,28 +44,31 @@ import _ from 'lodash';
 import {hookProps as selectStationCodeHook} from '../selectStationCode/controller';
 export const SubRow1Memo = React.memo(
   (props: {
-    MA_QUYEN: string;
-    MA_COT: string;
-    TEN_KHANG: string;
-    MA_KHANG: string;
-    DIA_CHI: string;
+    STATION_CODE: string;
+    STATION_NAME: string;
+    CUSTOMER_NAME: string;
+    CUSTOMER_CODE: string;
+    ADDRESS: string;
   }) => {
     //console.log('ren SubRow1Memo');
     return (
       <>
         <Text style={styleItemRow.textNormal}>
-          Mã quyển:{' '}
-          <Text style={styleItemRow.textImpress}>{props.MA_QUYEN}</Text>
+          Trạm:{' '}
+          <Text style={styleItemRow.textImpress}>{props.STATION_NAME}</Text>
           {' - '}
-          Mã cột: <Text style={styleItemRow.textImpress}>{props.MA_COT}</Text>
+          Mã trạm:{' '}
+          <Text style={styleItemRow.textImpress}>{props.STATION_CODE}</Text>
         </Text>
         <Text style={styleItemRow.textNormal}>
-          KH: <Text style={styleItemRow.textImpress}>{props.TEN_KHANG}</Text>
+          KH:{' '}
+          <Text style={styleItemRow.textImpress}>{props.CUSTOMER_NAME}</Text>
           {' - '}
-          Mã KH: <Text style={styleItemRow.textImpress}>{props.MA_KHANG}</Text>
+          Mã KH:{' '}
+          <Text style={styleItemRow.textImpress}>{props.CUSTOMER_CODE}</Text>
         </Text>
         <Text style={styleItemRow.textNormal}>
-          ĐC: <Text style={styleItemRow.textNormal}>{props.DIA_CHI}</Text>
+          ĐC: <Text style={styleItemRow.textNormal}>{props.ADDRESS}</Text>
         </Text>
       </>
     );
@@ -76,18 +79,19 @@ export const SubRow1Memo = React.memo(
 export const SubRow2Memo = React.memo(
   (props: {
     TT: string;
-    SERY_CTO: string;
-    LOAI_BCS: string;
+    NO_METER: string;
     labelMeter: string;
+    NO_MODULE: string;
   }) => {
     //console.log('ren SubRow2Memo');
     return (
       <>
         <Text style={styleItemRow.textNormal}>
-          <Text style={styleItemRow.textImpress}>
-            {props.TT}. {props.SERY_CTO} - {props.LOAI_BCS}
-          </Text>
+          <Text style={styleItemRow.textImpress}>{props.TT}</Text>
+          <Text style={styleItemRow.textNormal}>. CK: </Text>
+          <Text style={styleItemRow.textImpress}>{props.NO_METER}</Text>
           <Text style={styleItemRow.textNormal}> - {props.labelMeter}</Text>
+          <Text style={styleItemRow.textImpress}>{props.NO_MODULE}</Text>
         </Text>
       </>
     );
@@ -100,9 +104,7 @@ export const SubRow3Memo = React.memo(
     CS_MOI: number;
     CS_CU: number;
     SL_CU: number;
-    isManyPrice: boolean;
-    PMAX: number;
-    NGAY_PMAX: string;
+    DateLatch: string;
   }) => {
     //console.log('ren SubRow3Memo');
     const SL_Moi =
@@ -120,14 +122,10 @@ export const SubRow3Memo = React.memo(
           {' - '}
           cũ: <Text style={styleItemRow.textImpress}>{props.SL_CU}</Text>
         </Text>
-        {props.isManyPrice && (
-          <Text style={styleItemRow.textNormal}>
-            Pmax: <Text style={styleItemRow.textImpress}>{props.PMAX}</Text>
-            {'   -   '}
-            Ngày :{' '}
-            <Text style={styleItemRow.textImpress}>{props.NGAY_PMAX}</Text>
-          </Text>
-        )}
+        <Text style={styleItemRow.textNormal}>
+          Ngày chốt:{' '}
+          <Text style={styleItemRow.textImpress}>{props.DateLatch}</Text>
+        </Text>
       </>
     );
   },
@@ -160,15 +158,15 @@ function ItemStock(item: PropsDataTable) {
     backgroundColor = '#e3e6e8';
     //backgroundColor = 'pink';
   } else {
-    if (item.data.LoaiDoc === TYPE_READ_RF.HAVE_NOT_READ) {
+    if (item.data.TYPE_READ === TYPE_READ_RF.HAVE_NOT_READ) {
       backgroundColor = 'white'; //'transparent';
-    } else if (item.data.LoaiDoc === TYPE_READ_RF.READ_FAILED) {
+    } else if (item.data.TYPE_READ === TYPE_READ_RF.READ_FAILED) {
       backgroundColor = '#f6a8bf';
-    } else if (item.data.LoaiDoc === TYPE_READ_RF.WRITE_BY_HAND) {
+    } else if (item.data.TYPE_READ === TYPE_READ_RF.WRITE_BY_HAND) {
       backgroundColor = '#a9f6a8';
-    } else if (item.data.LoaiDoc === TYPE_READ_RF.ABNORMAL_CAPACITY) {
+    } else if (item.data.TYPE_READ === TYPE_READ_RF.ABNORMAL_CAPACITY) {
       backgroundColor = '#f6f5a9';
-    } else if (item.data.LoaiDoc === TYPE_READ_RF.READ_SUCCEED) {
+    } else if (item.data.TYPE_READ === TYPE_READ_RF.READ_SUCCEED) {
       backgroundColor = '#67f3bb';
     }
   }
@@ -189,25 +187,27 @@ function ItemStock(item: PropsDataTable) {
         <IconPencilMemo item={item} />
         <SubRow2Memo
           TT={item.stt}
-          SERY_CTO={item.data.SERY_CTO}
-          LOAI_BCS={item.data.LOAI_BCS}
+          NO_METER={item.data.NO_METER}
+          NO_MODULE={item.data.NO_MODULE}
           labelMeter={item.labelMeter}
         />
       </View>
       <SubRow1Memo
-        MA_QUYEN={item.data.MA_QUYEN}
-        MA_COT={item.data.MA_COT}
-        TEN_KHANG={item.data.TEN_KHANG}
-        MA_KHANG={item.data.MA_KHANG}
-        DIA_CHI={item.data.DIA_CHI}
+        STATION_CODE={item.data.LINE_ID}
+        STATION_NAME={item.data.LINE_NAME}
+        CUSTOMER_NAME={item.data.CUSTOMER_NAME}
+        CUSTOMER_CODE={item.data.CUSTOMER_CODE}
+        ADDRESS={item.data.ADDRESS}
       />
       <SubRow3Memo
-        CS_MOI={item.data.CS_MOI}
-        CS_CU={item.data.CS_CU}
-        SL_CU={item.data.SL_CU}
-        isManyPrice={item.isManyPrice}
-        PMAX={item.data.PMAX}
-        NGAY_PMAX={item.data.NGAY_PMAX}
+        CS_MOI={
+          item.data.DATA.length
+            ? item.data.DATA[0].cwRegister - item.data.DATA[0].uCwRegister
+            : 0
+        }
+        CS_CU={0}
+        SL_CU={0}
+        DateLatch={item.data.DATA.length ? item.data.DATA[0].time : ' '}
       />
     </TouchableOpacity>
   );
@@ -216,8 +216,8 @@ function ItemStock(item: PropsDataTable) {
 function areEqual(prev: PropsDataTable, next: PropsDataTable) {
   if (
     prev.checked !== next.checked ||
-    prev.data.CS_MOI !== next.data.CS_MOI ||
-    prev.data.LoaiDoc !== next.data.LoaiDoc
+    prev.data.DATA !== next.data.DATA ||
+    prev.data.TYPE_READ !== next.data.TYPE_READ
   ) {
     return false;
   }
@@ -259,8 +259,8 @@ export const WriteStationCodeScreen = () => {
         onOKPress={variable.modalAlert.onOKPress}
       />
       <View style={{backgroundColor: 'white'}}>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-          <Text style={styles.label}>Chọn mã cột</Text>
+        <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
+          {/* <Text style={styles.label}>Chọn mã cột</Text> */}
           <Text style={styles.percentSucceed}>
             Thành công: {hookProps.state.totalSucceed}/{' '}
             {hookProps.state.totalBCS}
@@ -282,7 +282,7 @@ export const WriteStationCodeScreen = () => {
             ))}
           </ScrollView> */}
           <View style={styles.containerSearch}>
-            <View style={styles.dropdown}>
+            {/* <View style={styles.dropdown}>
               <SelectDropdown
                 ref={ref}
                 buttonStyle={styles.dropdown}
@@ -307,7 +307,7 @@ export const WriteStationCodeScreen = () => {
                   return item;
                 }}
               />
-            </View>
+            </View> */}
             <TextInput
               style={styles.searchText}
               placeholder="Tìm kiếm"

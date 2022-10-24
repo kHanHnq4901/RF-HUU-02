@@ -9,8 +9,8 @@ export const PATH_EXECUTE_CSDL = RNFS.DocumentDirectoryPath.replace(
   'databases',
 );
 export const PATH_EXPORT_CSDL =
-  RNFS.ExternalStorageDirectoryPath + '/GLX_HHU_EM/csdl';
+  RNFS.ExternalStorageDirectoryPath + '/GLX_HHU_WM/csdl';
 export const PATH_EXPORT_XML_EXTERNAL =
-  RNFS.ExternalStorageDirectoryPath + '/GLX_HHU_EM/xml';
+  RNFS.ExternalStorageDirectoryPath + '/GLX_HHU_WM/xml';
 
 export const NAME_CSDL = 'local_csdl.db';

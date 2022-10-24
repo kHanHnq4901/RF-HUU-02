@@ -5,135 +5,135 @@ type PropsCell = {
 };
 
 type PropsTable = {
-  seriModule: PropsCell;
-  seriMeter: PropsCell;
-  lineId: PropsCell;
-  lineName: PropsCell;
-  customerName: PropsCell;
-  customerCode: PropsCell;
-  phone: PropsCell;
-  email: PropsCell;
-  meterName: PropsCell;
-  pointCodeMeasurement: PropsCell;
-  address: PropsCell;
-  dateCreated: PropsCell;
-  dateQuery: PropsCell;
-  data: PropsCell;
-  stt: PropsCell;
-  id: PropsCell;
-  typeRead: PropsCell;
-  isSent: PropsCell;
-  note: PropsCell;
+  NO_MODULE: PropsCell;
+  NO_METER: PropsCell;
+  LINE_ID: PropsCell;
+  LINE_NAME: PropsCell;
+  CUSTOMER_NAME: PropsCell;
+  CUSTOMER_CODE: PropsCell;
+  PHONE: PropsCell;
+  EMAIL: PropsCell;
+  METER_NAME: PropsCell;
+  POINT_CODE_MEASUREMENT: PropsCell;
+  ADDRESS: PropsCell;
+  DATE_CREATED: PropsCell;
+  DATE_QUERY: PropsCell;
+  DATA: PropsCell;
+  STT: PropsCell;
+  ID: PropsCell;
+  TYPE_READ: PropsCell;
+  IS_SENT: PropsCell;
+  NOTE: PropsCell;
 };
 
 export const dataDBTable: PropsTable = {
-  seriModule: {
-    id: 'seriModule',
+  NO_MODULE: {
+    id: 'NO_MODULE',
   },
-  seriMeter: {
-    id: 'seriMeter',
+  NO_METER: {
+    id: 'NO_METER',
   },
-  lineId: {
-    id: 'lineId',
+  LINE_ID: {
+    id: 'LINE_ID',
   },
-  lineName: {
-    id: 'lineName',
+  LINE_NAME: {
+    id: 'LINE_NAME',
   },
-  customerName: {
-    id: 'customerName',
+  CUSTOMER_NAME: {
+    id: 'CUSTOMER_NAME',
   },
-  customerCode: {
-    id: 'customerCode',
+  CUSTOMER_CODE: {
+    id: 'CUSTOMER_CODE',
   },
-  phone: {
-    id: 'phone',
+  PHONE: {
+    id: 'PHONE',
   },
-  email: {
-    id: 'email',
+  EMAIL: {
+    id: 'EMAIL',
   },
-  meterName: {
-    id: 'meterName',
+  METER_NAME: {
+    id: 'METER_NAME',
   },
-  pointCodeMeasurement: {
-    id: 'pointCodeMeasurement',
+  POINT_CODE_MEASUREMENT: {
+    id: 'POINT_CODE_MEASUREMENT',
   },
-  address: {
-    id: 'address',
+  ADDRESS: {
+    id: 'ADDRESS',
   },
-  dateCreated: {
-    id: 'dateCreated',
+  DATE_CREATED: {
+    id: 'DATE_CREATED',
   },
-  dateQuery: {
-    id: 'dateQuery',
+  DATE_QUERY: {
+    id: 'DATE_QUERY',
   },
-  data: {
-    id: 'data',
+  DATA: {
+    id: 'DATA',
   },
-  stt: {
-    id: 'stt',
+  STT: {
+    id: 'STT',
   },
-  id: {
-    id: 'id',
+  ID: {
+    id: 'ID',
   },
-  typeRead: {
-    id: 'typeRead',
+  TYPE_READ: {
+    id: 'TYPE_READ',
   },
-  isSent: {
-    id: 'isSent',
+  IS_SENT: {
+    id: 'IS_SENT',
   },
-  note: {
-    id: 'note',
+  NOTE: {
+    id: 'NOTE',
   },
 };
 
 export type PropsDataModel = {
-  cwRegister: string;
-  uCwRegister: string;
+  cwRegister: number;
+  uCwRegister: number;
   time: string;
 }[];
 
 export type PropsKHCMISModel = {
-  seriModule: string;
-  seriMeter: string;
-  lineId: string;
-  lineName: string;
-  customerName: string;
-  customerCode: string;
-  phone: string;
-  email: string;
-  meterName: string;
-  pointCodeMeasurement: string;
-  address: string;
-  dateCreated: string;
-  dateQuery: string;
-  data: PropsDataModel;
-  stt: number;
-  id: string;
-  typeRead: string;
-  isSent: boolean | null;
-  note: string;
+  NO_MODULE: string;
+  NO_METER: string;
+  LINE_ID: string;
+  LINE_NAME: string;
+  CUSTOMER_NAME: string;
+  CUSTOMER_CODE: string;
+  PHONE: string;
+  EMAIL: string;
+  METER_NAME: string;
+  POINT_CODE_MEASUREMENT: string;
+  ADDRESS: string;
+  DATE_CREATED: string;
+  DATE_QUERY: string;
+  DATA: PropsDataModel;
+  STT: number;
+  ID: string;
+  TYPE_READ: string;
+  IS_SENT: boolean | null;
+  NOTE: string;
 };
 
 const dumy: PropsKHCMISModel = {
-  seriModule: '',
-  seriMeter: '',
-  lineId: '',
-  lineName: '',
-  customerName: '',
-  customerCode: '',
-  phone: '',
-  email: '',
-  meterName: '',
-  pointCodeMeasurement: '',
-  address: '',
-  dateCreated: '',
-  dateQuery: '',
-  data: [],
-  stt: 0,
-  id: '',
-  typeRead: '',
-  isSent: false,
-  note: '',
+  NO_MODULE: '',
+  NO_METER: '',
+  LINE_ID: '',
+  LINE_NAME: '',
+  CUSTOMER_NAME: '',
+  CUSTOMER_CODE: '',
+  PHONE: '',
+  EMAIL: '',
+  METER_NAME: '',
+  POINT_CODE_MEASUREMENT: '',
+  ADDRESS: '',
+  DATE_CREATED: '',
+  DATE_QUERY: '',
+  DATA: [],
+  STT: 0,
+  ID: '',
+  TYPE_READ: '',
+  IS_SENT: false,
+  NOTE: '',
 };
 
 export type PropsTypeOf =

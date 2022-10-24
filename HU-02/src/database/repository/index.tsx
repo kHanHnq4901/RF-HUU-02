@@ -12,6 +12,16 @@ SQLite.enablePromise(true);
 
 let db: SQLite.SQLiteDatabase | null = null;
 
+export async function deleteDB() {
+  if (db) {
+    await db.close();
+  }
+  await SQLite.deleteDatabase({
+    location: 'default',
+    name: NAME_CSDL,
+  });
+}
+
 export const checkTabelDBIfExist = async (): Promise<boolean> => {
   try {
     if ((await getDBConnection()) === false) {
@@ -32,8 +42,10 @@ export const checkTabelDBIfExist = async (): Promise<boolean> => {
     }
     query += ')';
     //const results =
-    await db?.executeSql(query);
-    console.log('create table if exist');
+    console.log('qury:', query);
+
+    const res = await db?.executeSql(query);
+    console.log('create table if exist:', JSON.stringify(res));
   } catch (e) {
     console.log(TAG, 'err tabel exist: ', e.message);
   }
@@ -47,8 +59,8 @@ export const deleteDataDB = async (): Promise<boolean> => {
     }
     //const query = `SELECT name FROM sqlite_master WHERE type='table' AND name=${TABLE_NAME}`;
     let query = `DELETE FROM ${TABLE_NAME};`;
-    await db?.executeSql(query);
-    console.log('deletedb ');
+    const res = await db?.executeSql(query);
+    console.log('deletedb :', JSON.stringify(res));
     return true;
   } catch (e) {
     console.log(TAG, 'err tabel exist: ', e.message);
@@ -196,9 +208,13 @@ KHCMISRepository.findAll = async (
       query += conditionQuery;
     }
     query += ';';
-    //console.log('query:', query);
+
+    // const query1 = `PRAGMA table_info('${TABLE_NAME}')`;
+    // const test = await db?.executeSql(query1);
+    // console.log('test:', test[0].rows.raw());
+    // console.log('query:', query);
     const results = await db?.executeSql(query);
-    console.log(results);
+    //console.log('ret:', JSON.stringify(results));
     results?.forEach(result => {
       for (let index = 0; index < result.rows.length; index++) {
         // if (index === 0) {
@@ -481,10 +497,14 @@ KHCMISRepository.save = async (item: PropsKHCMISEntity): Promise<boolean> => {
       } else {
         query += ',';
       }
-
-      query += `"${item[i]}"`;
+      if (item[i] !== null || item[i] !== undefined) {
+        query += `"${item[i]}"`;
+      } else {
+      }
     }
     query += ');';
+    //console.log('query:', query);
+
     await db?.executeSql(query);
     return true;
   } catch (error) {
