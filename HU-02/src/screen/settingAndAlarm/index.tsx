@@ -93,7 +93,7 @@ export const SettingAndAlarmScreen = () => {
         </View> */}
         <View style={styles.containerIPPort}>
           <View style={styles.containerItemIPPort}>
-            <Text style={styles.title}>IP:</Text>
+            <Text style={styles.title}>IP dữ liệu:</Text>
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
               {/* <Text style={styles.textThreshold}>Nhỏ hơn:</Text> */}
               <TextInputInteractive
@@ -114,7 +114,7 @@ export const SettingAndAlarmScreen = () => {
             </View>
           </View>
           <View style={styles.containerItemIPPort}>
-            <Text style={styles.title}>Port:</Text>
+            <Text style={styles.title}>Port dữ liệu:</Text>
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
               {/* <Text style={styles.textThreshold}>Nhỏ hơn:</Text> */}
               <TextInputInteractive
@@ -125,6 +125,50 @@ export const SettingAndAlarmScreen = () => {
                 onChangeText={text => {
                   store.setState(state => {
                     store.state.appSetting.server.port = text;
+                    return {...state};
+                  });
+                }}
+                // onSubmitEditing={e => {
+                //   onNumRetriesReadSubmit(e.nativeEvent.text);
+                // }}
+              />
+            </View>
+          </View>
+        </View>
+        <View style={styles.containerIPPort}>
+          <View style={styles.containerItemIPPort}>
+            <Text style={styles.title}>IP HHU:</Text>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              {/* <Text style={styles.textThreshold}>Nhỏ hơn:</Text> */}
+              <TextInputInteractive
+                placeholder=""
+                keyboardType="numeric"
+                value={store.state.appSetting.hhu.host}
+                textInputStyle={styles.textIP}
+                onChangeText={text => {
+                  store.setState(state => {
+                    store.state.appSetting.hhu.host = text;
+                    return {...state};
+                  });
+                }}
+                // onSubmitEditing={e => {
+                //   onNumRetriesReadSubmit(e.nativeEvent.text);
+                // }}
+              />
+            </View>
+          </View>
+          <View style={styles.containerItemIPPort}>
+            <Text style={styles.title}>Port HHU:</Text>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              {/* <Text style={styles.textThreshold}>Nhỏ hơn:</Text> */}
+              <TextInputInteractive
+                placeholder=""
+                keyboardType="numeric"
+                value={store.state.appSetting.hhu.port}
+                textInputStyle={styles.valueTextInput}
+                onChangeText={text => {
+                  store.setState(state => {
+                    store.state.appSetting.hhu.port = text;
                     return {...state};
                   });
                 }}
@@ -184,7 +228,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: normalize(18),
     marginLeft: 5,
-    color: Colors.text,
+    color: Colors.caption,
     marginVertical: 10,
     marginTop: 20,
   },
@@ -226,6 +270,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     flexWrap: 'wrap',
+    paddingLeft: 15,
   },
   textIP: {
     width: 200 * scale,

@@ -24,6 +24,10 @@ export type PropsAppSetting = {
     host: string;
     port: string;
   };
+  hhu: {
+    host: string;
+    port: string;
+  };
 };
 
 export const getDefaultStorageValue = (): PropsAppSetting => {
@@ -39,6 +43,11 @@ export const getDefaultStorageValue = (): PropsAppSetting => {
     '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918';
   storageVariable.passwordAdmin =
     'fa656a64a169bd0f37f44fc4c42e62f8b533827eff4af4f2050b238da70b0bf3';
+
+  storageVariable.hhu = {
+    host: '222.252.14.147',
+    port: '5050',
+  };
   // storageVariable.showResultOKInWriteData = false;
   // storageVariable.setting = {
   //   typeAlarm: 'Percent',
@@ -66,6 +75,10 @@ export const updateValueAppSettingFromNvm =
         storageVariable.server = {
           host: storageVar.server.host,
           port: storageVar.server.port,
+        };
+        storageVariable.hhu = {
+          host: storageVar.hhu.host,
+          port: storageVar.hhu.port,
         };
 
         //console.log('storageVariable:', storageVar);

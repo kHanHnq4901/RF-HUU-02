@@ -42,10 +42,10 @@ export const checkTabelDBIfExist = async (): Promise<boolean> => {
     }
     query += ')';
     //const results =
-    console.log('qury:', query);
+    //console.log('qury:', query);
 
     const res = await db?.executeSql(query);
-    console.log('create table if exist:', JSON.stringify(res));
+    console.log('create table if exist');
   } catch (e) {
     console.log(TAG, 'err tabel exist: ', e.message);
   }
@@ -95,7 +95,7 @@ export const getDBConnection = async (): Promise<boolean> => {
   } else {
     succeed = true;
   }
-  console.log('succeed:', succeed);
+  //console.log('succeed:', succeed);
   return succeed;
 };
 

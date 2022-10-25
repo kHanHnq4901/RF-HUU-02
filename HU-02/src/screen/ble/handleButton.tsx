@@ -4,7 +4,7 @@ import {hookProps, requestGps, setStatus, store} from './controller';
 import * as Ble from '../../util/ble';
 import {BleFunc_SaveStorage} from '../../service/hhu/Ble/bleHhuFunc';
 import {ObjSend, readVersion, ShakeHand} from '../../service/hhu/Ble/hhuFunc';
-import { checkUpdateHHU } from '../../service/api';
+import {checkUpdateHHU} from '../../service/api';
 
 const TAG = 'handleBtn Ble:';
 
@@ -49,7 +49,7 @@ export const connectHandle = async (id: string) => {
           const version = await readVersion();
           if (version) {
             let arr = version.split('.');
-            arr.pop();
+            arr.length = 2;
             const shortVersion = arr
               .join('.')
               .toLocaleLowerCase()

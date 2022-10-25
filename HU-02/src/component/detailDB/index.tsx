@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
-import { Colors, normalize } from '../../theme';
+import {View, StyleSheet, Text} from 'react-native';
+import {Colors, normalize} from '../../theme';
 
-export type PropsDetail = { data: PropsItemStation[] };
+export type PropsDetail = {data: PropsItemStation[]};
 
 export type PropsItemStation = {
   stationName: string;
@@ -22,7 +22,7 @@ const OneStation = (props: PropsItemStation) => {
           BCS: {props.totalSucceed}/ {props.totalBCS}
         </Text>
       </View>
-      <View style={{ ...styles.containerMainColumn, flex: 2 }}>
+      <View style={{...styles.containerMainColumn, flex: 2}}>
         {props.listBook.map(item => (
           <OneBook key={item.bookName} {...item} />
         ))}

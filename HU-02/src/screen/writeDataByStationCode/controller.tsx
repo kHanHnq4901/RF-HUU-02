@@ -1,7 +1,8 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useState} from 'react';
 import {NativeScrollEvent} from 'react-native';
-import {PropsKHCMISModel} from '../../database/model';
+import {dataDBTable, PropsKHCMISModel} from '../../database/model';
+import {PropsCondition, PropsConditions} from '../../database/repository';
 import {CMISKHServices} from '../../database/service';
 import {
   PropsRouteParamsWriteStation,
@@ -14,6 +15,7 @@ import {
 import {PropsInfoWM} from '../../service/user';
 import {PropsStore, storeContext} from '../../store';
 import {sizeScreen} from '../../theme';
+import {hookProps as selectStationCodeHook} from '../selectStationCode/controller';
 
 type PropsCheckBox = {
   checked: boolean;
@@ -188,9 +190,22 @@ const getDataDb = async (ref, routeParams: PropsRouteParamsWriteStation) => {
   });
 
   //console.log(TAG, 'routeParams', routeParams);
+
+  const dateQuery =
+    selectStationCodeHook.state.dateEnd.toLocaleDateString('vi');
+
+  const conditions: PropsConditions = [];
+  let condition = {
+    data: {},
+  } as PropsCondition;
+  condition.data[dataDBTable.DATE_QUERY.id] = dateQuery;
+  condition.logic = '=';
+  condition.behindOperator = 'AND';
+
+  conditions.push(condition);
   try {
     //if (store.state.appSetting.showResultOKInWriteData === true) {
-    items = await CMISKHServices.findAll();
+    items = await CMISKHServices.findAll(undefined, conditions);
     dataDB = items;
     //console.log('index0:', dataDB[0]);
 

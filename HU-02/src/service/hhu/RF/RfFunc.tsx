@@ -169,6 +169,8 @@ export async function AnalysisRF(payload: Buffer): Promise<PropsResponse> {
         dateTime.setMonth(timeFistData.u8Month - 1);
         dateTime.setDate(timeFistData.u8Date);
         dateTime.setHours(timeFistData.u8Hour);
+        dateTime.setMinutes(0);
+        dateTime.setSeconds(0);
 
         index += sizeof(RP_TimeFirstDataType);
 
@@ -532,10 +534,27 @@ export async function RfFunc_Read(props: PropsRead): Promise<PropsResponse> {
                   '/' +
                   item.time.u8Date.toString().padStart(2, '0');
 
+                const date = new Date();
+                date.setFullYear(item.time.u8Year + 2000);
+                if (item.time.u8Month < 1) {
+                  response.message = 'item.time.u8Month < 1';
+                  response.bSucceed = false;
+                  return response;
+                }
+                date.setMonth(item.time.u8Month - 1);
+                date.setDate(item.time.u8Date);
+                date.setHours(item.time.u8Hour);
+                date.setMinutes(0);
+                date.setSeconds(0);
+
                 modelRadio.data.push({
                   'Thời điểm chốt': timeString,
                   Xuôi: item.data.Data.au8CwData.readUintLE(0, 4).toString(),
                   Ngược: item.data.Data.au8UcwData.readUintLE(0, 4).toString(),
+                  'Thời điểm chốt (full time)': date
+                    .toISOString()
+                    .split('.')[0]
+                    .replace('T', ' '),
                 });
               });
 

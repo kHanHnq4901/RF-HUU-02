@@ -8,6 +8,7 @@ import {
   PropsLineServer,
 } from '../../service/user';
 import {PropsStore, storeContext} from '../../store';
+import {upDateMissData} from './handleButton';
 
 // type PropsDataDB = {
 //   item: PropsKHCMISModel;
@@ -160,31 +161,36 @@ const getDataDb = async () => {
 };
 
 export const onInit = async (navigation, ref) => {
-  navigation.addListener('focus', async () => {
-    if ((await checkNetworkStatus()) === true) {
-      //getDataDb(ref);
-      const dataTable: PropsTabel[] = [];
-      for (let line of store.state.meter.listLine) {
-        const item = {
-          meterLine: {},
-        } as PropsTabel;
-        item.checked = false;
-        item.id = line.LINE_ID;
-        item.show = true;
-        item.meterLine.line = line;
-        item.meterLine.listMeter = [];
+  //navigation.addListener('focus', async () => {
+  if ((await checkNetworkStatus()) === true) {
+    //getDataDb(ref);
+    const dataTable: PropsTabel[] = [];
+    for (let line of store.state.meter.listLine) {
+      const item = {
+        meterLine: {},
+      } as PropsTabel;
+      item.checked = false;
+      item.id = line.LINE_ID;
+      item.show = true;
+      item.meterLine.line = line;
+      item.meterLine.listMeter = [];
 
-        dataTable.push(item);
-      }
-
-      hookProps.setState(state => {
-        state.dataTabel = dataTable;
-        return {...state};
-      });
-    } else {
-      await getDataDb();
+      dataTable.push(item);
     }
-  });
+
+    hookProps.setState(state => {
+      state.dataTabel = dataTable;
+      return {...state};
+    });
+    if (hookProps.state.typeRead === 'Dữ liệu gần nhất') {
+      upDateMissData(new Date(), true);
+    } else {
+      upDateMissData(hookProps.state.dateEnd, true);
+    }
+  } else {
+    await getDataDb();
+  }
+  //});
 };
 
 export const onDeInit = () => {};

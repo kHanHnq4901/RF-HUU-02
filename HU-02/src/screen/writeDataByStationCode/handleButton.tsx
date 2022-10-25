@@ -23,9 +23,12 @@ import {
   PropsUpdateData2DB,
   updateDataToDB,
   updateReadFailToDb,
+  updateSentToDb,
 } from '../../service/database';
+import {PushDataToServer} from '../../service/api';
+import {PropsResponse} from '../../service/hhu/Ble/hhuFunc';
 
-const TAG = 'Handle Btn Write Data By Column Code';
+const TAG = 'Handle Btn Write Data By Column Code: ';
 
 const setStatus = (value: string) => {
   hookProps.setState(state => {
@@ -323,6 +326,23 @@ export function onPencilPress(props: PropsPencil) {
   });
 }
 
+async function pushDataServer(listUpdate: PropsUpdateData2DB[]) {
+  console.log(TAG, 'push data to server');
+  for (let itemUpdate of listUpdate) {
+    // eslint-disable-next-line no-undef
+    console.log('here:', JSON.stringify(itemUpdate.data));
+
+    let ret = await PushDataToServer({
+      seri: itemUpdate.seri,
+      data: itemUpdate.data,
+    });
+    if (ret === true) {
+      updateSentToDb(itemUpdate.seri, itemUpdate.dateQuery, true);
+    } else {
+    }
+  }
+}
+
 const readData = async () => {
   let numRetries = Number(store.state.appSetting.numRetriesRead);
   if (numRetries <= 0) {
@@ -341,18 +361,23 @@ const readData = async () => {
       } else {
         await sleep(150);
       }
+      let result: PropsResponse = {
+        bSucceed: false,
+        message: '',
+        obj: null,
+      };
       try {
-        for (let j = 0; j < 1; j++) {
-          let strSeri: string = item.data.NO_METER;
-          let iDate: Date = new Date();
-          const typeReadRf: TypeReadRF = selectStationCodeHook.state.typeRead;
-          const is0h = selectStationCodeHook.state.is0h;
-          const dateEnd = selectStationCodeHook.state.dateEnd;
-          const dateStart = new Date();
-          dateStart.setDate(dateEnd.getDate() - 8);
-          console.log('strSeri:', strSeri);
-          setStatus('Đang đọc ' + strSeri + ' ...');
-          let result = await RfFunc_Read({
+        let strSeri: string = item.data.NO_METER;
+        const typeReadRf: TypeReadRF = selectStationCodeHook.state.typeRead;
+        const is0h = selectStationCodeHook.state.is0h;
+        const dateEnd = selectStationCodeHook.state.dateEnd;
+        const dateQuery = dateEnd.toLocaleDateString('vi');
+        const dateStart = new Date();
+        dateStart.setDate(dateEnd.getDate() - 8);
+        console.log('strSeri:', strSeri);
+        setStatus('Đang đọc ' + strSeri + ' ...');
+        for (let j = 0; j < numRetries; j++) {
+          result = await RfFunc_Read({
             seri: strSeri,
             typeAffect: 'Đọc 1',
             typeRead: typeReadRf,
@@ -387,7 +412,7 @@ const readData = async () => {
               const data: PropsDataModel = [];
               for (let dat of modelRadio.data) {
                 data.push({
-                  time: dat['Thời điểm chốt'] as unknown as string,
+                  time: dat['Thời điểm chốt (full time)'] as unknown as string,
                   cwRegister: Number(dat.Xuôi),
                   uCwRegister: Number(dat.Ngược),
                 });
@@ -397,21 +422,13 @@ const readData = async () => {
               // only get curent dât, no need updae hook
               hookProps.setState(state => {
                 for (let key in state.dataTable) {
-                  state.dataTable[key] = state.dataTable.render.map(itm => {
+                  state.dataTable[key] = state.dataTable[key].map(itm => {
                     if (itm.data.NO_MODULE === strSeri) {
-                      const newCapacity =
-                        Number(dataConverted[strBCS].power) -
-                        Number(itm.data.CS_CU);
                       listUpdate.push({
                         seri: strSeri,
-                        BCSCMIS: strBCS,
-                        date: dataConverted[strBCS].datePower ?? iDate,
-                        RfCode: RfcodeNow,
-                        T0: dataConverted[strBCS].power,
-                        newCapacity: newCapacity,
-                        oldCapacity: Number(itm.data.SL_CU),
-                        Pmax: dataConverted[strBCS].pmax,
-                        datePmax: dataConverted[strBCS].datePmax,
+                        data: data,
+                        typeRead: TYPE_READ_RF.READ_SUCCEED,
+                        dateQuery: dateQuery,
                       });
                     }
                     return itm;
@@ -421,24 +438,14 @@ const readData = async () => {
               });
               let bcsReadSucced = '';
               let statusWriteFailed = '';
+              let totalUpdateFailed = 0;
               for (let itemUpdate of listUpdate) {
-                bcsReadSucced += ' ' + itemUpdate.BCSCMIS + ',';
                 let updateDbSucceess = await updateDataToDB(itemUpdate);
-                if (updateDbSucceess) {
-                  itemUpdate.updateSucced = true;
-                } else {
+                if (updateDbSucceess !== true) {
                   totalUpdateFailed++;
-                  itemUpdate.updateSucced = false;
-                  statusWriteFailed += ' ' + itemUpdate.BCSCMIS + ',';
                 }
               }
-              let status =
-                'Đọc thành công ' +
-                listUpdate.length +
-                ' chỉ mục: ' +
-                bcsReadSucced +
-                ' của seri: ' +
-                strSeri;
+              let status = 'Đọc thành công ' + ' seri: ' + strSeri;
               if (totalUpdateFailed > 0) {
                 status +=
                   ' Ghi Lỗi ' +
@@ -449,15 +456,15 @@ const readData = async () => {
                   strSeri;
               }
               // let node = null;
+
               hookProps.setState(state => {
                 state.status = status;
                 for (let key in state.dataTable) {
                   for (let itemUpdate of listUpdate) {
                     const indexCurRow = state.dataTable[key].findIndex(
                       itm =>
-                        itm.data.SERY_CTO === strSeri &&
-                        itm.data.LOAI_BCS === itemUpdate.BCSCMIS &&
-                        itm.data.RF === itemUpdate.RfCode,
+                        itm.data.NO_METER === strSeri &&
+                        itm.data.DATE_QUERY === itemUpdate.dateQuery,
                     );
                     //console.log('indexrow:', indexCurRow);
                     if (indexCurRow !== -1) {
@@ -468,36 +475,27 @@ const readData = async () => {
                         ...state.dataTable[key][indexCurRow].data,
                       };
                       state.dataTable[key][indexCurRow].checked = false;
-                      if (itemUpdate.isAbnormal !== true) {
-                        state.dataTable[key][indexCurRow].data.TYPE_READ =
-                          TYPE_READ_RF.READ_SUCCEED;
-                      } else {
-                        state.dataTable[key][indexCurRow].data.TYPE_READ =
-                          TYPE_READ_RF.ABNORMAL_CAPACITY;
-                      }
+                      // state.dataTable[key][indexCurRow].data.TYPE_READ =
+                      //   TYPE_READ_RF.READ_SUCCEED;
                       if (
-                        itemUpdate.isAbnormal !== true ||
-                        (itemUpdate.isAbnormal &&
-                          itemUpdate.stillSaveWhenAbnormal)
+                        // itemUpdate.isAbnormal !== true ||
+                        // (itemUpdate.isAbnormal &&
+                        //   itemUpdate.stillSaveWhenAbnormal)
+                        true
                       ) {
-                        state.dataTable[key][indexCurRow].data.CS_MOI = Number(
-                          itemUpdate.T0,
-                        );
-                        state.dataTable[key][indexCurRow].data.NGAY_MOI =
-                          formatDateTimeDB(itemUpdate.date);
-                        if (itemUpdate.Pmax) {
-                          state.dataTable[key][indexCurRow].data.PMAX = Number(
-                            itemUpdate.Pmax,
-                          );
+                        state.dataTable[key][indexCurRow].data.DATA =
+                          itemUpdate.data;
+                        state.dataTable[key][indexCurRow].data.DATE_QUERY =
+                          dateQuery;
+
+                        if (itemUpdate.note) {
+                          state.dataTable[key][indexCurRow].data.NOTE =
+                            itemUpdate.note;
                         }
-                        if (itemUpdate.datePmax) {
-                          state.dataTable[key][indexCurRow].data.NGAY_PMAX =
-                            itemUpdate.datePmax;
-                        }
-                        if (itemUpdate.ghiChu) {
-                          state.dataTable[key][indexCurRow].data.GhiChu =
-                            itemUpdate.ghiChu;
-                        }
+                        // console.log(
+                        //   'here:',
+                        //   JSON.stringify(state.dataTable[key][indexCurRow]),
+                        // );
                       }
                       // node = state.dataTable[key][indexCurRow];
                     }
@@ -519,6 +517,9 @@ const readData = async () => {
                 state.totalSucceed = totalSucceed.toString();
                 return {...state};
               });
+              //push data to server
+
+              pushDataServer(listUpdate);
               // if (node) {
               //   refScroll.current?.scrollResponderScrollTo({
               //     x: 0,
@@ -530,33 +531,32 @@ const readData = async () => {
               index = -1; // reset index -1 ++ = 0
               break;
             } else {
-              if (store.state.hhu.connect !== 'CONNECTED') {
-                return;
-              }
-              hookProps.setState(state => {
-                state.status =
-                  'Đọc thất bại seri ' + strSeri + ': ' + result.strMessage;
-                for (let key in state.dataTable) {
-                  state.dataTable[key] = state.dataTable[key].map(itm => {
-                    if (itm.data.SERY_CTO === strSeri) {
-                      itm = {...itm};
-                      itm.data = {...itm.data};
-                      itm.checked = false;
-                      itm.data.TYPE_READ =
-                        itm.data.TYPE_READ === TYPE_READ_RF.HAVE_NOT_READ
-                          ? TYPE_READ_RF.READ_FAILED
-                          : itm.data.TYPE_READ;
-                    }
-                    return itm;
-                  });
-                }
-                return {...state};
-              });
-              let writeFailed = await updateReadFailToDb(strSeri);
-              if (writeFailed !== true) {
-                console.log('Update Read failed to DB is Failed');
-              }
             }
+          }
+        }
+        if (result.bSucceed !== true) {
+          hookProps.setState(state => {
+            state.status =
+              'Đọc thất bại seri ' + strSeri + ': ' + result.message;
+            for (let key in state.dataTable) {
+              state.dataTable[key] = state.dataTable[key].map(itm => {
+                if (itm.data.SERY_CTO === strSeri) {
+                  itm = {...itm};
+                  itm.data = {...itm.data};
+                  itm.checked = false;
+                  itm.data.TYPE_READ =
+                    itm.data.TYPE_READ === TYPE_READ_RF.HAVE_NOT_READ
+                      ? TYPE_READ_RF.READ_FAILED
+                      : itm.data.TYPE_READ;
+                }
+                return itm;
+              });
+            }
+            return {...state};
+          });
+          let writeFailed = await updateReadFailToDb(strSeri, dateQuery);
+          if (writeFailed !== true) {
+            console.log('Update Read failed to DB is Failed');
           }
         }
       } catch (err) {

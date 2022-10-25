@@ -137,13 +137,13 @@ export const OverViewScreen = () => {
               <ItemLabel
                 color={colorsChart[index]}
                 label={item}
-                key={index.toString()}
+                key={index.toString() + item}
                 quantity={quantity}
               />
             );
           })}
         </View>
-        <DetailDB data={hookProps.state.detailDB} />
+        {/* <DetailDB data={hookProps.state.detailDB} /> */}
       </ScrollView>
     </View>
   );

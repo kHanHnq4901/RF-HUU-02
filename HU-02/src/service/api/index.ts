@@ -1,6 +1,9 @@
 import axios from 'axios';
 import {showAlert, showToast} from '../../util/index';
 import {store} from '../../component/drawer/drawerContent/controller';
+import {PropsDataModel} from '../../database/model';
+import {GetFormatDate, GetFormatTime} from '../user/util';
+import {ObjSend, onOKAlertNeedUpdatePress} from '../hhu/Ble/hhuFunc';
 
 type PropsReturnGetVerion = {
   bResult: boolean;
@@ -63,9 +66,12 @@ export const getVersion = async (): Promise<PropsReturnGetVerion> => {
   ret.dateIssue = '';
   ret.priority = 'Cao';
   try {
-    const rest = await axios.get(
-      `http://222.252.14.147:5050/HU_02/version.txt?timestamp=${new Date().getTime()}`,
-    );
+    const url = `http://${store.state.appSetting.hhu.host}:${
+      store.state.appSetting.hhu.port
+    }/HU_02/version.txt?timestamp=${new Date().getTime()}`;
+    //console.log('url read version:', url);
+
+    const rest = await axios.get(url);
     const arr: string[] = rest?.data.split('_');
     if (arr.length !== 3) {
       console.log('error arr');
@@ -99,7 +105,9 @@ export const getStringFirmware = async (): Promise<PropsReturnGetFirmware> => {
 
   try {
     const {data}: {data: string} = await axios.get(
-      `http://222.252.14.147:5050/HU_02/firmware.txt?timestamp=${new Date().getTime()}`,
+      `http://${store.state.appSetting.hhu.host}:${
+        store.state.appSetting.hhu.port
+      }/HU_02/firmware.txt?timestamp=${new Date().getTime()}`,
     );
     ret.bResult = true;
     ret.strFirmware = data;
@@ -122,16 +130,19 @@ export async function checkUpdateHHU(props?: PropsReturnGetVerion) {
       }
       if (restVersion.bResult === true) {
         if (currentVersion !== restVersion.version) {
-          console.log('currentVersion:', currentVersion);
-          console.log('restVersion.version:', restVersion.version);
-
           let status = `Đã có phiên bản mới cho thiết bị cầm tay ${restVersion.version}\r\n`;
           if (restVersion.priority === 'Cao') {
             status += '(Quan trọng)';
+            ObjSend.isNeedUpdate = true;
+            showAlert(status, onOKAlertNeedUpdatePress);
+          } else {
+            ObjSend.isNeedUpdate = false;
+            showAlert(status);
           }
-          showAlert(status);
+          console.log('rest version:', restVersion.version);
+          console.log('current version:', currentVersion);
         } else {
-          //showToast('Không có bản cập nhật nào');
+          console.log('Không có bản cập nhật nào');
         }
       }
       //console.log('rest version:', rest);
@@ -139,4 +150,62 @@ export async function checkUpdateHHU(props?: PropsReturnGetVerion) {
   } catch (err: any) {
     console.log(TAG, err.message);
   }
+}
+
+type PropsPushDataToServer = {
+  seri: string;
+  data: PropsDataModel;
+};
+export async function PushDataToServer(
+  props: PropsPushDataToServer,
+): Promise<boolean> {
+  //SaveActiveTotal(string ModuleNo, string DataTime, string ActiveTotal, string NegactiveTotal, string Token)
+
+  const url = `http://${store.state.appSetting.server.host}:${
+    store.state.appSetting.server.port
+  }/SaveActiveTotal?timestamp=${new Date().getTime()}`;
+  let res: boolean = true;
+  let totalSucceed = 0;
+  for (let data of props.data) {
+    // console.log('kkk:', {
+    //   ModuleNo: props.seri,
+    //   DataTime: GetFormatTime(new Date(data.time)),
+    //   ActiveTotal: data.cwRegister.toString(),
+    //   NegactiveTotal: data.uCwRegister.toString(),
+    //   Token: store.state.userInfo.TOKEN,
+    // });
+
+    const rest = await axios.get(url, {
+      params: {
+        ModuleNo: props.seri,
+        DataTime: GetFormatTime(new Date(data.time)),
+        ActiveTotal: data.cwRegister.toString(),
+        NegactiveTotal: data.uCwRegister.toString(),
+        Token: store.state.userInfo.TOKEN,
+      },
+    });
+    const ret = rest.data as {CODE: string; MESSAGE: string};
+    if (ret.CODE === '1') {
+      totalSucceed++;
+      //return true;
+    } else {
+      console.log(TAG, 'err:', ret.MESSAGE);
+
+      //return false;
+    }
+  }
+
+  if (totalSucceed === props.data.length) {
+    res = true;
+    console.log('push data to server succeed seri ' + props.seri);
+  } else {
+    res = false;
+    console.log(
+      'push data to server faile seri ' +
+        props.seri +
+        ` ${totalSucceed}/${props.data.length}`,
+    );
+  }
+
+  return res;
 }

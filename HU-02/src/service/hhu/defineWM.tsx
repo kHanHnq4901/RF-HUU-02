@@ -6,6 +6,7 @@ export type PropsLabel =
   | 'Nhiệt độ'
   | 'Điện áp'
   | 'Thời điểm chốt'
+  | 'Thời điểm chốt (full time)'
   | 'Xuôi'
   | 'Ngược'
   | 'Phiên bản'

@@ -1,19 +1,13 @@
-import {Alert} from 'react-native';
-import {dataDBTable, PropsKHCMISModel} from '../../database/model';
+import {dataDBTable} from '../../database/model';
 import {
-  checkTabelDBIfExist,
-  deleteDataDB,
-  deleteDB,
   KHCMISRepository,
   PropsCondition,
   PropsConditions,
 } from '../../database/repository';
-import {StackWriteStationCodeNavigationProp} from '../../navigation/model/model';
-import {TYPE_READ_RF} from '../../service/hhu/defineEM';
-import {getMeterListMissByLine} from '../../service/user';
-import {hookProps, PropsMeterLine, PropsTabel, store} from './controller';
-import {dummyDataTable} from '../overview/controller';
 import {CMISKHServices, PropsKHCMISModelSave} from '../../database/service';
+import {StackWriteStationCodeNavigationProp} from '../../navigation/model/model';
+import {getMeterListMissByLine} from '../../service/user';
+import {hookProps, PropsTabel} from './controller';
 
 const TAG = 'handlebutton Select station code';
 
@@ -51,8 +45,14 @@ export const onOKPress = (navigation: StackWriteStationCodeNavigationProp) => {
 
 let updateBusy = false;
 let lastDateExecute: Date | null = null;
-export async function upDateMissData(date: Date) {
+export async function upDateMissData(
+  date: Date,
+  force?: boolean,
+): Promise<void> {
+  console.log('enter update miss Data, force:', force);
+
   if (
+    force !== true &&
     lastDateExecute !== null &&
     lastDateExecute.getTime() === date.getTime()
   ) {
@@ -106,7 +106,7 @@ export async function onTestPress() {
   // return;
   let res: boolean = false;
   // delete
-  const dateQuery = hookProps.state.dateEnd;
+  const dateQuery = hookProps.state.dateEnd.toLocaleDateString('vi');
   for (let data of hookProps.state.dataTabel) {
     const conditions: PropsConditions = [];
     let condition = {
@@ -136,12 +136,14 @@ export async function onTestPress() {
 
     conditions.push(condition);
 
+    console.log('conditions:', conditions);
+
     res = await KHCMISRepository.delete(conditions);
 
     console.log('res delete:', res);
   }
 
-  // save
+  //save
 
   for (let data of hookProps.state.dataTabel) {
     const station = data.meterLine;

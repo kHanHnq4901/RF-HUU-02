@@ -1,5 +1,5 @@
-import { Buffer } from 'buffer';
-import { crc16_offset } from '../../../util/crc16';
+import {Buffer} from 'buffer';
+import {crc16_offset} from '../../../util/crc16';
 import struct from '../../../util/cstruct';
 import {
   Array2Struct,
@@ -8,13 +8,16 @@ import {
 } from '../../../util/struct-and-array';
 import {
   BufferToString,
+  showAlert,
   showToast,
   sleep,
   StringFromArray,
 } from '../../../util';
-import { BleFunc_Send, BleFunc_StartNotification } from './bleHhuFunc';
-import { DeviceEventEmitter } from 'react-native';
-import { UPDATE_FW_HHU } from '../../event/constant';
+import {BleFunc_Send, BleFunc_StartNotification} from './bleHhuFunc';
+import {DeviceEventEmitter} from 'react-native';
+import {UPDATE_FW_HHU} from '../../event/constant';
+import {screenDatas} from '../../../shared/index';
+import {navigation} from '../../../component/header/controller';
 
 const TAG = 'hhuFunc: ';
 
@@ -57,10 +60,12 @@ export const ObjSend: {
   type: 'USB' | 'BLE';
   id: null | string;
   isShakeHanded: boolean;
+  isNeedUpdate: boolean;
 } = {
   type: 'USB',
   id: null,
   isShakeHanded: false,
+  isNeedUpdate: false,
 };
 
 export enum TYPE_HHU_CMD {
@@ -117,6 +122,17 @@ export async function hhuFunc_SendAckBLE(): Promise<boolean> {
   return result;
 }
 
+export function onOKAlertNeedUpdatePress(): void {
+  const screenData = screenDatas.find(item => item.id === 'BoardBLE');
+  navigation.navigate('Drawer', {
+    screen: 'BoardBLE',
+    params: {
+      info: screenData?.info ?? '',
+      title: screenData?.title ?? '',
+    },
+  });
+}
+
 export async function hhuFunc_Send(
   header: hhuFunc_HeaderProps,
   payload?: Buffer,
@@ -149,6 +165,15 @@ export async function hhuFunc_Send(
     // );
     console.log('Send bytes: ', lengthSend);
     console.log(BufferToString(buffSend, 0, lengthSend, 16, true));
+    if (header.u8Cmd === TYPE_HHU_CMD.DATA) {
+      if (ObjSend.isNeedUpdate === true) {
+        showAlert(
+          'Cần cập nhật phiên bản mới cho thiết bị cầm tay',
+          onOKAlertNeedUpdatePress,
+        );
+        return false;
+      }
+    }
     await BleFunc_Send(ObjSend.id, Array.from(buffSend));
     //console.log('here a');
     return true;

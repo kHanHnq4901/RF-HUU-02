@@ -10,7 +10,7 @@ import {ReadParameterScreen} from '../screen/readParameter';
 import {SettingAndAlarmScreen} from '../screen/settingAndAlarm';
 import {StackWriteStationCodeNavigator} from '../navigation/StackWriteBySatationCode';
 import {GuideBookScreen} from '../screen/guideBook';
-import { ImportExportCSDLScreen } from '../screen/importexportCSDL/index';
+import {ImportExportCSDLScreen} from '../screen/importexportCSDL/index';
 
 export const version = '1.0.1';
 

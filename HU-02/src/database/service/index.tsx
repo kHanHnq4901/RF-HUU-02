@@ -58,6 +58,11 @@ const convertEntity2Model = (entity: PropsKHCMISEntity): PropsKHCMISModel => {
   const model = {} as PropsKHCMISModel;
   for (let i = 0; i < KHCMISModelFields.length; i++) {
     if (KHCMISModelFields[i] === dataDBTable.DATA.id) {
+      // console.log(
+      //   'entity[KHCMISModelFields[i]]:',
+      //   typeof entity[KHCMISModelFields[i]],
+      // );
+
       model[KHCMISModelFields[i]] = JSON.parse(entity[KHCMISModelFields[i]]);
     } else {
       model[KHCMISModelFields[i]] = entity[KHCMISModelFields[i]];
@@ -130,6 +135,8 @@ CMISKHServices.save = async (item: PropsKHCMISModelSave) => {
   }
   //'id' | 'dateCreated' | 'isSent' | 'typeRead' | 'note'
   entity.DATA = JSON.stringify(item.DATA);
+  console.log('entity.DATA:', item.DATA);
+
   entity.DATE_CREATED = new Date().toLocaleString('vi');
   entity.ID = uuid.v4().toString();
   entity.IS_SENT = null;

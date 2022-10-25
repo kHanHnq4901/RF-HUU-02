@@ -10,9 +10,9 @@ import {
   View,
 } from 'react-native';
 import {Checkbox} from 'react-native-paper';
-import {Pie} from 'react-native-progress';
 import SelectDropdown from 'react-native-select-dropdown';
 import {Button} from '../../component/button/button';
+import Loader1 from '../../component/loader1';
 import {CheckboxButton} from '../../component/checkbox/checkbox';
 import {ModalWriteRegister} from '../../component/modal/modalWriteRegister';
 import {StackWriteDataByStationCodeList} from '../../navigation/model/model';
@@ -366,7 +366,8 @@ export const WriteStationCodeScreen = () => {
       <View style={{flex: 1}}>
         {hookProps.state.isReading && (
           <View style={styles.bigLoading}>
-            <Pie progress={0.4} size={sizeChartWaiting} indeterminate={true} />
+            {/* <Pie progress={0.4} size={sizeChartWaiting} indeterminate={true} /> */}
+            <Loader1 />
             {/* <BubblesLoader size={60} /> */}
           </View>
         )}
@@ -482,12 +483,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
-    bottom: 80,
+    bottom: 0,
     top: 0,
-    opacity: 0.5,
+    opacity: 1,
     zIndex: 10000000,
-
-    backgroundColor: 'white',
+    backgroundColor: 'transparent',
   },
 });
 
