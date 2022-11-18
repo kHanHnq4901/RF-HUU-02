@@ -406,10 +406,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-around',
     flexWrap: 'wrap',
+    marginLeft: 15,
+    // backgroundColor: 'pink',
   },
   labelSelectDate: {
     color: Colors.text,
     fontSize: normalize(15),
+    marginLeft: 10,
   },
   conatinerSelectDate: {
     flexDirection: 'row',

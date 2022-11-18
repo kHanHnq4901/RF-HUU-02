@@ -17,7 +17,7 @@ import {CheckboxButton} from '../../component/checkbox/checkbox';
 import {ModalWriteRegister} from '../../component/modal/modalWriteRegister';
 import {StackWriteDataByStationCodeList} from '../../navigation/model/model';
 import {TYPE_READ_RF} from '../../service/hhu/defineEM';
-import {Colors, normalize, scaleHeight, scaleWidth} from '../../theme';
+import {Colors, normalize, scale, scaleHeight, scaleWidth} from '../../theme';
 import {sizeScreen} from '../../theme/index';
 import {
   GetHookProps,
@@ -40,6 +40,8 @@ import {
   onStopReadPress,
 } from './handleButton';
 import Entypo from 'react-native-vector-icons/Entypo';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import _ from 'lodash';
 import {hookProps as selectStationCodeHook} from '../selectStationCode/controller';
 export const SubRow1Memo = React.memo(
@@ -145,6 +147,22 @@ const IconPencilMemo = React.memo((props: {item: PropsDataTable}) => {
     </TouchableOpacity>
   );
 });
+const IconSentStatusMemo = React.memo(
+  (props: {status: boolean | null}) => {
+    //console.log('status Is Sent:', props.status);
+
+    return (
+      <TouchableOpacity style={styleItemRow.sentStatus}>
+        {props.status === true ? (
+          <AntDesign name="check" size={20} color={Colors.caption} />
+        ) : (
+          <AntDesign name="swap" size={20} color={Colors.caption} />
+        )}
+      </TouchableOpacity>
+    );
+  },
+  (prev, next) => _.isEqual(prev.status, next.status),
+);
 
 //ListRenderItemInfo<PropsDatatable>
 function ItemStock(item: PropsDataTable) {
@@ -182,9 +200,11 @@ function ItemStock(item: PropsDataTable) {
       {/* <TouchableOpacity style={styleItemRow.pencil} onPress={_PencilPress}>
         <Entypo name="pencil" size={35} color={Colors.primary} />
       </TouchableOpacity> */}
+      <IconSentStatusMemo status={item.data.IS_SENT} />
       <View style={styleItemRow.row}>
         <Checkbox status={item.checked ? 'checked' : 'unchecked'} />
         <IconPencilMemo item={item} />
+
         <SubRow2Memo
           TT={item.stt}
           NO_METER={item.data.NO_METER}
@@ -217,7 +237,8 @@ function areEqual(prev: PropsDataTable, next: PropsDataTable) {
   if (
     prev.checked !== next.checked ||
     prev.data.DATA !== next.data.DATA ||
-    prev.data.TYPE_READ !== next.data.TYPE_READ
+    prev.data.TYPE_READ !== next.data.TYPE_READ ||
+    prev.data.IS_SENT !== next.data.IS_SENT
   ) {
     return false;
   }
@@ -225,11 +246,6 @@ function areEqual(prev: PropsDataTable, next: PropsDataTable) {
 }
 
 const ItemStockMemoried = React.memo(ItemStock, areEqual);
-
-const sizeChartWaiting =
-  sizeScreen.width < sizeScreen.height
-    ? sizeScreen.width * 0.2
-    : sizeScreen.height * 0.2;
 
 export const WriteStationCodeScreen = () => {
   GetHookProps();
@@ -259,8 +275,11 @@ export const WriteStationCodeScreen = () => {
         onOKPress={variable.modalAlert.onOKPress}
       />
       <View style={{backgroundColor: 'white'}}>
-        <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
-          {/* <Text style={styles.label}>Chọn mã cột</Text> */}
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <Text style={styles.label}>
+            Đã cập nhật: {hookProps.state.totalSent2ServerSucceed}/{' '}
+            {hookProps.state.totalBCS}
+          </Text>
           <Text style={styles.percentSucceed}>
             Thành công: {hookProps.state.totalSucceed}/{' '}
             {hookProps.state.totalBCS}
@@ -308,6 +327,13 @@ export const WriteStationCodeScreen = () => {
                 }}
               />
             </View> */}
+            <TouchableOpacity style={styles.updateToServer} onPress={() => {}}>
+              <EvilIcons
+                name="refresh"
+                size={35 * scale}
+                color={Colors.secondary}
+              />
+            </TouchableOpacity>
             <TextInput
               style={styles.searchText}
               placeholder="Tìm kiếm"
@@ -489,6 +515,9 @@ const styles = StyleSheet.create({
     zIndex: 10000000,
     backgroundColor: 'transparent',
   },
+  updateToServer: {
+    marginLeft: 5,
+  },
 });
 
 export const styleItemRow = StyleSheet.create({
@@ -522,8 +551,13 @@ export const styleItemRow = StyleSheet.create({
     alignItems: 'center',
     position: 'absolute',
     //backgroundColor: 'pink',
-    top: 5,
+    top: -3,
     right: 15,
     zIndex: 15,
+  },
+  sentStatus: {
+    position: 'absolute',
+    right: 15,
+    bottom: 5,
   },
 });

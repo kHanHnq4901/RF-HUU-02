@@ -124,7 +124,7 @@ export const screenDatas: DataScreensProps = [
     `,
     id: 'ImportExportCSDL',
     icon: 'server',
-    component: ImportExportCSDLScreen,
+    component: null, //ImportExportCSDLScreen,
   },
   {
     title: 'Xuất file xml',

@@ -170,11 +170,6 @@ export async function getMeterListMissByLine(
       '/api' +
       '/GetMeterListByLine';
     console.log('store.state.userInfo.USER_ID:', store.state.userInfo.USER_ID);
-    console.log('tets:', {
-      LineID: lineID,
-      DateMiss: GetFormatDate(dateMiss),
-      Token: store.state.userInfo.TOKEN,
-    });
 
     const {data}: {data: {CODE: string; MESSAGE: string}} = await axios.get(
       url,

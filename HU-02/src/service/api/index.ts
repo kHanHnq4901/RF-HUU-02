@@ -163,7 +163,7 @@ export async function PushDataToServer(
 
   const url = `http://${store.state.appSetting.server.host}:${
     store.state.appSetting.server.port
-  }/SaveActiveTotal?timestamp=${new Date().getTime()}`;
+  }/api/SaveActiveTotal?timestamp=${new Date().getTime()}`;
   let res: boolean = true;
   let totalSucceed = 0;
   for (let data of props.data) {
@@ -189,7 +189,7 @@ export async function PushDataToServer(
       totalSucceed++;
       //return true;
     } else {
-      console.log(TAG, 'err:', ret.MESSAGE);
+      console.log(TAG, 'err:', ret);
 
       //return false;
     }
@@ -208,4 +208,38 @@ export async function PushDataToServer(
   }
 
   return res;
+}
+
+export type PropsDeclareMeter = {
+  seri: string;
+  lat: string;
+  long: string;
+};
+
+export async function DeclareMeter(props: PropsDeclareMeter): Promise<boolean> {
+  //SaveActiveTotal(string ModuleNo, string DataTime, string ActiveTotal, string NegactiveTotal, string Token)
+
+  try {
+    const url = `http://${store.state.appSetting.server.host}:${store.state.appSetting.server.port}/api/SaveCoordinate`;
+
+    const rest = await axios.get(url, {
+      params: {
+        MeterNo: props.seri,
+        Coordinate: props.lat + ',' + props.long,
+        Token: store.state.userInfo.TOKEN,
+      },
+    });
+    const ret = rest.data as {CODE: string; MESSAGE: string};
+    if (ret.CODE === '1') {
+      return true;
+    } else {
+      console.log(TAG, 'err:', ret);
+
+      return false;
+    }
+  } catch (err) {
+    console.log(TAG, 'err: ', err.message);
+
+    return false;
+  }
 }

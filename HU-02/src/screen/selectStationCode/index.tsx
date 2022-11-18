@@ -353,7 +353,7 @@ export const SelectStationCodeScreen = () => {
               onOKPress(navigation);
             }}
           />
-          <Button style={styles.btn} label="Test" onPress={onTestPress} />
+          {/* <Button style={styles.btn} label="Test" onPress={onTestPress} /> */}
         </View>
       </View>
     </View>

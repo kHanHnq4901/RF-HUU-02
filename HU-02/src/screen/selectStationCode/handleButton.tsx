@@ -30,8 +30,24 @@ export const onChangeTextSearch = (value: string) => {
   });
 };
 
-export const onOKPress = (navigation: StackWriteStationCodeNavigationProp) => {
+export const onOKPress = async (
+  navigation: StackWriteStationCodeNavigationProp,
+) => {
   let listStationCode: string[] = [];
+  try {
+    hookProps.setState(state => {
+      state.isLoading = true;
+      return {...state};
+    });
+    await updateSeri2Db();
+  } catch (err) {
+  } finally {
+    hookProps.setState(state => {
+      state.isLoading = false;
+      return {...state};
+    });
+  }
+
   for (let item of hookProps.state.dataTabel) {
     if (item.checked && item.show) {
       listStationCode.push(item.meterLine.line.LINE_ID);
@@ -99,7 +115,9 @@ export async function upDateMissData(
   }
 }
 
-export async function onTestPress() {
+export async function onTestPress() {}
+
+export async function updateSeri2Db() {
   // await deleteDB();
   // await checkTabelDBIfExist();
   // await CMISKHServices.findAll();

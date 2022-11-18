@@ -207,6 +207,7 @@ export async function hhuFunc_wait(timeout: number): Promise<PropsResponse> {
   respones.bSucceed = false;
 
   respones.obj = {} as hhuFunc_PropsObjAnalysis;
+  HhuObj.identityFrame.bActive = false;
   //console.log('1');
   const btimeout = await waitAframeHHU(timeout + 1200);
   //console.log('2');

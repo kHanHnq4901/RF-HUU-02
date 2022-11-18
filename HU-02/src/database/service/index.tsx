@@ -62,8 +62,11 @@ const convertEntity2Model = (entity: PropsKHCMISEntity): PropsKHCMISModel => {
       //   'entity[KHCMISModelFields[i]]:',
       //   typeof entity[KHCMISModelFields[i]],
       // );
+      let dat: string = entity[KHCMISModelFields[i]];
+      dat = dat.replace(/ quote /g, '"');
+      //console.log('dat:', dat);
 
-      model[KHCMISModelFields[i]] = JSON.parse(entity[KHCMISModelFields[i]]);
+      model[KHCMISModelFields[i]] = JSON.parse(dat);
     } else {
       model[KHCMISModelFields[i]] = entity[KHCMISModelFields[i]];
     }
@@ -134,8 +137,8 @@ CMISKHServices.save = async (item: PropsKHCMISModelSave) => {
     entity[key] = item[key];
   }
   //'id' | 'dateCreated' | 'isSent' | 'typeRead' | 'note'
-  entity.DATA = JSON.stringify(item.DATA);
-  console.log('entity.DATA:', item.DATA);
+  entity.DATA = JSON.stringify(item.DATA).replace(/"/g, ' quote ');
+  //console.log('entity.DATA:', item.DATA);
 
   entity.DATE_CREATED = new Date().toLocaleString('vi');
   entity.ID = uuid.v4().toString();

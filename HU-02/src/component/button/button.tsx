@@ -1,11 +1,20 @@
 import React from 'react';
-import { Omit, StyleSheet, TouchableOpacity, View, Text } from 'react-native';
-import { Button as Btn, useTheme } from 'react-native-paper';
-import Theme, { Fonts, normalize } from '../../theme';
+import {
+  Omit,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  Text,
+  StyleProp,
+  TextStyle,
+} from 'react-native';
+import {Button as Btn, useTheme} from 'react-native-paper';
+import Theme, {Fonts, normalize} from '../../theme';
 
 type Props = {
   label: string;
   onPress: () => void;
+  labelStyle?: StyleProp<TextStyle>;
 } & Omit<React.ComponentProps<typeof Btn>, 'children'>;
 
 export const Button = (props: Props) => {
@@ -25,7 +34,7 @@ export const Button = (props: Props) => {
         mode="contained">
         {props.label}
       </Btn> */}
-      <Text style={styles.label}>{props.label}</Text>
+      <Text style={{...styles.label, ...props.labelStyle}}>{props.label}</Text>
     </TouchableOpacity>
   );
 };

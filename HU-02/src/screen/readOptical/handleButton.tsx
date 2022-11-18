@@ -193,9 +193,9 @@ async function readData() {
   }
 
   const arrtypeData: OPTICAL_CMD[] = [];
-  if (hookProps.state.seri === '') {
-    arrtypeData.push(OPTICAL_CMD.OPTICAL_GET_SERIAL);
-  }
+  //if (hookProps.state.seri === '') {
+  arrtypeData.push(OPTICAL_CMD.OPTICAL_GET_SERIAL);
+  //}
   if (hookProps.state.typeRead === 'Tức thời') {
     arrtypeData.push(OPTICAL_CMD.OPTICAL_GET_REGISTER);
   } else {

@@ -39,7 +39,7 @@ import {
   SIZE_SERIAL,
 } from './radioProtocol';
 import {PropsLabel} from '../defineWM';
-import {SimpleTimeToSTring} from '../util/utilFunc';
+import {formatDateTimeDB, SimpleTimeToSTring} from '../util/utilFunc';
 
 const TAG = 'Rf Func';
 
@@ -138,9 +138,13 @@ export async function AnalysisRF(payload: Buffer): Promise<PropsResponse> {
   index += sizeof(RP_HeaderType);
   let lengthForTimeAndData: number = 0;
   let numRecord: number = 0;
+  const numLatchDataPerDay: uint8_t = payload[index];
+  index++;
 
   switch (responseRadio.header.u8TypePacket) {
     case RP_TYPE_PACKET.RP_PACKET_TYPE_HHU_GET_ONE_DATA:
+      const periodMinutes = Math.round(1440 / numLatchDataPerDay);
+      console.log(TAG, 'period minutes latch data: ', periodMinutes);
       responseRadio.data = [];
       responseRadio.detailedRecord = [];
 
@@ -195,7 +199,7 @@ export async function AnalysisRF(payload: Buffer): Promise<PropsResponse> {
           responseRadio.detailedRecord.push(record);
           index += sizeof(RP_DataType);
 
-          dateTime.setHours(dateTime.getHours() - 1);
+          dateTime.setMinutes(dateTime.getMinutes() - periodMinutes);
         }
       }
 
@@ -551,10 +555,7 @@ export async function RfFunc_Read(props: PropsRead): Promise<PropsResponse> {
                   'Thời điểm chốt': timeString,
                   Xuôi: item.data.Data.au8CwData.readUintLE(0, 4).toString(),
                   Ngược: item.data.Data.au8UcwData.readUintLE(0, 4).toString(),
-                  'Thời điểm chốt (full time)': date
-                    .toISOString()
-                    .split('.')[0]
-                    .replace('T', ' '),
+                  'Thời điểm chốt (full time)': formatDateTimeDB(date),
                 });
               });
 

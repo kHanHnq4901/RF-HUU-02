@@ -54,6 +54,7 @@ export type HookState = {
   dataTable: PropsTable;
   totalBCS: string;
   totalSucceed: string;
+  totalSent2ServerSucceed: string;
   selectedColumn: string | null;
 };
 
@@ -160,6 +161,7 @@ export const GetHookProps = (): HookProps => {
     totalSucceed: '0',
     selectedColumn: null,
     requestStop: false,
+    totalSent2ServerSucceed: '0',
   });
   hookProps.state = state;
   hookProps.setState = setState;
@@ -181,6 +183,7 @@ const getDataDb = async (ref, routeParams: PropsRouteParamsWriteStation) => {
   let totalBCS = 0;
   let totalSucceed = 0;
   let firstTime = hookProps.state.dataTable.render.length === 0 ? true : false;
+  let totalSent2ServerSucceed = 0;
   //let stt = 1;
 
   hookProps.setState(state => {
@@ -230,6 +233,10 @@ const getDataDb = async (ref, routeParams: PropsRouteParamsWriteStation) => {
             totalSucceed++;
           }
 
+          if (item.IS_SENT === true) {
+            totalSent2ServerSucceed++;
+          }
+
           dataTable.noRender.push({
             checked: false,
             data: item,
@@ -257,6 +264,7 @@ const getDataDb = async (ref, routeParams: PropsRouteParamsWriteStation) => {
       state.arrColumnColumnCode = arrColumnCode;
       state.totalBCS = totalBCS.toString();
       state.totalSucceed = totalSucceed.toString();
+      state.totalSent2ServerSucceed = totalSent2ServerSucceed.toString();
       state.dataTable = dataTable;
       state.status = '';
       return {...state};
@@ -268,6 +276,12 @@ const getDataDb = async (ref, routeParams: PropsRouteParamsWriteStation) => {
     //}
   } catch (err) {
     console.log(TAG, err.message);
+    hookProps.setState(state => {
+      //state.dataDB = dataDB;
+
+      state.status = 'Lỗi: ' + err.message;
+      return {...state};
+    });
   }
 };
 

@@ -368,16 +368,17 @@ const styles = StyleSheet.create({
   },
 
   rowSelectDate: {
-    //borderRadius: 15,
     flexDirection: 'row',
+
     alignItems: 'center',
     justifyContent: 'space-around',
     flexWrap: 'wrap',
-    width: sizeScreen.width,
+    marginLeft: 15,
   },
   labelSelectDate: {
     color: Colors.text,
     fontSize: normalize(15),
+    marginLeft: 10,
   },
   conatinerSelectDate: {
     flexDirection: 'row',

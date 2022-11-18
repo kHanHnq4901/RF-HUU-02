@@ -35,12 +35,15 @@ export async function updateDataToDB(
 
   const valueSet = {};
 
-  valueSet[dataDBTable.DATA.id] = JSON.stringify(props.data);
+  valueSet[dataDBTable.DATA.id] = JSON.stringify(props.data).replace(
+    /"/g,
+    ' quote ',
+  );
   valueSet[dataDBTable.TYPE_READ.id] = props.typeRead;
   if (props.note) {
     valueSet[dataDBTable.NOTE.id] = props.note;
   }
-  console.log('valueSet[dataDBTable.DATA.id]:', valueSet[dataDBTable.DATA.id]);
+  //console.log('valueSet[dataDBTable.DATA.id]:', valueSet[dataDBTable.DATA.id]);
 
   const res = await CMISKHServices.update(conditions, valueSet);
 

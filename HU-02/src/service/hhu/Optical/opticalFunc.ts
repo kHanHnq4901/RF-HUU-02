@@ -20,7 +20,7 @@ import {
   Rtc_SimpleTimeType,
   SIZE_SERIAL,
 } from '../RF/radioProtocol';
-import {SimpleTimeToSTring} from '../util/utilFunc';
+import {formatDateTimeDB, SimpleTimeToSTring} from '../util/utilFunc';
 import {
   DataManager_IlluminateRecordProps,
   DataManager_IlluminateRecordType,
@@ -50,6 +50,7 @@ export type OpticalDailyProps = {
   'Thời điểm chốt': string;
   'Dữ liệu xuôi': string;
   'Dữ liệu ngược': string;
+  'Thời điểm chốt(full time)': string;
 };
 
 async function opticalSendAck(): Promise<boolean> {
@@ -374,7 +375,22 @@ export async function waitOpticalAdvance(
           strDataDaily.au8UcwData = Buffer.from(strDataDaily.au8UcwData);
 
           index += sizeof(DataManager_IlluminateRecordType);
+
+          const date = new Date();
+          date.setFullYear(strDataDaily.SimpleTime.u8Year + 2000);
+          if (strDataDaily.SimpleTime.u8Month < 1) {
+            response.message = 'strDataDaily.SimpleTime.u8Year.u8Month < 1';
+            response.bSucceed = false;
+            return response;
+          }
+          date.setMonth(strDataDaily.SimpleTime.u8Month - 1);
+          date.setDate(strDataDaily.SimpleTime.u8Date);
+          date.setHours(strDataDaily.SimpleTime.u8Hour);
+          date.setMinutes(0);
+          date.setSeconds(0);
+
           dataDaily.push({
+            'Thời điểm chốt(full time)': formatDateTimeDB(date),
             'Thời điểm chốt': SimpleTimeToSTring(strDataDaily.SimpleTime),
             'Dữ liệu xuôi': strDataDaily.au8CwData.readUintLE(0, 4).toString(),
             'Dữ liệu ngược': strDataDaily.au8UcwData

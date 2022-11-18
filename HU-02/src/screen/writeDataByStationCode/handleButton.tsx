@@ -336,8 +336,48 @@ async function pushDataServer(listUpdate: PropsUpdateData2DB[]) {
       seri: itemUpdate.seri,
       data: itemUpdate.data,
     });
+
     if (ret === true) {
       updateSentToDb(itemUpdate.seri, itemUpdate.dateQuery, true);
+      hookProps.setState(state => {
+        for (let key in state.dataTable) {
+          for (let itmUp of listUpdate) {
+            const indexCurRow = state.dataTable[key].findIndex(
+              itm =>
+                itm.data.NO_METER === itmUp.seri &&
+                itm.data.DATE_QUERY === itmUp.dateQuery,
+            );
+            //console.log('indexrow:', indexCurRow);
+            if (indexCurRow !== -1) {
+              state.dataTable[key][indexCurRow] = {
+                ...state.dataTable[key][indexCurRow],
+              };
+              state.dataTable[key][indexCurRow].data = {
+                ...state.dataTable[key][indexCurRow].data,
+              };
+              state.dataTable[key][indexCurRow].data.IS_SENT = true;
+            }
+          }
+        }
+        let totalSentSucceed = 0;
+        for (let key in state.dataTable) {
+          for (let itm of state.dataTable[key] as PropsDataTable[]) {
+            if (
+              itm.data.TYPE_READ === TYPE_READ_RF.READ_SUCCEED ||
+              itm.data.TYPE_READ === TYPE_READ_RF.WRITE_BY_HAND ||
+              (itm.data.TYPE_READ === TYPE_READ_RF.ABNORMAL_CAPACITY &&
+                Number(itm.data.DATA.length) !== 0)
+            ) {
+              if (itm.data.IS_SENT === true) {
+                totalSentSucceed++;
+              }
+            }
+          }
+        }
+        state.totalSent2ServerSucceed = totalSentSucceed.toString();
+
+        return {...state};
+      });
     } else {
     }
   }
