@@ -5,8 +5,12 @@ import {Button} from '../../component/button/button';
 import {Text} from '../../component/Text';
 import {Colors, CommonHeight, normalize, scale} from '../../theme';
 import {CommonFontSize} from '../../theme/index';
-import {GetHookProps, store} from './controller';
-import {onNumRetriesReadSubmit, onSavePress} from './handleButton';
+import {GetHookProps, hookProps, store} from './controller';
+import {
+  onNumRetriesReadSubmit,
+  onSavePress,
+  onSetChanelPress,
+} from './handleButton';
 
 export const SettingAndAlarmScreen = () => {
   GetHookProps();
@@ -199,17 +203,34 @@ export const SettingAndAlarmScreen = () => {
             }}
           />
         </View>
-        {/* <Text style={styles.title}>
-        Hiển thị dữ liệu ghi thành công khi ghi chỉ số:
-      </Text>
-      <CheckboxButton
-        label="Hiển thị"
-        checked={store.state.appSetting.showResultOKInWriteData}
-        onPress={onCheckBoxShowDataOkInWriteRegister}
-      /> */}
+        {store.state.user === 'admin' && (
+          <>
+            <Text style={styles.title}>Cấu hình kênh RF:</Text>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              {/* <Text style={styles.textThreshold}>Nhỏ hơn:</Text> */}
+              <TextInputInteractive
+                placeholder=""
+                keyboardType="numeric"
+                value={hookProps.state.chanelRF}
+                textInputStyle={styles.valueTextInput}
+                onChangeText={text => {
+                  hookProps.setState(state => {
+                    state.chanelRF = text;
+                    return {...state};
+                  });
+                }}
+              />
+              <Button
+                style={styles.buttonSmall}
+                label="Cài"
+                onPress={onSavePress}
+              />
+            </View>
+          </>
+        )}
       </ScrollView>
       <View style={styles.btnBottom}>
-        <Button style={styles.button} label="Lưu" onPress={onSavePress} />
+        <Button style={styles.button} label="Lưu" onPress={onSetChanelPress} />
       </View>
     </View>
   );
@@ -262,6 +283,13 @@ const styles = StyleSheet.create({
     height: 50,
     alignSelf: 'center',
     maxWidth: 350,
+  },
+  buttonSmall: {
+    width: '30%',
+    height: 45,
+    alignSelf: 'center',
+    maxWidth: 100,
+    backgroundColor: '#0cf814',
   },
   containerItemIPPort: {
     marginRight: 20,

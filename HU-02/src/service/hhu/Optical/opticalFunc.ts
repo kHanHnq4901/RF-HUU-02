@@ -50,6 +50,7 @@ export type OpticalDailyProps = {
   'Thời điểm chốt': string;
   'Dữ liệu xuôi': string;
   'Dữ liệu ngược': string;
+  'Chỉ số': string;
   'Thời điểm chốt(full time)': string;
 };
 
@@ -386,16 +387,19 @@ export async function waitOpticalAdvance(
           date.setMonth(strDataDaily.SimpleTime.u8Month - 1);
           date.setDate(strDataDaily.SimpleTime.u8Date);
           date.setHours(strDataDaily.SimpleTime.u8Hour);
-          date.setMinutes(0);
-          date.setSeconds(0);
+          date.setMinutes(strDataDaily.SimpleTime.u8Minute);
+          date.setSeconds(strDataDaily.SimpleTime.u8Second);
+
+          const cwLit = strDataDaily.au8CwData.readUintLE(0, 4);
+          const uCwLit = strDataDaily.au8UcwData.readUintLE(0, 4);
+          const lit = cwLit - uCwLit;
 
           dataDaily.push({
             'Thời điểm chốt(full time)': formatDateTimeDB(date),
             'Thời điểm chốt': SimpleTimeToSTring(strDataDaily.SimpleTime),
-            'Dữ liệu xuôi': strDataDaily.au8CwData.readUintLE(0, 4).toString(),
-            'Dữ liệu ngược': strDataDaily.au8UcwData
-              .readUintLE(0, 4)
-              .toString(),
+            'Dữ liệu xuôi': cwLit.toString(),
+            'Dữ liệu ngược': uCwLit.toString(),
+            'Chỉ số': lit.toString(),
           });
         }
         //data['Dữ liệu hàng ngày'] = dataDaily;

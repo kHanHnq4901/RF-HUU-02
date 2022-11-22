@@ -372,6 +372,39 @@ export async function readVersion(): Promise<string | null> {
   }
 }
 
+export async function configRFBoardBle(chanel: number): Promise<boolean> {
+  const header: hhuFunc_HeaderProps = {
+    u8Cmd: TYPE_HHU_CMD.CONFIG_RF,
+    u16FSN: 0xffff,
+    u16Length: 0,
+  };
+
+  const payload = Buffer.alloc(1);
+  payload[0] = chanel & 0xff;
+
+  header.u16Length = payload.length;
+
+  let bResult: boolean = await hhuFunc_Send(header, payload);
+
+  if (bResult) {
+    const respones = await hhuFunc_wait(2000);
+    console.log('bResult:', bResult);
+    if (respones.bSucceed) {
+      if (respones.obj.hhuHeader.u8Cmd === TYPE_HHU_CMD.ACK) {
+        bResult = true;
+      } else {
+        bResult = false;
+      }
+    } else {
+      bResult = false;
+    }
+  } else {
+    bResult = false;
+  }
+
+  return bResult;
+}
+
 export async function setNameHHU(name: string): Promise<boolean> {
   const buff = Buffer.alloc(24);
 

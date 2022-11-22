@@ -1,7 +1,11 @@
 import {Keyboard} from 'react-native';
 import {ObjSend} from '../../service/hhu/Ble/hhuFunc';
 import {PropsLabel} from '../../service/hhu/defineWM';
-import {PropsModelRadio, RfFunc_Read} from '../../service/hhu/RF/RfFunc';
+import {
+  PropsModelRadio,
+  PropsRead,
+  RfFunc_Read,
+} from '../../service/hhu/RF/RfFunc';
 import {getUnitByLabel} from '../../service/hhu/util/utilFunc';
 import {isAllNumeric, showToast} from '../../util';
 import * as controller from './controller';
@@ -69,7 +73,7 @@ const checkCondition = (): boolean => {
   return true;
 };
 
-const readData = async () => {
+const readData = async (props: PropsRead) => {
   let numRetries = Number(store.state.appSetting.numRetriesRead);
 
   if (numRetries <= 0) {
@@ -78,22 +82,14 @@ const readData = async () => {
 
   try {
     for (let j = 0; j < numRetries; j++) {
-      if (hookProps.state.typeRead === 'Theo thời gian') {
-        console.log('dateStart:' + hookProps.state.dateStart.toLocaleString());
-        console.log('dateEnd:' + hookProps.state.dateEnd.toLocaleString());
+      if (props.typeRead === 'Theo thời gian') {
+        console.log('dateStart:' + props.dateStatrt?.toLocaleString());
+        console.log('dateEnd:' + props.dateEnd?.toLocaleString());
       }
 
-      const result = await RfFunc_Read({
-        seri: hookProps.state.seri,
-        typeAffect: 'Đọc 1',
-        typeRead: hookProps.state.typeRead,
-        is0h: hookProps.state.is0h,
-        numNearest: 10,
-        dateStatrt: hookProps.state.dateStart,
-        dateEnd: hookProps.state.dateEnd,
-      });
+      const result = await RfFunc_Read(props);
 
-      console.log(TAG, 'result:', JSON.stringify(result));
+      //console.log(TAG, 'result:', JSON.stringify(result));
       if (result.bSucceed === true) {
         const rows: string[][] = [];
         let row: string[] = [];
@@ -102,6 +98,7 @@ const readData = async () => {
         for (let key in modelRadio.info) {
           if (modelRadio.info[key]) {
             row = [];
+
             row.push(key);
             row.push(modelRadio.info[key] + getUnitByLabel(key as PropsLabel));
             //console.log(row);
@@ -114,10 +111,17 @@ const readData = async () => {
         for (let item of modelRadio.data) {
           for (let key in item) {
             if (item[key]) {
-              row = [];
-              row.push(key);
-              row.push(item[key] + getUnitByLabel(key as PropsLabel));
-              rows.push(row);
+              const keyTypeScript: PropsLabel = key as unknown as PropsLabel;
+              if (
+                keyTypeScript !== 'Thời điểm chốt (full time)' &&
+                keyTypeScript !== 'Xuôi' &&
+                keyTypeScript !== 'Ngược'
+              ) {
+                row = [];
+                row.push(key);
+                row.push(item[key] + getUnitByLabel(key as PropsLabel));
+                rows.push(row);
+              }
             }
           }
         }
@@ -190,7 +194,15 @@ export const onBtnReadPress = async () => {
   });
 
   //init: 0x73 , reset 0x74, search 0x72, data
-  await readData();
+  await readData({
+    seri: hookProps.state.seri,
+    typeAffect: 'Đọc 1',
+    typeRead: hookProps.state.typeRead,
+    is0h: hookProps.state.is0h,
+    numNearest: 10,
+    dateStatrt: hookProps.state.dateStart,
+    dateEnd: hookProps.state.dateEnd,
+  });
   //await BleFunc_StopNotification(ObjSend.id);
   hookProps.setState(state => {
     state.isReading = false;

@@ -11,7 +11,9 @@ export type PropsLabel =
   | 'Ngược'
   | 'Phiên bản'
   | 'Rssi'
-  | 'Số bản tin chốt';
+  | 'Số bản tin chốt'
+  | 'Chu kỳ chốt'
+  | 'Chỉ số';
 
 export enum TYPE_SENSOR {
   undefine = 0,

@@ -11,6 +11,7 @@ export const getUnitByLabel = (label: PropsLabel) => {
   switch (label) {
     case 'Xuôi':
     case 'Ngược':
+    case 'Chỉ số':
       unit = ' (lít)';
       break;
 
@@ -22,6 +23,9 @@ export const getUnitByLabel = (label: PropsLabel) => {
       break;
     case 'Rssi':
       unit = ' (dbm)';
+      break;
+    case 'Chu kỳ chốt':
+      unit = ' (phút)';
       break;
   }
   return unit;

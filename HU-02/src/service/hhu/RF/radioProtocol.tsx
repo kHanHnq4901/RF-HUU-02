@@ -173,11 +173,13 @@ export const RP_TimeFirstDataType = struct`
   uint8_t u8Year;
   uint8_t u8Month;
   uint8_t u8Date;
-  uint8_t u8Hour;`;
+  uint8_t u8Hour;
+  uint8_t u8Minute`;
 
 export type RP_TimeFirstDataProps = {
   u8Year: uint8_t;
   u8Month: uint8_t;
   u8Date: uint8_t;
   u8Hour: uint8_t;
+  u8Minute: uint8_t;
 };

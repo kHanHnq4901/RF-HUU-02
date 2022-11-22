@@ -68,6 +68,7 @@ type RecordDetailProps = {
 type PropsResponseRadio = {
   header: RP_HeaderProps;
   //transient?: RP_TransientProps;
+  periodLatchData?: number;
   timeLatchFirst: RP_TimeFirstDataProps;
   data: DataManager_DataProps[];
   detailedRecord: RecordDetailProps[];
@@ -144,11 +145,14 @@ export async function AnalysisRF(payload: Buffer): Promise<PropsResponse> {
   switch (responseRadio.header.u8TypePacket) {
     case RP_TYPE_PACKET.RP_PACKET_TYPE_HHU_GET_ONE_DATA:
       const periodMinutes = Math.round(1440 / numLatchDataPerDay);
-      console.log(TAG, 'period minutes latch data: ', periodMinutes);
+      //console.log(TAG, 'period minutes latch data: ', periodMinutes);
+      responseRadio.periodLatchData = periodMinutes;
+
       responseRadio.data = [];
       responseRadio.detailedRecord = [];
 
-      lengthForTimeAndData = responseRadio.header.u8LengthPayload;
+      lengthForTimeAndData =
+        responseRadio.header.u8LengthPayload - 1; /* num latch data */
       //  -
       // sizeof(RP_ConfigNode2GatewayType) -
       // sizeof(RP_TransientType);
@@ -173,7 +177,7 @@ export async function AnalysisRF(payload: Buffer): Promise<PropsResponse> {
         dateTime.setMonth(timeFistData.u8Month - 1);
         dateTime.setDate(timeFistData.u8Date);
         dateTime.setHours(timeFistData.u8Hour);
-        dateTime.setMinutes(0);
+        dateTime.setMinutes(timeFistData.u8Minute);
         dateTime.setSeconds(0);
 
         index += sizeof(RP_TimeFirstDataType);
@@ -191,6 +195,7 @@ export async function AnalysisRF(payload: Buffer): Promise<PropsResponse> {
           time.u8Month = dateTime.getMonth() + 1;
           time.u8Date = dateTime.getDate();
           time.u8Hour = dateTime.getHours();
+          time.u8Minute = dateTime.getMinutes();
           let record: RecordDetailProps = {
             data: dataRP,
             time: time,
@@ -198,6 +203,12 @@ export async function AnalysisRF(payload: Buffer): Promise<PropsResponse> {
           responseRadio.data.push(dataRP.Data);
           responseRadio.detailedRecord.push(record);
           index += sizeof(RP_DataType);
+
+          if (k === 0) {
+            dateTime.setMinutes(
+              dateTime.getMinutes() - (dateTime.getMinutes() % 30),
+            );
+          }
 
           dateTime.setMinutes(dateTime.getMinutes() - periodMinutes);
         }
@@ -228,8 +239,8 @@ export async function AnalysisRF(payload: Buffer): Promise<PropsResponse> {
       responseRadio.data = [];
       responseRadio.detailedRecord = [];
 
-      lengthForTimeAndData = responseRadio.header.u8LengthPayload;
-
+      lengthForTimeAndData =
+        responseRadio.header.u8LengthPayload - 1; /* num latch data */
       numRecord = 0;
 
       if (lengthForTimeAndData > sizeof(RP_TimeFirstDataType)) {
@@ -250,6 +261,8 @@ export async function AnalysisRF(payload: Buffer): Promise<PropsResponse> {
         dateTime.setMonth(timeFistData.u8Month - 1);
         dateTime.setDate(timeFistData.u8Date);
         dateTime.setHours(timeFistData.u8Hour);
+        dateTime.setMinutes(timeFistData.u8Minute);
+        dateTime.setSeconds(0);
 
         index += sizeof(RP_TimeFirstDataType);
 
@@ -265,7 +278,10 @@ export async function AnalysisRF(payload: Buffer): Promise<PropsResponse> {
           time.u8Year = dateTime.getFullYear() - 2000;
           time.u8Month = dateTime.getMonth() + 1;
           time.u8Date = dateTime.getDate();
+
           time.u8Hour = dateTime.getHours();
+          time.u8Minute = dateTime.getMinutes();
+
           let record: RecordDetailProps = {
             data: dataRP,
             time: time,
@@ -275,6 +291,9 @@ export async function AnalysisRF(payload: Buffer): Promise<PropsResponse> {
           index += sizeof(RP_DataType);
 
           dateTime.setDate(dateTime.getDate() - 1);
+          if (k === 0) {
+            dateTime.setMinutes(0);
+          }
         }
       }
 
@@ -400,7 +419,7 @@ export const RfFunc_EncodePayloadRadio = (
   return PayloadRadio;
 };
 
-type PropsRead = {
+export type PropsRead = {
   seri: string;
   typeRead: TypeReadRF;
   typeAffect: TypeEfectRF;
@@ -512,6 +531,10 @@ export async function RfFunc_Read(props: PropsRead): Promise<PropsResponse> {
                 console.log('received seri:' + modelRadio.info.Seri);
                 continue;
               }
+              if (dataRadio.radio.periodLatchData) {
+                modelRadio.info['Chu kỳ chốt'] =
+                  dataRadio.radio.periodLatchData.toString();
+              }
 
               modelRadio.info.Rssi = dataRadio.infoGet.s8Rssi.toString();
 
@@ -532,6 +555,8 @@ export async function RfFunc_Read(props: PropsRead): Promise<PropsResponse> {
                 const timeString =
                   item.time.u8Hour.toString().padStart(2, '0') +
                   'h  ' +
+                  item.time.u8Minute.toString().padStart(2, '0') +
+                  'p  ' +
                   (item.time.u8Year + 2000).toString() +
                   '/' +
                   item.time.u8Month.toString().padStart(2, '0') +
@@ -548,14 +573,20 @@ export async function RfFunc_Read(props: PropsRead): Promise<PropsResponse> {
                 date.setMonth(item.time.u8Month - 1);
                 date.setDate(item.time.u8Date);
                 date.setHours(item.time.u8Hour);
-                date.setMinutes(0);
+                date.setMinutes(item.time.u8Minute);
                 date.setSeconds(0);
+
+                const cwLit = item.data.Data.au8CwData.readUintLE(0, 4);
+                const uCwLit = item.data.Data.au8UcwData.readUintLE(0, 4);
+                const lit = (cwLit - uCwLit).toString();
 
                 modelRadio.data.push({
                   'Thời điểm chốt': timeString,
-                  Xuôi: item.data.Data.au8CwData.readUintLE(0, 4).toString(),
-                  Ngược: item.data.Data.au8UcwData.readUintLE(0, 4).toString(),
-                  'Thời điểm chốt (full time)': formatDateTimeDB(date),
+                  'Chỉ số': lit,
+                  Xuôi: cwLit.toString(),
+                  Ngược: uCwLit.toString(),
+
+                  // 'Thời điểm chốt (full time)': formatDateTimeDB(date),
                 });
               });
 

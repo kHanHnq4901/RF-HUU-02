@@ -1,10 +1,10 @@
-import { Alert } from 'react-native';
-import {
-  PropsAppSetting,
-  saveValueAppSettingToNvm,
-} from '../../service/storage';
-import { isNumeric, showToast } from '../../util';
-import { store } from './controller';
+import {Alert} from 'react-native';
+import {configRFBoardBle} from '../../service/hhu/Ble/hhuFunc';
+import {PropsAppSetting, saveValueAppSettingToNvm} from '../../service/storage';
+import {isNumeric, showToast} from '../../util';
+import {hookProps, store} from './controller';
+import {hook} from '../settingUser/controller';
+import {uint8_t} from '../../util/custom_typedef';
 
 export const onNumRetriesReadSubmit = (text: string) => {
   let err = false;
@@ -31,102 +31,21 @@ export const onNumRetriesReadSubmit = (text: string) => {
     ]);
     store.setState(state => {
       state.appSetting.numRetriesRead = '1';
-      return { ...state };
+      return {...state};
     });
   }
 };
 
-export const onLowerThresholdDoneSubmit = (text: string) => {
-  if (isNumeric(text) === true) {
-  } else {
-    Alert.alert('Lỗi', 'Ngưỡng nhỏ hơn không hợp lệ', [
-      {
-        text: 'OK',
-      },
-    ]);
-    return;
-  }
-
-  let uppervalue;
-
-  if (store.state.appSetting.setting.typeAlarm === 'Value') {
-    uppervalue = Number(store.state.appSetting.setting.upperThresholdValue);
-  } else {
-    uppervalue = Number(store.state.appSetting.setting.upperThresholdPercent);
-  }
-  const lower = Number(text);
-  if (Number(text) < 0 || lower >= uppervalue) {
-    Alert.alert('Lỗi', 'Ngưỡng nhỏ hơn phải lớn hơn bằng 0', [
-      {
-        text: 'OK',
-      },
-    ]);
-    store.setState(state => {
-      if (state.appSetting.setting.typeAlarm === 'Value') {
-        state.appSetting.setting.lowerThresholdValue = (
-          uppervalue - 1 > 0 ? uppervalue - 1 : 0
-        ).toString();
-      } else {
-        state.appSetting.setting.lowerThresholdPercent = (
-          uppervalue - 1 > 0 ? uppervalue - 1 : 0
-        ).toString();
-      }
-      return { ...state };
-    });
-    return;
-  }
-};
-export const onUpperThresholdDoneSubmit = (text: string) => {
-  if (isNumeric(text) === true) {
-  } else {
-    Alert.alert('Lỗi', 'Ngưỡng lớn hơn không hợp lệ', [
-      {
-        text: 'OK',
-      },
-    ]);
-    return;
-  }
-  let lowerValue;
-
-  if (store.state.appSetting.setting.typeAlarm === 'Value') {
-    lowerValue = Number(store.state.appSetting.setting.lowerThresholdValue);
-  } else {
-    lowerValue = Number(store.state.appSetting.setting.lowerThresholdPercent);
-  }
-  const upper = Number(text);
-  if (upper <= lowerValue) {
-    Alert.alert('Lỗi', 'Ngưỡng lớn hơn phải lớn hơn Ngưỡng nhỏ hơn', [
-      {
-        text: 'OK',
-      },
-    ]);
-    store.setState(state => {
-      if (state.appSetting.setting.typeAlarm === 'Value') {
-        state.appSetting.setting.upperThresholdValue = (
-          lowerValue + 1
-        ).toString();
-      } else {
-        state.appSetting.setting.upperThresholdPercent = (
-          lowerValue + 1
-        ).toString();
-      }
-      return { ...state };
-    });
-    return;
-  }
-};
-
-export const onCheckBoxShowDataOkInWritwRegister = () => {
-  store.setState(state => {
-    state.appSetting.showResultOKInWriteData = state.appSetting
-      .showResultOKInWriteData
-      ? false
-      : true;
-    //console.log(state.appSetting.showResultOKInWriteData);
-    return { ...state };
-  });
-};
 export async function onSavePress() {
   await saveValueAppSettingToNvm(store.state.appSetting as PropsAppSetting);
   showToast('Đã lưu');
+}
+
+export async function onSetChanelPress() {
+  const rest = await configRFBoardBle(Number(hookProps.state.chanelRF));
+  if (rest === true) {
+    showToast('Cài thành công');
+  } else {
+    showToast('Cài thất bại');
+  }
 }

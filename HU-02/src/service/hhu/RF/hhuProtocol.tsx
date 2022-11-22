@@ -1,7 +1,7 @@
 import struct from '../../../util/cstruct';
-import { Buffer } from 'buffer';
-import { uint16_t, uint8_t } from '../../../util/custom_typedef';
-import { SIZE_SERIAL } from './radioProtocol';
+import {Buffer} from 'buffer';
+import {uint16_t, uint8_t} from '../../../util/custom_typedef';
+import {SIZE_SERIAL} from './radioProtocol';
 
 export enum RP_HhuTypeReadData {
   HHU_APS_CMD_READ_NEAREST_DATA = 0x01,
