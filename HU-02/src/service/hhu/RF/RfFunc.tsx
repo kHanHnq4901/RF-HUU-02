@@ -25,6 +25,7 @@ import {
 } from './hhuProtocol';
 import {
   DataManager_DataProps,
+  DataManager_DataType,
   RP_ConfigNode2GatewayProps,
   RP_ConfigNode2GatewayType,
   RP_DataProps,
@@ -40,10 +41,11 @@ import {
 } from './radioProtocol';
 import {PropsLabel} from '../defineWM';
 import {formatDateTimeDB, SimpleTimeToSTring} from '../util/utilFunc';
+import {BufferToString} from '../../../util';
 
 const TAG = 'Rf Func';
 
-export type TypeReadRF = 'Dữ liệu gần nhất' | 'Theo thời gian';
+export type TypeReadRF = 'Tức thời' | 'Dữ liệu gần nhất' | 'Theo thời gian';
 export type TypeEfectRF = 'Đọc 1' | 'Đọc nhiều';
 
 enum TYPE_EFFECT {
@@ -69,9 +71,10 @@ type PropsResponseRadio = {
   header: RP_HeaderProps;
   //transient?: RP_TransientProps;
   periodLatchData?: number;
-  timeLatchFirst: RP_TimeFirstDataProps;
-  data: DataManager_DataProps[];
-  detailedRecord: RecordDetailProps[];
+  timeLatchFirst?: RP_TimeFirstDataProps;
+  data?: DataManager_DataProps[];
+  detailedRecord?: RecordDetailProps[];
+  immediateData?: DataManager_DataProps;
   //configNode2Gateway?: RP_ConfigNode2GatewayProps;
 };
 
@@ -139,11 +142,12 @@ export async function AnalysisRF(payload: Buffer): Promise<PropsResponse> {
   index += sizeof(RP_HeaderType);
   let lengthForTimeAndData: number = 0;
   let numRecord: number = 0;
-  const numLatchDataPerDay: uint8_t = payload[index];
-  index++;
+  let numLatchDataPerDay: uint8_t = 0;
 
   switch (responseRadio.header.u8TypePacket) {
     case RP_TYPE_PACKET.RP_PACKET_TYPE_HHU_GET_ONE_DATA:
+      numLatchDataPerDay = payload[index];
+      index++;
       const periodMinutes = Math.round(1440 / numLatchDataPerDay);
       //console.log(TAG, 'period minutes latch data: ', periodMinutes);
       responseRadio.periodLatchData = periodMinutes;
@@ -236,6 +240,8 @@ export async function AnalysisRF(payload: Buffer): Promise<PropsResponse> {
 
       break;
     case RP_TYPE_PACKET.RP_PACKET_TYPE_HHU_GET_ONE_DATA_0H:
+      numLatchDataPerDay = payload[index];
+      index++;
       responseRadio.data = [];
       responseRadio.detailedRecord = [];
 
@@ -309,6 +315,34 @@ export async function AnalysisRF(payload: Buffer): Promise<PropsResponse> {
       break;
     case RP_TYPE_PACKET.RP_PACKET_TYPE_ACK:
       break;
+    case RP_TYPE_PACKET.RP_PACKET_TYPE_HHU_GET_IMMEDIATE_DATA:
+      if (
+        responseRadio.header.u8LengthPayload === sizeof(DataManager_DataType)
+      ) {
+        let immediateData: DataManager_DataProps = Array2Struct(
+          payload,
+          index,
+          DataManager_DataType,
+        );
+
+        //console.log('immediateData:', immediateData);
+
+        immediateData.au8CwData = Buffer.from(immediateData.au8CwData);
+        immediateData.au8UcwData = Buffer.from(immediateData.au8UcwData);
+
+        responseRadio.immediateData = immediateData;
+        response.obj.radio = responseRadio;
+        response.bSucceed = true;
+      } else {
+        response.bSucceed = false;
+        response.message =
+          'Length Immediate not match  ' +
+          responseRadio.header.u8LengthPayload +
+          ' ' +
+          sizeof(DataManager_DataType);
+      }
+
+      break;
     default:
       response.message = 'No type RP_TYPE_PACKET';
       response.bSucceed = false;
@@ -349,6 +383,9 @@ export const RfFunc_EncodePayloadRadio = (
         return null;
       }
       headerGetData.u8Length = sizeof(RP_HhuTime5byteType) * 2;
+      break;
+    case RP_HhuTypeReadData.HHU_APS_CMD_READ_IMMEDIATE_DATA:
+      headerGetData.u8Length = 0;
       break;
     default:
       return null;
@@ -397,6 +434,8 @@ export const RfFunc_EncodePayloadRadio = (
       // console.log('start time:', startTime);
       // console.log('end time:', endTime);
 
+      break;
+    case RP_HhuTypeReadData.HHU_APS_CMD_READ_IMMEDIATE_DATA:
       break;
     default:
       return null;
@@ -449,7 +488,10 @@ export async function RfFunc_Read(props: PropsRead): Promise<PropsResponse> {
     typePacket:
       props.typeRead === 'Dữ liệu gần nhất'
         ? RP_HhuTypeReadData.HHU_APS_CMD_READ_NEAREST_DATA
-        : RP_HhuTypeReadData.HHU_APS_CMD_READ_DATA_BY_TIME,
+        : props.typeRead === 'Theo thời gian'
+        ? RP_HhuTypeReadData.HHU_APS_CMD_READ_DATA_BY_TIME
+        : RP_HhuTypeReadData.HHU_APS_CMD_READ_IMMEDIATE_DATA,
+
     is0h: props.is0h,
     dateEnd: props.dateEnd,
     dateStart: props.dateStatrt,
@@ -546,12 +588,12 @@ export async function RfFunc_Read(props: PropsRead): Promise<PropsResponse> {
 
               const rtcSimpleTime = dataRadio.radio.header.Time;
 
-              modelRadio.info['Thời gian'] = SimpleTimeToSTring(rtcSimpleTime);
+              modelRadio.info.RTC = SimpleTimeToSTring(rtcSimpleTime);
 
               modelRadio.info['Phiên bản'] =
                 dataRadio.radio.header.u8Version.toString();
 
-              dataRadio.radio.detailedRecord.forEach(item => {
+              dataRadio.radio.detailedRecord?.forEach(item => {
                 const timeString =
                   item.time.u8Hour.toString().padStart(2, '0') +
                   'h  ' +
@@ -590,12 +632,26 @@ export async function RfFunc_Read(props: PropsRead): Promise<PropsResponse> {
                 });
               });
 
+              if (dataRadio.radio.immediateData) {
+                const cwLit =
+                  dataRadio.radio.immediateData.au8CwData.readUintLE(0, 4);
+                const uCwLit =
+                  dataRadio.radio.immediateData.au8UcwData.readUintLE(0, 4);
+                const lit = (cwLit - uCwLit).toString();
+                modelRadio.data.push({
+                  'Chỉ số': lit,
+                });
+              }
+
               response.obj = modelRadio;
               response.bSucceed = true;
 
               if (headerHHu.u16FSN === 0xffff) {
-                modelRadio.info['Số bản tin chốt'] =
-                  modelRadio.data.length.toString();
+                if (props.typeRead !== 'Tức thời') {
+                  modelRadio.info['Số bản tin chốt'] =
+                    modelRadio.data.length.toString();
+                }
+
                 return response;
               } else {
                 console.log('FSN:', headerHHu.u16FSN);

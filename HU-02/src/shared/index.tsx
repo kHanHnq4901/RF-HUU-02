@@ -11,6 +11,7 @@ import {SettingAndAlarmScreen} from '../screen/settingAndAlarm';
 import {StackWriteStationCodeNavigator} from '../navigation/StackWriteBySatationCode';
 import {GuideBookScreen} from '../screen/guideBook';
 import {ImportExportCSDLScreen} from '../screen/importexportCSDL/index';
+import {WriteOpticalScreen} from '../screen/writeOptical';
 
 export const version = '1.0.1';
 
@@ -88,6 +89,15 @@ export const screenDatas: DataScreensProps = [
     component: ReadParameterScreen,
   },
   {
+    title: 'Ghi cổng quang',
+    info: `
+    
+    `,
+    id: 'WriteOptical',
+    icon: 'ios-pencil',
+    component: WriteOpticalScreen,
+  },
+  {
     title: 'Đọc cổng quang',
     info: `
     Đọc dữ liệu tức thời công tơ bất kỳ, dữ liệu sẽ không được lưu vào DB.
@@ -97,6 +107,7 @@ export const screenDatas: DataScreensProps = [
     icon: 'ios-book-outline',
     component: ReadOpticalScreen,
   },
+
   {
     title: 'Chỉ số bất thường',
     info: 'info',

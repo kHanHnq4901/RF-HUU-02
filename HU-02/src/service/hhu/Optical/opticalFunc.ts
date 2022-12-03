@@ -40,7 +40,7 @@ const OPTICAL_SIZE_PASS = 8;
 
 export type FieldOpticalResponseProps =
   | 'Seri'
-  | 'Thời gian'
+  | 'RTC'
   | 'Version'
   | 'Điện áp'
   | 'Dữ liệu'
@@ -327,7 +327,7 @@ export async function waitOpticalAdvance(
           index,
           Rtc_SimpleTimeType,
         );
-        data['Thời gian'] = SimpleTimeToSTring(rtc);
+        data['RTC'] = SimpleTimeToSTring(rtc);
         break;
       case OPTICAL_CMD.OPTICAL_GET_REGISTER:
         const typeSensor = objOptical.payload[index];

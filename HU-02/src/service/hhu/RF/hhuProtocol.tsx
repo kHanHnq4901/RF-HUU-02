@@ -6,6 +6,7 @@ import {SIZE_SERIAL} from './radioProtocol';
 export enum RP_HhuTypeReadData {
   HHU_APS_CMD_READ_NEAREST_DATA = 0x01,
   HHU_APS_CMD_READ_DATA_BY_TIME = 0x02,
+  HHU_APS_CMD_READ_IMMEDIATE_DATA = 0x03,
 }
 
 export const RP_HhuTime5byteType = struct(`

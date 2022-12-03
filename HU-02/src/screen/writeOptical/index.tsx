@@ -3,7 +3,7 @@ import {StyleSheet, Text, View} from 'react-native';
 import Theme from '../../theme';
 import {GetHookProps, onDeInit, onInit} from './controller';
 
-export const ExampleScreen = () => {
+export const WriteOpticalScreen = () => {
   GetHookProps();
   useEffect(() => {
     onInit();
@@ -11,7 +11,7 @@ export const ExampleScreen = () => {
   }, []);
   return (
     <View style={styles.container}>
-      <Text>Example</Text>
+      <Text>Example Write Optical</Text>
     </View>
   );
 };

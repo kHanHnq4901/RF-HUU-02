@@ -81,6 +81,7 @@ export type DrawerParamsList = {
   ReadParameter: ParamsDrawerProps;
   DeclareMeter: ParamsDrawerProps;
   ReadOptical: ParamsDrawerProps;
+  WriteOptical: ParamsDrawerProps;
   AbnormalRegister: ParamsDrawerProps;
   ImportExportCSDL: ParamsDrawerProps;
   ExportXml: ParamsDrawerProps;

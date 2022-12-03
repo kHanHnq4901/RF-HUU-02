@@ -2,7 +2,7 @@ export type TYPE_METER = 'Đồng hồ' | 'Repeater' | null;
 
 export type PropsLabel =
   | 'Seri'
-  | 'Thời gian'
+  | 'RTC'
   | 'Nhiệt độ'
   | 'Điện áp'
   | 'Thời điểm chốt'

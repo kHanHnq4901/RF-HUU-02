@@ -36,7 +36,7 @@ export const itemTypeMeter: PropsCheckBox[] = [
 ];
 
 export const dataReadRadioButton: TypeReadRF[] = Array.from(
-  new Set<TypeReadRF>(['Dữ liệu gần nhất', 'Theo thời gian']),
+  new Set<TypeReadRF>(['Tức thời', 'Dữ liệu gần nhất', 'Theo thời gian']),
 );
 
 type HookProps = {
