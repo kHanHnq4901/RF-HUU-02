@@ -5,17 +5,19 @@ import {
   StyleProp,
   ViewStyle,
   TouchableOpacity,
+  TextStyle,
 } from 'react-native';
-import { Text } from '../Text';
-import { Checkbox as CB_Paper, useTheme } from 'react-native-paper';
-import { CommonFontSize } from '../../theme';
-import { Colors } from '../../theme/index';
+import {Text} from '../Text';
+import {Checkbox as CB_Paper, useTheme} from 'react-native-paper';
+import {CommonFontSize} from '../../theme';
+import {Colors} from '../../theme/index';
 
 type Props = {
   checked: boolean;
   label: string;
   onPress: () => void;
   style?: StyleProp<ViewStyle>;
+  styleLabel?: StyleProp<TextStyle>;
 };
 
 export const CheckboxButton = (props: Props) => {
@@ -23,13 +25,13 @@ export const CheckboxButton = (props: Props) => {
   return (
     <TouchableOpacity
       onPress={props.onPress}
-      style={{ ...styles.conatiner, ...props.style }}>
+      style={{...styles.conatiner, ...props.style}}>
       <CB_Paper
         color={theme.colors.primary}
         onPress={props.onPress}
         status={props.checked === true ? 'checked' : 'unchecked'}
       />
-      <Text style={styles.text}>{props.label}</Text>
+      <Text style={{...styles.text, ...props.styleLabel}}>{props.label}</Text>
     </TouchableOpacity>
   );
 };

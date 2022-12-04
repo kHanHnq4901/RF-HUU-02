@@ -1,6 +1,11 @@
 import React, {Dispatch, useState} from 'react';
 import {getDefaultStorageValue, PropsAppSetting} from '../service/storage';
-import {PropsInfoUser, PropsInfoWM, PropsLineServer} from '../service/user';
+import {
+  PropsInfoUser,
+  PropsInfoWM,
+  PropsLineServer,
+  USER_ROLE_TYPE,
+} from '../service/user';
 
 export type PropsStoreMeter = {
   listLine: PropsLineServer[];
@@ -37,7 +42,6 @@ type PropsState = {
     showInfo: boolean;
     showWriteRegister: boolean;
   };
-  user: 'customer' | 'admin';
   userInfo: PropsInfoUser;
   meter: PropsStoreMeter;
 };
@@ -81,7 +85,6 @@ export const StoreProvider = ({children}) => {
       showInfo: false,
       showWriteRegister: false,
     },
-    user: 'customer',
     userInfo: userInfo,
     meter: {
       listLine: [],

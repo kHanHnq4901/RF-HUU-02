@@ -16,13 +16,21 @@ export function isNumeric(str: any) {
   ); // ...and ensure strings of whitespace fail
 }
 
-export function showAlert(message: string, onOKPress?: () => void) {
-  Alert.alert('', message, [
-    {
-      text: 'OK',
-      onPress: onOKPress,
-    },
-  ]);
+export async function showAlert(message: string, onOKPress?: () => void) {
+  return new Promise<void>((resolve, reject) => {
+    Alert.alert('', message, [
+      {
+        text: 'OK',
+        onPress: () => {
+          if (onOKPress) {
+            onOKPress();
+          }
+
+          resolve();
+        },
+      },
+    ]);
+  });
 }
 
 export function showToast(message: string) {

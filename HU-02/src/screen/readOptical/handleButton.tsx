@@ -1,3 +1,4 @@
+import {Buffer} from 'buffer';
 import {Keyboard} from 'react-native';
 import {ObjSend} from '../../service/hhu/Ble/hhuFunc';
 import {
@@ -9,26 +10,18 @@ import {
 import {
   OPTICAL_CMD,
   Optical_HeaderProps,
+  Optical_SeriType,
   OPTICAL_TYPE_GET_DATA_DAILY,
   Rtc_CalendarProps,
   Rtc_CalendarType,
 } from '../../service/hhu/Optical/opticalProtocol';
 import {
-  isAllNumeric,
-  showToast,
-  sleep,
-  ByteArrayToString,
-  BufferToString,
-} from '../../util';
-import {hookProps, store} from './controller';
-import {Buffer} from 'buffer';
-import {sizeof, Struct2Array} from '../../util/struct-and-array';
-import {
-  getUnitByLabel,
   getUnitByLabelOptical,
   PropsLabelOptical,
 } from '../../service/hhu/util/utilFunc';
-import {PropsLabel} from '../../service/hhu/defineWM';
+import {showToast, sleep} from '../../util';
+import {sizeof, Struct2Array} from '../../util/struct-and-array';
+import {hookProps, store} from './controller';
 
 export function setStatus(message: string) {
   hookProps.setState(state => {
@@ -111,7 +104,7 @@ function ConvertObjToHook(objResponse: any) {
   for (let itm in objResponse) {
     if (typeof objResponse[itm] === 'string') {
       hookProps.setState(state => {
-        if ((itm as FieldOpticalResponseProps) === 'Seri') {
+        if ((itm as FieldOpticalResponseProps) === 'Seri đồng hồ') {
           state.seri = objResponse[itm];
         }
         state.dataTable.push([
@@ -159,10 +152,15 @@ async function readInfo() {
   header.u8Length = 0;
 
   let hasFailed = false;
-
+  let payload: Buffer | undefined;
   for (let cmd of arrtypeData) {
     header.u8Command = cmd;
-    bRet = await opticalSend(header);
+    if (cmd === OPTICAL_CMD.OPTICAL_GET_SERIAL) {
+      payload = Buffer.alloc(1);
+      payload[0] = Optical_SeriType.OPTICAL_TYPE_SERI_METER;
+      header.u8Length = payload.byteLength;
+    }
+    bRet = await opticalSend(header, payload);
     if (bRet) {
       const response = await waitOpticalAdvance({
         desiredCmd: cmd,
@@ -178,6 +176,7 @@ async function readInfo() {
         ConvertObjToHook(response.obj);
       }
     }
+    payload = undefined;
     await sleep(150);
   }
   if (!hasFailed) {
@@ -212,6 +211,11 @@ async function readData() {
     let payload: Buffer | undefined;
     let index = 0;
     header.u8Command = cmd;
+    if (cmd === OPTICAL_CMD.OPTICAL_GET_SERIAL) {
+      payload = Buffer.alloc(1);
+      payload[0] = Optical_SeriType.OPTICAL_TYPE_SERI_METER;
+      header.u8Length = 1;
+    }
     if (cmd === OPTICAL_CMD.OPTICAL_GET_LIST_DATA_DAILY) {
       if (hookProps.state.typeRead === 'Theo thời gian') {
         const calendar = {} as Rtc_CalendarProps;

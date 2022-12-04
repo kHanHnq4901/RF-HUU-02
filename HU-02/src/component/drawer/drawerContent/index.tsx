@@ -24,6 +24,7 @@ import {infoHeader} from '../../header';
 import {Text} from '../../Text';
 import {DrawerItem} from '../drawerItem';
 import {GetHookProps, onDeInit, onInit, store} from './controller';
+import {USER_ROLE_TYPE} from '../../../service/user/index';
 
 const TAG = 'DrawerContent:';
 
@@ -50,6 +51,13 @@ export const DrawerContent = props => {
   // }, [store.state.appSetting]);
 
   //console.log('ren drawer');
+
+  const role =
+    store.state.userInfo.USER_TYPE === USER_ROLE_TYPE.ADMIN
+      ? 'Admin'
+      : store.state.userInfo.USER_TYPE === USER_ROLE_TYPE.STAFF
+      ? 'Nhân viên'
+      : 'Khách hàng';
 
   return (
     <>
@@ -85,6 +93,8 @@ export const DrawerContent = props => {
             {/* 🤗 */}
             {store.state.userInfo.USER_NAME}
           </Text>
+
+          <Text style={styles.role}>{role}</Text>
 
           <View style={styles.body}>
             <Divider />
@@ -261,7 +271,15 @@ const styles = StyleSheet.create({
     fontSize: normalize(30),
     fontFamily: 'Lato-Regular',
     marginBottom: 15,
-    marginVertical: 10,
+    marginTop: 10,
+    marginEnd: 0,
     marginLeft: 10,
+  },
+  role: {
+    color: Colors.caption,
+    fontSize: normalize(14),
+    fontFamily: 'Lato-Regular',
+    alignSelf: 'flex-end',
+    marginRight: 10,
   },
 });

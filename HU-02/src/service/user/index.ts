@@ -12,6 +12,12 @@ export type PropsResponse = {
   data: any;
 };
 
+export enum USER_ROLE_TYPE {
+  ADMIN = '0',
+  STAFF = '1',
+  CUSTOMER = '2',
+}
+
 export type PropsInfoUser = {
   CODE: string;
   MESSAGE: string;
@@ -24,6 +30,7 @@ export type PropsInfoUser = {
   LASTACTIVE_TIME: string;
   TOKEN: string;
   TOKEN_EXPIRED: string | Date;
+  USER_TYPE: USER_ROLE_TYPE;
 };
 export type PropsInfoWM = {
   ADDRESS: string;

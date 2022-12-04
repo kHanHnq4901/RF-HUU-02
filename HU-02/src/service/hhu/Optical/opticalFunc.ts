@@ -32,6 +32,7 @@ import {
   Optical_MoreInfoProps,
   Optical_MoreInfoType,
   Optical_PasswordType,
+  Optical_SeriType,
 } from './opticalProtocol';
 
 const TAG = 'opticalFunc:';
@@ -39,7 +40,8 @@ const TAG = 'opticalFunc:';
 const OPTICAL_SIZE_PASS = 8;
 
 export type FieldOpticalResponseProps =
-  | 'Seri'
+  | 'Seri đồng hồ'
+  | 'Seri module'
   | 'RTC'
   | 'Version'
   | 'Điện áp'
@@ -306,9 +308,27 @@ export async function waitOpticalAdvance(
       case OPTICAL_CMD.OPTICAL_ACK:
         break;
       case OPTICAL_CMD.OPTICAL_GET_SERIAL:
-        data.Seri = objOptical.payload
-          .readUintLE(index, SIZE_SERIAL)
-          .toString();
+        let typeSeri = objOptical.payload[index];
+        index++;
+        if (
+          typeSeri !== Optical_SeriType.OPTICAL_TYPE_SERI_METER &&
+          typeSeri !== Optical_SeriType.OPTICAL_TYPE_SERI_MODULE
+        ) {
+          responseOptical.bSucceed = false;
+          responseOptical.message = 'Incompatible type seri';
+          return responseOptical;
+        }
+        if (typeSeri === Optical_SeriType.OPTICAL_TYPE_SERI_METER) {
+          data['Seri đồng hồ'] = objOptical.payload
+            .readUintLE(index, SIZE_SERIAL)
+            .toString();
+        }
+        if (typeSeri === Optical_SeriType.OPTICAL_TYPE_SERI_MODULE) {
+          data['Seri module'] = objOptical.payload
+            .readUintLE(index, SIZE_SERIAL)
+            .toString();
+        }
+
         break;
       case OPTICAL_CMD.OPTICAL_GET_VERSION:
         data.Version = objOptical.payload[index].toString();
@@ -327,7 +347,7 @@ export async function waitOpticalAdvance(
           index,
           Rtc_SimpleTimeType,
         );
-        data['RTC'] = SimpleTimeToSTring(rtc);
+        data.RTC = SimpleTimeToSTring(rtc);
         break;
       case OPTICAL_CMD.OPTICAL_GET_REGISTER:
         const typeSensor = objOptical.payload[index];

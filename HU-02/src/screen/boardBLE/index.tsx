@@ -23,6 +23,7 @@ import * as handleBtn from './handleButton';
 import {onUpdateFirmWareContainer} from './handleButton';
 import {EatBeanLoader} from 'react-native-indicator';
 import {ModalGetText} from '../../component/modal/modalGetText';
+import {USER_ROLE_TYPE} from '../../service/user';
 
 const sizeChartPie = sizeScreen.width * 0.42;
 
@@ -99,7 +100,7 @@ export const BoardBLEScreen = () => {
             //style={{ ...styles.btn, backgroundColor: Colors.secondary }}
             onPress={throttle(handleBtn.onUpdateFirmWareContainer, 2000)}
           />
-          {store.state.user === 'admin' && (
+          {store.state.userInfo.USER_TYPE === USER_ROLE_TYPE.ADMIN && (
             <Button
               label="Đổi tên thiết bị"
               style={styles.btn}

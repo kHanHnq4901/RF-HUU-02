@@ -1,7 +1,7 @@
 import {showAlert} from '../../util';
 import {hook, navigation, store} from './controller';
 import axios from 'axios';
-import {PropsInfoUser} from '../../service/user';
+import {PropsInfoUser, USER_ROLE_TYPE} from '../../service/user';
 import {Keyboard} from 'react-native';
 import {saveUserStorage} from '../../service/storage/user';
 import TouchID from 'react-native-touch-id';
@@ -47,8 +47,8 @@ export async function onLoginPress(props?: PropsLogin) {
       store.state.appSetting.passwordAdmin === hashPassword
     ) {
       store.setState(state => {
-        state.user = 'admin';
         state.userInfo = {} as PropsInfoUser;
+        state.userInfo.USER_TYPE = USER_ROLE_TYPE.ADMIN;
         return {...state};
       });
       console.log('Đăng nhập thành công');
@@ -79,14 +79,13 @@ export async function onLoginPress(props?: PropsLogin) {
 
       const userInfo: PropsInfoUser = result.data;
 
-      //console.log('userInfo:', userInfo);
+      console.log('userInfo:', userInfo);
 
       userInfo.TOKEN_EXPIRED = new Date(userInfo.TOKEN_EXPIRED);
 
       if (userInfo.CODE === '1') {
         store.setState(state => {
           state.userInfo = userInfo;
-          state.user = 'customer';
           return {...state};
         });
         console.log('Đăng nhập thành công');

@@ -3,6 +3,7 @@ import {ScrollView, StyleSheet, View} from 'react-native';
 import TextInputInteractive from 'react-native-text-input-interactive';
 import {Button} from '../../component/button/button';
 import {Text} from '../../component/Text';
+import {USER_ROLE_TYPE} from '../../service/user';
 import {Colors, CommonHeight, normalize, scale} from '../../theme';
 import {CommonFontSize} from '../../theme/index';
 import {GetHookProps, hookProps, store} from './controller';
@@ -203,7 +204,7 @@ export const SettingAndAlarmScreen = () => {
             }}
           />
         </View>
-        {store.state.user === 'admin' && (
+        {store.state.userInfo.USER_TYPE === USER_ROLE_TYPE.ADMIN && (
           <>
             <Text style={styles.title}>Cấu hình kênh RF:</Text>
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
