@@ -17,10 +17,8 @@ import {RadioButton} from '../../component/radioButton/radioButton';
 import Theme, {
   Colors,
   CommonFontSize,
-  CommonHeight,
   Fonts,
   normalize,
-  scale,
   scaleHeight,
   sizeScreen,
 } from '../../theme';

@@ -21,7 +21,12 @@ type PropsDataLatch = {
   UcwData: string;
 };
 
-type PropsTypeData = 'Thông tin' | 'Dữ liệu';
+type PropsTypeData =
+  | 'Thông tin'
+  | 'Dữ liệu'
+  | 'Nbiot'
+  | 'Thời gian gửi'
+  | 'Sensor';
 
 type PropsCheckBox = {
   label: PropsTypeData;
@@ -64,7 +69,7 @@ function getInitialState(): HookState {
 
   startDate.setDate(startDate.getDate() - 1);
 
-  return {
+  let value: HookState = {
     status: '',
     dateStart: startDate,
     dateEnd: endDate,
@@ -91,6 +96,21 @@ function getInitialState(): HookState {
     requestStop: false,
     is0h: false,
   };
+
+  // value.typeData.items.push({
+  //   label: 'Nbiot',
+  //   value: 'Nbiot',
+  // });
+  // value.typeData.items.push({
+  //   label: 'Thời gian gửi',
+  //   value: 'Thời gian gửi',
+  // });
+  // value.typeData.items.push({
+  //   label: 'Sensor',
+  //   value: 'Sensor',
+  // });
+
+  return value;
 }
 
 export const GetHookProps = (): HookProps => {

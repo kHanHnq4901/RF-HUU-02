@@ -142,10 +142,13 @@ async function readInfo() {
   }
 
   const arrtypeData: OPTICAL_CMD[] = [];
-  arrtypeData.push(OPTICAL_CMD.OPTICAL_GET_SERIAL);
+  arrtypeData.push(OPTICAL_CMD.OPTICAL_GET_SERIAL); // meter
+  arrtypeData.push(OPTICAL_CMD.OPTICAL_GET_SERIAL); // module
   arrtypeData.push(OPTICAL_CMD.OPTICAL_GET_VERSION);
   arrtypeData.push(OPTICAL_CMD.OPTICAL_GET_MORE);
   arrtypeData.push(OPTICAL_CMD.OPTICAL_GET_RTC);
+
+  let typeSeri = Optical_SeriType.OPTICAL_TYPE_SERI_METER;
 
   const header = {} as Optical_HeaderProps;
   header.u8FSN = 0xff;
@@ -157,8 +160,9 @@ async function readInfo() {
     header.u8Command = cmd;
     if (cmd === OPTICAL_CMD.OPTICAL_GET_SERIAL) {
       payload = Buffer.alloc(1);
-      payload[0] = Optical_SeriType.OPTICAL_TYPE_SERI_METER;
+      payload[0] = typeSeri; // first meter then module
       header.u8Length = payload.byteLength;
+      typeSeri = Optical_SeriType.OPTICAL_TYPE_SERI_MODULE;
     }
     bRet = await opticalSend(header, payload);
     if (bRet) {

@@ -21,7 +21,11 @@ import {
   connectLatestBLE,
   handleUpdateValueForCharacteristic,
 } from '../../../service/hhu/Ble/bleHhuFunc';
-import {getLineList, getMeterByAccount} from '../../../service/user';
+import {
+  USER_ROLE_TYPE,
+  getLineList,
+  getMeterByAccount,
+} from '../../../service/user';
 import {showAlert} from '../../../util';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -39,6 +43,8 @@ let hhuReceiveDataListener: any = null;
 
 let updateFWListener: EmitterSubscription | undefined;
 
+let timerCheckValidToken: any;
+
 export const GetHookProps = () => {
   store = useContext(storeContext);
   navigationStackRoot = useNavigation<StackNavigationProp<StackRootList>>();
@@ -55,7 +61,7 @@ const hhuHandleDisconnectedPeripheral = data => {
 };
 
 function checkTokenValidInterval() {
-  setInterval(() => {
+  timerCheckValidToken = setInterval(() => {
     if (
       new Date().getTime() >=
       (store.state.userInfo.TOKEN_EXPIRED as Date).getTime()
@@ -97,7 +103,7 @@ export const onInit = async navigation => {
       return {...state};
     });
   }
-  if (store.state.user === 'customer') {
+  if (store.state.userInfo.USER_TYPE === USER_ROLE_TYPE.CUSTOMER) {
     try {
       //await getMeterByAccount();
 
@@ -192,4 +198,7 @@ export const onDeInit = async () => {
   updateFWListener = undefined;
   hhuDisconnectListener = null;
   hhuReceiveDataListener = null;
+  if (timerCheckValidToken) {
+    clearInterval(timerCheckValidToken);
+  }
 };

@@ -422,7 +422,10 @@ export async function waitOpticalAdvance(
             'Chỉ số': lit.toString(),
           });
         }
-        //data['Dữ liệu hàng ngày'] = dataDaily;
+        break;
+      case OPTICAL_CMD.OPTICAL_GET_TIME_SEND:
+        {
+        }
         break;
     }
 

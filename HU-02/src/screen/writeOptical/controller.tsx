@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {PropsStore, storeContext} from '../../store';
-import { TextInput } from 'react-native';
+import {TextInput} from 'react-native';
 
 export type RadioTextProps = {
   checked: boolean;
@@ -18,8 +18,8 @@ export type HookState = {
 export type HookProps = {
   state: HookState;
   setState: React.Dispatch<React.SetStateAction<HookState>>;
-  refSeriMeter : React.RefObject<TextInput>;
-  refSeriModule : React.RefObject<TextInput>;
+  refSeriMeter: React.RefObject<TextInput>;
+  refSeriModule: React.RefObject<TextInput>;
   refImmediateData: React.RefObject<TextInput>;
 };
 
