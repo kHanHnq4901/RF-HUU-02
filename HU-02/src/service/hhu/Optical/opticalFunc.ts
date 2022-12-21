@@ -71,7 +71,10 @@ async function opticalSendAck(): Promise<boolean> {
   return true;
 }
 
-export async function opticalShakeHand(password: string): Promise<boolean> {
+export async function opticalShakeHand(
+  password: string,
+  typePassword?: Optical_PasswordType,
+): Promise<boolean> {
   if (password.length > 8) {
     console.log('password is too length');
     return false;
@@ -80,7 +83,13 @@ export async function opticalShakeHand(password: string): Promise<boolean> {
   let index = 0;
   const buffPass = Buffer.from(password);
   const payload = Buffer.alloc(1 /* type password */ + OPTICAL_SIZE_PASS);
-  payload[index] = Optical_PasswordType.PW_TYPE_P1;
+  payload.fill(0);
+  if (typePassword) {
+    payload[index] = typePassword;
+  } else {
+    payload[index] = Optical_PasswordType.PW_TYPE_P1;
+  }
+
   index++;
   buffPass.copy(payload, index, 0, buffPass.byteLength);
 
@@ -235,6 +244,7 @@ export async function waitOptical(timeout: number): Promise<PropsResponse> {
   if (responseHhuFunc.bSucceed !== true) {
     response.bSucceed = false;
     response.message = responseHhuFunc.message;
+
     return response;
   }
 
@@ -250,7 +260,7 @@ export async function waitOptical(timeout: number): Promise<PropsResponse> {
   }
 
   const responseHhuOptical = await AnalysisHhuOptical(payloadHhuFunc);
-
+  //console.log('responseHhuOptical:', responseHhuOptical);
   return responseHhuOptical;
 }
 
@@ -283,7 +293,7 @@ export async function waitOpticalAdvance(
       }
       response.bSucceed = false;
       response.obj = data;
-      response.message = 'Quá thời gian';
+      response.message = responseOptical.message ?? 'Lỗi không xác định';
       return response;
     }
 
@@ -322,16 +332,19 @@ export async function waitOpticalAdvance(
           data['Seri đồng hồ'] = objOptical.payload
             .readUintLE(index, SIZE_SERIAL)
             .toString();
+          console.log('get serial meter');
         }
         if (typeSeri === Optical_SeriType.OPTICAL_TYPE_SERI_MODULE) {
           data['Seri module'] = objOptical.payload
             .readUintLE(index, SIZE_SERIAL)
             .toString();
+          console.log('get serial module');
         }
 
         break;
       case OPTICAL_CMD.OPTICAL_GET_VERSION:
         data.Version = objOptical.payload[index].toString();
+        console.log('get version');
         break;
       case OPTICAL_CMD.OPTICAL_GET_MORE:
         const more: Optical_MoreInfoProps = Array2Struct(
@@ -340,6 +353,7 @@ export async function waitOpticalAdvance(
           Optical_MoreInfoType,
         );
         data['Điện áp'] = more.fVoltage.toFixed(2);
+        console.log('get more');
         break;
       case OPTICAL_CMD.OPTICAL_GET_RTC:
         const rtc: Rtc_SimpleTimeProps = Array2Struct(
@@ -348,6 +362,7 @@ export async function waitOpticalAdvance(
           Rtc_SimpleTimeType,
         );
         data.RTC = SimpleTimeToSTring(rtc);
+        console.log('get rtc');
         break;
       case OPTICAL_CMD.OPTICAL_GET_REGISTER:
         const typeSensor = objOptical.payload[index];
@@ -382,6 +397,7 @@ export async function waitOpticalAdvance(
           default:
             data['Dữ liệu'] = 'unknown';
         }
+        console.log('get register');
         break;
       case OPTICAL_CMD.OPTICAL_GET_LIST_DATA_DAILY:
         const numRecord =
@@ -415,8 +431,9 @@ export async function waitOpticalAdvance(
           const lit = cwLit - uCwLit;
 
           dataDaily.push({
-            'Thời điểm chốt(full time)': formatDateTimeDB(date),
-            'Thời điểm chốt': SimpleTimeToSTring(strDataDaily.SimpleTime),
+            'Thời điểm chốt(full time)': undefined as unknown as string,
+            // 'Thời điểm chốt': SimpleTimeToSTring(strDataDaily.SimpleTime),
+            'Thời điểm chốt': formatDateTimeDB(date),
             'Dữ liệu xuôi': cwLit.toString(),
             'Dữ liệu ngược': uCwLit.toString(),
             'Chỉ số': lit.toString(),

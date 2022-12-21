@@ -203,27 +203,27 @@ export async function waitAframeHHU(timeout: number): Promise<boolean> {
 
 export async function hhuFunc_wait(timeout: number): Promise<PropsResponse> {
   let hhuHeader = {} as hhuFunc_HeaderProps;
-  let respones = {} as PropsResponse;
-  respones.bSucceed = false;
+  let response = {} as PropsResponse;
+  response.bSucceed = false;
 
-  respones.obj = {} as hhuFunc_PropsObjAnalysis;
+  response.obj = {} as hhuFunc_PropsObjAnalysis;
   HhuObj.identityFrame.bActive = false;
   //console.log('1');
-  const btimeout = await waitAframeHHU(timeout + 1200);
+  const bTimeout = await waitAframeHHU(timeout + 1200);
   //console.log('2');
 
-  if (btimeout === false) {
+  if (bTimeout === false) {
     console.log('timeout');
-    respones.message = 'timeout';
-    respones.bSucceed = false;
-    return respones;
+    response.message = 'Quá thời gian';
+    response.bSucceed = false;
+    return response;
   }
 
   if (HhuObj.countRec < sizeIdentityHeader) {
     console.log('count rec so small');
-    respones.message = 'count rec so small';
-    respones.bSucceed = false;
-    return respones;
+    response.message = 'count rec so small';
+    response.bSucceed = false;
+    return response;
   }
 
   const crc16FrameUart = crc16_offset(
@@ -246,9 +246,9 @@ export async function hhuFunc_wait(timeout: number): Promise<PropsResponse> {
     console.log('crc16FrameUart:', crc16FrameUart.toString(16));
     console.log('crc16Buff:', crc16Buff.toString(16));
 
-    respones.message = 'crc uart error';
-    respones.bSucceed = false;
-    return respones;
+    response.message = 'crc uart error';
+    response.bSucceed = false;
+    return response;
   }
   let index = 0;
   hhuHeader = Array2Struct(HhuObj.buffRx, index, hhuFunc_HeaderType);
@@ -257,14 +257,14 @@ export async function hhuFunc_wait(timeout: number): Promise<PropsResponse> {
   HhuObj.buffRx.copyWithin(0, index);
   HhuObj.countRec -= index;
 
-  respones.obj.hhuHeader = hhuHeader;
-  respones.obj.payload = HhuObj.buffRx.slice(0, hhuHeader.u16Length); //Buffer.from(HhuObj.buffRx, 0, hhuHeader.u16Length);
+  response.obj.hhuHeader = hhuHeader;
+  response.obj.payload = HhuObj.buffRx.slice(0, hhuHeader.u16Length); //Buffer.from(HhuObj.buffRx, 0, hhuHeader.u16Length);
 
   console.log('hhuHeader:', hhuHeader);
 
   console.log('Rec func:', HhuObj.countRec - 2 /* crc */ + ' bytes');
   console.log(
-    BufferToString(respones.obj.payload, 0, hhuHeader.u16Length, 16, true),
+    BufferToString(response.obj.payload, 0, hhuHeader.u16Length, 16, true),
   );
 
   // switch (hhuHeader.u8Cmd) {
@@ -279,8 +279,8 @@ export async function hhuFunc_wait(timeout: number): Promise<PropsResponse> {
   //     return false;
   // }
 
-  respones.bSucceed = true;
-  return respones;
+  response.bSucceed = true;
+  return response;
 }
 
 // /////////////

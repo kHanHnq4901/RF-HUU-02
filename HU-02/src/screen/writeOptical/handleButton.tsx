@@ -8,20 +8,23 @@ import {
 import {
   OPTICAL_CMD,
   Optical_HeaderProps,
+  Optical_PasswordType,
   Optical_SeriType,
 } from '../../service/hhu/Optical/opticalProtocol';
 import {SIZE_SERIAL} from '../../service/hhu/RF/radioProtocol';
 import {showAlert} from '../../util';
 import {hookProps, RadioTextProps} from './controller';
+import {Buffer} from 'buffer';
 
 function checkIsItemSelected(): boolean {
   let hasItem = false;
 
   for (let item in hookProps.state) {
-    if (typeof item === 'object') {
+    if (typeof hookProps.state[item] === 'object') {
       let valueObj = hookProps.state[item] as RadioTextProps;
       if (valueObj.checked) {
         hasItem = true;
+
         break;
       }
     }
@@ -37,6 +40,24 @@ export function setStatus(str: string) {
   });
 }
 
+function clearBeforeRead() {
+  if (hookProps.state.seriMeter.checked) {
+    hookProps.refSeriMeter.current?.setNativeProps({
+      text: '',
+    });
+  }
+  if (hookProps.state.seriModule.checked) {
+    hookProps.refSeriModule.current?.setNativeProps({
+      text: '',
+    });
+  }
+  if (hookProps.state.immediateData.checked) {
+    hookProps.refImmediateData.current?.setNativeProps({
+      text: '',
+    });
+  }
+}
+
 export async function onReadOpticalPress() {
   let message = '';
   try {
@@ -49,6 +70,8 @@ export async function onReadOpticalPress() {
       return;
     }
 
+    clearBeforeRead();
+
     hookProps.setState(state => {
       state.isBusy = true;
       return {...state};
@@ -58,7 +81,7 @@ export async function onReadOpticalPress() {
     if (!bRet) {
       message += 'Bắt tay cổng quang lỗi. ';
     } else {
-      const timeout = 2000;
+      const timeout = 3000;
 
       const header = {} as Optical_HeaderProps;
       header.u8FSN = 0xff;
@@ -67,17 +90,22 @@ export async function onReadOpticalPress() {
       let payload: Buffer | undefined;
       let cmd: number = 0;
       if (hookProps.state.seriMeter.checked) {
+        console.log('get seri meter');
+
         cmd = OPTICAL_CMD.OPTICAL_GET_SERIAL;
         payload = Buffer.alloc(1);
+
         payload[0] = Optical_SeriType.OPTICAL_TYPE_SERI_METER;
         header.u8Length = payload.byteLength;
         header.u8Command = cmd;
         bRet = await opticalSend(header, payload);
+
         if (bRet) {
           const response = await waitOpticalAdvance({
             desiredCmd: cmd,
             timeout: timeout,
           });
+
           if (response.bSucceed) {
             if (response.obj) {
               const data = response.obj as {
@@ -85,14 +113,19 @@ export async function onReadOpticalPress() {
                   | string
                   | OpticalDailyProps[];
               };
-
+              const strSeriMeter = data['Seri đồng hồ'];
               hookProps.refSeriMeter.current?.setNativeProps({
-                text: data['Seri đồng hồ'],
+                text: strSeriMeter,
+              });
+              hookProps.setState(state => {
+                state.seriMeter.value = strSeriMeter as string;
+                return {...state};
               });
             }
           } else {
             message += 'Lỗi: ' + response.message + '. ';
-            setStatus(message);
+
+            //setStatus(message);
           }
         }
       }
@@ -115,29 +148,36 @@ export async function onReadOpticalPress() {
                   | string
                   | OpticalDailyProps[];
               };
-
+              const strSeriModule = data['Seri module'];
               hookProps.refSeriModule.current?.setNativeProps({
-                text: data['Seri module'],
+                text: strSeriModule,
+              });
+              hookProps.setState(state => {
+                state.seriModule.value = strSeriModule as string;
+                return {...state};
               });
             }
           } else {
             message += 'Lỗi: ' + response.message + '. ';
-            setStatus(message);
+
+            //setStatus(message);
           }
         }
       }
-      if (hookProps.state.seriMeter.checked) {
+
+      if (hookProps.state.immediateData.checked) {
         cmd = OPTICAL_CMD.OPTICAL_GET_REGISTER;
-        payload = Buffer.alloc(1);
-        payload[0] = Optical_SeriType.OPTICAL_TYPE_SERI_METER;
-        header.u8Length = payload.byteLength;
+        payload = undefined;
+
         header.u8Command = cmd;
+        header.u8Length = 0;
         bRet = await opticalSend(header, payload);
         if (bRet) {
           const response = await waitOpticalAdvance({
             desiredCmd: cmd,
             timeout: timeout,
           });
+
           if (response.bSucceed) {
             if (response.obj) {
               const data = response.obj as {
@@ -145,14 +185,20 @@ export async function onReadOpticalPress() {
                   | string
                   | OpticalDailyProps[];
               };
-
+              //console.log(data['Dữ liệu']);
+              const strImmediateData = data['Dữ liệu'];
               hookProps.refImmediateData.current?.setNativeProps({
-                text: data['Dữ liệu'],
+                text: strImmediateData,
+              });
+              hookProps.setState(state => {
+                state.immediateData.value = strImmediateData as string;
+                return {...state};
               });
             }
           } else {
             message += 'Lỗi: ' + response.message + '. ';
-            setStatus(message);
+
+            //setStatus(message);
           }
         }
       }
@@ -186,7 +232,7 @@ export async function onWriteOpticalPress() {
       return {...state};
     });
 
-    let bRet = await opticalShakeHand('12345000');
+    let bRet = await opticalShakeHand('12345', Optical_PasswordType.PW_TYPE_P2);
     if (!bRet) {
       message += 'Bắt tay cổng quang lỗi. ';
     } else {
@@ -220,10 +266,10 @@ export async function onWriteOpticalPress() {
             timeout: timeout,
           });
           if (response.bSucceed) {
-            message += 'Cài sei đồng hồ thành công';
+            message += 'Cài sei đồng hồ thành công. ';
           } else {
             message += 'Lỗi: ' + response.message + '. ';
-            setStatus(message);
+            //setStatus(message);
           }
         }
       }
@@ -248,14 +294,14 @@ export async function onWriteOpticalPress() {
             timeout: timeout,
           });
           if (response.bSucceed) {
-            message += 'Cài sei module thành công';
+            message += 'Cài sei module thành công. ';
           } else {
             message += 'Lỗi: ' + response.message + '. ';
-            setStatus(message);
+            //setStatus(message);
           }
         }
       }
-      if (hookProps.state.seriMeter.checked) {
+      if (hookProps.state.immediateData.checked) {
         cmd = OPTICAL_CMD.OPTICAL_SET_DATA_NO_FACTOR_PULSE;
         payload = Buffer.alloc(4);
         index = 0;
@@ -274,10 +320,10 @@ export async function onWriteOpticalPress() {
             timeout: timeout,
           });
           if (response.bSucceed) {
-            message += 'Cài sei chỉ số thành công';
+            message += 'Cài sei chỉ số thành công. ';
           } else {
             message += 'Lỗi: ' + response.message + '. ';
-            setStatus(message);
+            //setStatus(message);
           }
         }
       }

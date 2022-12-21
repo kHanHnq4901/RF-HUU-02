@@ -1,14 +1,15 @@
 import React, {useEffect} from 'react';
-import {ScrollView, StyleSheet, TextInput, View} from 'react-native';
+import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {Button} from '../../component/button/button';
 import Loader3 from '../../component/loader3';
 import {RadioText} from '../../component/radioText';
-import Theme, {sizeScreen} from '../../theme';
+import Theme, {Colors, CommonFontSize, sizeScreen} from '../../theme';
 import {isAllNumeric, showAlert} from '../../util';
 import {GetHookProps, hookProps, onDeInit, onInit, store} from './controller';
 import throttle from 'lodash.throttle';
 import {onReadOpticalPress, onWriteOpticalPress} from './handleButton';
 import {USER_ROLE_TYPE} from '../../service/user';
+import {isNumeric} from '../../util/index';
 
 export const WriteOpticalScreen = () => {
   GetHookProps();
@@ -24,6 +25,7 @@ export const WriteOpticalScreen = () => {
           <Loader3 />
         </View>
       )}
+      <Text style={styles.status}>{hookProps.state.status}</Text>
       <ScrollView
         contentContainerStyle={styles.contentContainerScroll}
         showsVerticalScrollIndicator={false}
@@ -99,6 +101,8 @@ export const WriteOpticalScreen = () => {
               maxLength={10}
               textAlign="right"
               containerStyle={styles.width50}
+              keyboardType="numeric"
+              ref={hookProps.refSeriModule}
             />
           </View>
           <View style={styles.width50}>
@@ -116,7 +120,7 @@ export const WriteOpticalScreen = () => {
                   return;
                 }
                 const text = e.nativeEvent.text.trim();
-                if (isAllNumeric(text) === false) {
+                if (isNumeric(text) === false) {
                   await showAlert('Số không hợp lệ');
                   hookProps.refImmediateData.current?.clear();
                   return;
@@ -132,6 +136,8 @@ export const WriteOpticalScreen = () => {
               maxLength={10}
               textAlign="right"
               containerStyle={styles.width50}
+              keyboardType="numeric"
+              ref={hookProps.refImmediateData}
             />
           </View>
         </View>
@@ -164,6 +170,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Theme.Colors.backgroundColor,
+  },
+  status: {
+    color: Colors.primary,
+    fontSize: CommonFontSize,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    marginVertical: 5,
+    marginHorizontal: 15,
   },
   containerLoader: {
     backgroundColor: 'transparent',

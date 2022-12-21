@@ -107,10 +107,13 @@ function ConvertObjToHook(objResponse: any) {
         if ((itm as FieldOpticalResponseProps) === 'Seri đồng hồ') {
           state.seri = objResponse[itm];
         }
-        state.dataTable.push([
-          itm,
-          objResponse[itm] + getUnitByLabelOptical(itm as PropsLabelOptical),
-        ]);
+        if (objResponse[itm]) {
+          state.dataTable.push([
+            itm,
+            objResponse[itm] + getUnitByLabelOptical(itm as PropsLabelOptical),
+          ]);
+        }
+
         return {...state};
       });
     } else if (
@@ -120,10 +123,12 @@ function ConvertObjToHook(objResponse: any) {
       const dataTable: string[][] = [];
       for (let obj of objResponse[itm]) {
         for (let key in obj) {
-          dataTable.push([
-            key,
-            obj[key] + getUnitByLabelOptical(key as PropsLabelOptical),
-          ]);
+          if (obj[key]) {
+            dataTable.push([
+              key,
+              obj[key] + getUnitByLabelOptical(key as PropsLabelOptical),
+            ]);
+          }
         }
       }
       hookProps.setState(state => {
@@ -141,12 +146,12 @@ async function readInfo() {
     return;
   }
 
-  const arrtypeData: OPTICAL_CMD[] = [];
-  arrtypeData.push(OPTICAL_CMD.OPTICAL_GET_SERIAL); // meter
-  arrtypeData.push(OPTICAL_CMD.OPTICAL_GET_SERIAL); // module
-  arrtypeData.push(OPTICAL_CMD.OPTICAL_GET_VERSION);
-  arrtypeData.push(OPTICAL_CMD.OPTICAL_GET_MORE);
-  arrtypeData.push(OPTICAL_CMD.OPTICAL_GET_RTC);
+  const arrCommand: OPTICAL_CMD[] = [];
+  arrCommand.push(OPTICAL_CMD.OPTICAL_GET_SERIAL); // meter
+  arrCommand.push(OPTICAL_CMD.OPTICAL_GET_SERIAL); // module
+  arrCommand.push(OPTICAL_CMD.OPTICAL_GET_VERSION);
+  arrCommand.push(OPTICAL_CMD.OPTICAL_GET_MORE);
+  arrCommand.push(OPTICAL_CMD.OPTICAL_GET_RTC);
 
   let typeSeri = Optical_SeriType.OPTICAL_TYPE_SERI_METER;
 
@@ -156,7 +161,9 @@ async function readInfo() {
 
   let hasFailed = false;
   let payload: Buffer | undefined;
-  for (let cmd of arrtypeData) {
+  for (let cmd of arrCommand) {
+    console.log('get cmd:', cmd);
+
     header.u8Command = cmd;
     if (cmd === OPTICAL_CMD.OPTICAL_GET_SERIAL) {
       payload = Buffer.alloc(1);
@@ -181,6 +188,7 @@ async function readInfo() {
       }
     }
     payload = undefined;
+    header.u8Length = 0;
     await sleep(150);
   }
   if (!hasFailed) {
@@ -195,14 +203,14 @@ async function readData() {
     return;
   }
 
-  const arrtypeData: OPTICAL_CMD[] = [];
+  const arrCommand: OPTICAL_CMD[] = [];
   //if (hookProps.state.seri === '') {
-  arrtypeData.push(OPTICAL_CMD.OPTICAL_GET_SERIAL);
+  arrCommand.push(OPTICAL_CMD.OPTICAL_GET_SERIAL);
   //}
   if (hookProps.state.typeRead === 'Tức thời') {
-    arrtypeData.push(OPTICAL_CMD.OPTICAL_GET_REGISTER);
+    arrCommand.push(OPTICAL_CMD.OPTICAL_GET_REGISTER);
   } else {
-    arrtypeData.push(OPTICAL_CMD.OPTICAL_GET_LIST_DATA_DAILY);
+    arrCommand.push(OPTICAL_CMD.OPTICAL_GET_LIST_DATA_DAILY);
   }
 
   const header = {} as Optical_HeaderProps;
@@ -211,7 +219,7 @@ async function readData() {
 
   let hasFailed = false;
 
-  for (let cmd of arrtypeData) {
+  for (let cmd of arrCommand) {
     let payload: Buffer | undefined;
     let index = 0;
     header.u8Command = cmd;
@@ -219,16 +227,19 @@ async function readData() {
       payload = Buffer.alloc(1);
       payload[0] = Optical_SeriType.OPTICAL_TYPE_SERI_METER;
       header.u8Length = 1;
-    }
-    if (cmd === OPTICAL_CMD.OPTICAL_GET_LIST_DATA_DAILY) {
+    } else if (cmd === OPTICAL_CMD.OPTICAL_GET_LIST_DATA_DAILY) {
       if (hookProps.state.typeRead === 'Theo thời gian') {
         const calendar = {} as Rtc_CalendarProps;
 
-        header.u8Length = 1 /*type get */ + 2 * sizeof(Rtc_CalendarType);
+        header.u8Length =
+          1 /*type get */ + 1 /** is0h */ + 2 * sizeof(Rtc_CalendarType);
         payload = Buffer.alloc(header.u8Length);
         payload[index] = OPTICAL_TYPE_GET_DATA_DAILY.TYPE_GET_BY_TIME;
+        index++;
         if (hookProps.state.is0h === true) {
-          payload[index] |= (1 << 7) & 0xff;
+          payload[index] = 1;
+        } else {
+          payload[index] = 0;
         }
         index++;
 
@@ -238,6 +249,8 @@ async function readData() {
         calendar.u8Hours = hookProps.state.dateStart.getHours();
         calendar.u8Minutes = hookProps.state.dateStart.getMinutes();
         calendar.u8Seconds = hookProps.state.dateStart.getSeconds();
+
+        console.log('start time: ', calendar);
 
         Struct2Array(Rtc_CalendarType, calendar, payload, index);
         index += sizeof(Rtc_CalendarType);
@@ -249,25 +262,32 @@ async function readData() {
         calendar.u8Minutes = hookProps.state.dateEnd.getMinutes();
         calendar.u8Seconds = hookProps.state.dateEnd.getSeconds();
 
+        console.log('end time: ', calendar);
+
         Struct2Array(Rtc_CalendarType, calendar, payload, index);
         index += sizeof(Rtc_CalendarType);
       } else {
-        header.u8Length = 2;
+        header.u8Length = 3; /** type get + is 0h + num nearest */
         payload = Buffer.alloc(header.u8Length);
         payload[index] = OPTICAL_TYPE_GET_DATA_DAILY.TYPE_GET_BY_NEAREST;
+        index++;
         if (hookProps.state.is0h === true) {
-          payload[index] |= (1 << 7) & 0xff;
+          payload[index] = 1;
+        } else {
+          payload[index] = 0;
         }
         index++;
         payload[index] = 10;
         index++;
       }
+    } else {
+      header.u8Length = 0;
     }
     bRet = await opticalSend(header, payload);
     if (bRet) {
       const response = await waitOpticalAdvance({
         desiredCmd: cmd,
-        timeout: 2000,
+        timeout: 5000,
       });
       if (response.bSucceed) {
       } else {
