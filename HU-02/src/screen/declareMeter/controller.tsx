@@ -135,7 +135,7 @@ export const onInit = async () => {
   Geolocation.setRNConfiguration({
     skipPermissionRequests: false,
     authorizationLevel: 'whenInUse',
-    locationProvider: 'android',
+    locationProvider: 'playServices',
   });
   Geolocation.requestAuthorization(
     () => {

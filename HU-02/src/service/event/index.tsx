@@ -1,11 +1,24 @@
 import ReceiveSharingIntent from 'react-native-receive-sharing-intent';
-import { getFilExtension } from '../../util';
+import {getFilExtension} from '../../util';
 import RNFS from 'react-native-fs';
-import { PATH_IMPORT_CSDL, PATH_IMPORT_XML } from '../../shared/path';
-import { Alert, DeviceEventEmitter, BackHandler } from 'react-native';
-import { PACKAGE_NAME, RECEIVE_FILE_CSDL, RECEIVE_FILE_XML } from './constant';
-import { closeConnection } from '../../database/repository';
-import { importXmlFromPath } from '../../xml/xmlUtil';
+import {PATH_IMPORT_CSDL, PATH_IMPORT_XML} from '../../shared/path';
+import {
+  Alert,
+  DeviceEventEmitter,
+  BackHandler,
+  EventEmitter,
+  Vibration,
+} from 'react-native';
+import {
+  EVENT_SUCCEEDED,
+  PACKAGE_NAME,
+  RECEIVE_FILE_CSDL,
+  RECEIVE_FILE_XML,
+  EVENT_ERROR,
+} from './constant';
+import {closeConnection} from '../../database/repository';
+import {importXmlFromPath} from '../../xml/xmlUtil';
+import SoundPlayer from 'react-native-sound-player';
 
 const TAG = 'EVENT: ';
 
@@ -18,6 +31,27 @@ type FileSharedProps = {
   text: string;
   weblink: string;
 };
+
+export function ListenEventSucceedError() {
+  DeviceEventEmitter.addListener(EVENT_SUCCEEDED, () => {
+    try {
+      // play the file tone.mp3
+      SoundPlayer.playSoundFile('succeed1', 'mp3');
+    } catch (e) {
+      console.log('cannot play the sound file', e);
+    }
+  });
+  DeviceEventEmitter.addListener(EVENT_ERROR, () => {
+    Vibration.vibrate();
+  });
+}
+
+export function emitEventSuccess() {
+  DeviceEventEmitter.emit(EVENT_SUCCEEDED);
+}
+export function emitEventFailure() {
+  DeviceEventEmitter.emit(EVENT_ERROR);
+}
 
 export const onReceiveSharingIntent = () => {
   ReceiveSharingIntent.getReceivedFiles(

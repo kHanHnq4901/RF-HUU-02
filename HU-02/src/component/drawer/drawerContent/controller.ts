@@ -1,6 +1,9 @@
 import {useContext} from 'react';
 import {bleManagerEmitter} from '../../../screen/ble/controller';
-import {onReceiveSharingIntent} from '../../../service/event';
+import {
+  ListenEventSucceedError,
+  onReceiveSharingIntent,
+} from '../../../service/event';
 import {requestPermissionWriteExternalStorage} from '../../../service/permission';
 import {
   PATH_IMPORT_CSDL,
@@ -31,6 +34,7 @@ import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {StackRootList} from '../../../navigation/model/model';
 import {GetListChangeTypeMeter} from '../../../service/api';
+import {checkTabelDeclareMeterIfExist} from '../../../database/repository/declareMeterRepository';
 
 const TAG = 'controllerDrawerContent:';
 
@@ -160,6 +164,7 @@ export const onInit = async navigation => {
       onReceiveSharingIntent();
 
       await checkTabelDBIfExist();
+      await checkTabelDeclareMeterIfExist();
     }
 
     //exportXmlController.createDirectory();
@@ -182,6 +187,7 @@ export const onInit = async navigation => {
       },
     ]);
   });
+  ListenEventSucceedError();
 };
 
 export const onDeInit = async () => {
