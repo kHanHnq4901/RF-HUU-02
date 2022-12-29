@@ -1,5 +1,12 @@
 export type TYPE_METER = 'Đồng hồ' | 'Repeater' | null;
 
+export type TYPE_MODEL_METER =
+  | 'EW001C_EW-15P1'
+  | 'EW002C_EW-15P2'
+  | 'EW001D_EW-15M1'
+  | 'EW001E_EW-15M1'
+  | 'EW001F_EW-15M2';
+
 export type PropsLabel =
   | 'Seri'
   | 'RTC'

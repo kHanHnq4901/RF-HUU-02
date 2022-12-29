@@ -135,7 +135,7 @@ export const connectLatestBLE = async (store: PropsStore) => {
           const version = await readVersion();
           if (version) {
             let arr = version.split('.');
-            arr.pop();
+            arr = arr.slice(0, 2);
             const shortVersion = arr
               .join('.')
               .toLocaleLowerCase()
@@ -145,7 +145,7 @@ export const connectLatestBLE = async (store: PropsStore) => {
               state.hhu.shortVersion = shortVersion;
               return {...state};
             });
-            console.log('Read version succeed');
+            console.log('Read version succeed: ' + version);
             checkUpdateHHU();
             break;
           } else {

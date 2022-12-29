@@ -19,6 +19,12 @@ type PropsReturnGetFirmware = {
   strFirmware: string;
 };
 
+export type PropsCommonResponse = {
+  bSucceeded: boolean;
+  obj: any;
+  strMessage: string;
+};
+
 const TAG = 'API:';
 
 const getTimeFromString = (time: string): string | undefined => {
@@ -241,5 +247,149 @@ export async function DeclareMeter(props: PropsDeclareMeter): Promise<boolean> {
     console.log(TAG, 'err: ', err.message);
 
     return false;
+  }
+}
+
+export type PropsAddMeter = {
+  MeterNo: string;
+  MeterName: string;
+  MeterModelID: string;
+  LineID: string;
+  CustomerCode: string;
+  CustomerName: string;
+  CustomerAddress: string;
+  CustomerPhone: string;
+  SIM: string;
+  Coordinate: string;
+};
+
+export async function AddMeter(
+  props: PropsAddMeter,
+): Promise<PropsCommonResponse> {
+  //SaveActiveTotal(string ModuleNo, string DataTime, string ActiveTotal, string NegactiveTotal, string Token)
+
+  const response: PropsCommonResponse = {
+    bSucceeded: false,
+    obj: null,
+    strMessage: '',
+  };
+  try {
+    const url = `http://${store.state.appSetting.server.host}:${store.state.appSetting.server.port}/api/AddMeter`;
+
+    const rest = await axios.get(url, {
+      params: {
+        MeterNo: props.MeterNo,
+        MeterName: props.MeterName,
+        MeterModelID: props.MeterModelID,
+        LineID: props.LineID,
+        CustomerCode: props.CustomerCode,
+        CustomerName: props.CustomerName,
+        CustomerAddress: props.CustomerAddress,
+        CustomerPhone: props.CustomerPhone,
+        SIM: props.SIM,
+        Coordinate: props.Coordinate,
+        Token: store.state.userInfo.TOKEN,
+      },
+    });
+    const ret = rest.data as {CODE: string; MESSAGE: string};
+    if (ret.CODE === '1') {
+      response.bSucceeded = true;
+      return response;
+    } else {
+      console.log(TAG, 'err:', ret);
+      response.bSucceeded = false;
+      response.strMessage = ret.MESSAGE;
+      return response;
+    }
+  } catch (err) {
+    console.log(TAG, 'err: ', err.message);
+    response.bSucceeded = false;
+    response.strMessage = err.message;
+    return response;
+  }
+}
+
+export type PropsReturnGetListLine = {
+  LINE_ID: string;
+  LINE_NAME: string;
+  ADDRESS: string;
+  CODE: string;
+}[];
+
+export async function GetListLine(): Promise<PropsCommonResponse> {
+  //SaveActiveTotal(string ModuleNo, string DataTime, string ActiveTotal, string NegactiveTotal, string Token)
+
+  const response: PropsCommonResponse = {
+    bSucceeded: false,
+    obj: null,
+    strMessage: '',
+  };
+  try {
+    const url = `http://${store.state.appSetting.server.host}:${store.state.appSetting.server.port}/api/GetLineList`;
+
+    const rest = await axios.get(url, {
+      params: {
+        UserID: store.state.userInfo.USER_ID,
+        Token: store.state.userInfo.TOKEN,
+      },
+    });
+    let ret = rest.data as {CODE: string; MESSAGE: string};
+    if (ret.CODE === '0') {
+      response.bSucceeded = false;
+      response.strMessage = ret.MESSAGE;
+      return response;
+    }
+    const realValue = rest.data as PropsReturnGetListLine;
+
+    response.obj = realValue;
+    response.bSucceeded = true;
+
+    return response;
+  } catch (err) {
+    console.log(TAG, 'err: ', err.message);
+    response.bSucceeded = false;
+    response.strMessage = err.message;
+    return response;
+  }
+}
+
+export type PropsReturnGetModelMeter = {
+  METER_MODEL_ID: string;
+  METER_MODEL_DESC: string;
+}[];
+
+export async function GetMeterModel(): Promise<PropsCommonResponse> {
+  //SaveActiveTotal(string ModuleNo, string DataTime, string ActiveTotal, string NegactiveTotal, string Token)
+
+  const response: PropsCommonResponse = {
+    bSucceeded: false,
+    obj: null,
+    strMessage: '',
+  };
+  try {
+    const url = `http://${store.state.appSetting.server.host}:${store.state.appSetting.server.port}/api/GetMeterModel`;
+
+    const rest = await axios.get(url, {
+      params: {
+        Token: store.state.userInfo.TOKEN,
+      },
+    });
+    let ret = rest.data as {CODE: string; MESSAGE: string};
+    if (ret.CODE === '0') {
+      response.bSucceeded = false;
+      response.strMessage = ret.MESSAGE;
+      return response;
+    }
+    const realValue = rest.data as PropsReturnGetModelMeter;
+
+    response.obj = realValue;
+    response.bSucceeded = true;
+
+    return response;
+  } catch (err) {
+    console.log(TAG, 'err: ', err.message);
+    response.bSucceeded = false;
+    response.strMessage = err.message;
+    return response;
   }
 }

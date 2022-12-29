@@ -1,9 +1,9 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import TextInput, {
   IInteractiveTextInputProps,
 } from 'react-native-text-input-interactive';
-import { Fonts } from '../../theme';
+import {Fonts} from '../../theme';
 
 type Props = {
   label: string;

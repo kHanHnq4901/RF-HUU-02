@@ -1,19 +1,15 @@
+import {StackWriteStationCodeNavigator} from '../navigation/StackWriteBySatationCode';
 import {DrawerParamsList} from '../navigation/model/model';
 import {AboutScreen} from '../screen/about';
 import {BoardBLEScreen} from '../screen/boardBLE';
 import {DeclareMeterScreen} from '../screen/declareMeter';
-import {ExportXmlScreen} from '../screen/exportXml';
-import {ImportXmlScreen} from '../screen/importXml';
 import {OverViewScreen} from '../screen/overview';
 import {ReadOpticalScreen} from '../screen/readOptical';
 import {ReadParameterScreen} from '../screen/readParameter';
 import {SettingAndAlarmScreen} from '../screen/settingAndAlarm';
-import {StackWriteStationCodeNavigator} from '../navigation/StackWriteBySatationCode';
-import {GuideBookScreen} from '../screen/guideBook';
-import {ImportExportCSDLScreen} from '../screen/importexportCSDL/index';
 import {WriteOpticalScreen} from '../screen/writeOptical';
 
-export const version = '1.0.1';
+export const version = '1.0.2';
 
 // export const widthScreen = Dimensions.get('screen').width;
 // export const heighScreen = Dimensions.get('screen').height;

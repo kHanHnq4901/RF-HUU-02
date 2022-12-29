@@ -1,4 +1,4 @@
-import { PropsExtraLabelPower, PropsLabelMaxDemand } from './aps/hhuAps';
+import {PropsExtraLabelPower, PropsLabelMaxDemand} from './aps/hhuAps';
 
 export const LoaiDoc = {
   haveNotWrite: {
@@ -552,7 +552,7 @@ export const getTypeAndIs1ChanelByRFCode = (
   type: TYPE_METER;
   is1Ch: boolean;
 } => {
-  let result: { type: TYPE_METER; is1Ch: boolean } = {
+  let result: {type: TYPE_METER; is1Ch: boolean} = {
     type: null,
     is1Ch: false,
   };

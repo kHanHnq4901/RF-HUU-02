@@ -209,9 +209,9 @@ export const turnOnLocation = async (): Promise<boolean> => {
   let ok: boolean = false;
   switch (result) {
     case RESULTS.UNAVAILABLE:
-      console.log(
-        'This feature BLUETOOTH_CONNECT is not available (on this device / in this context)',
-      );
+      // console.log(
+      //   'This feature BLUETOOTH_CONNECT is not available (on this device / in this context)',
+      // );
       break;
     case RESULTS.DENIED:
       console.log(
@@ -235,9 +235,9 @@ export const turnOnLocation = async (): Promise<boolean> => {
   ok = false;
   switch (result) {
     case RESULTS.UNAVAILABLE:
-      console.log(
-        'This feature BLUETOOTH_CONNECT is not available (on this device / in this context)',
-      );
+      // console.log(
+      //   'This feature BLUETOOTH_CONNECT is not available (on this device / in this context)',
+      // );
       break;
     case RESULTS.DENIED:
       console.log(

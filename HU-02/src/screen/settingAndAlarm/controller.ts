@@ -3,6 +3,7 @@ import {PropsStore, storeContext} from '../../store';
 
 type PropsHookState = {
   chanelRF: string;
+  chanelRFRadio: string[];
 };
 
 type PropsHook = {
@@ -31,10 +32,24 @@ export const typeAlarmRegister: {
 export const hookProps = {} as PropsHook;
 export let store = {} as PropsStore;
 
+function getInitialState(): PropsHookState {
+  const initialState = {} as PropsHookState;
+
+  initialState.chanelRF = '0';
+  initialState.chanelRFRadio = [];
+
+  let initChanel = 920225;
+
+  for (let i = 0; i < 18; i++) {
+    initialState.chanelRFRadio.push(initChanel.toString() + 'kHz');
+    initChanel += 150;
+  }
+
+  return initialState;
+}
+
 export const GetHookProps = (): PropsHook => {
-  const [state, setState] = useState<PropsHookState>({
-    chanelRF: '0',
-  });
+  const [state, setState] = useState<PropsHookState>(getInitialState());
   hookProps.state = state;
   hookProps.setState = setState;
 

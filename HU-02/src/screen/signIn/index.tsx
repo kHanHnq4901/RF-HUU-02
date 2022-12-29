@@ -20,6 +20,7 @@ import {
 } from './controller';
 import {onFingerPress, onLoginPress} from './handle';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {version} from '../../shared';
 
 export function SignInScreen() {
   UpdateHook();
@@ -99,7 +100,9 @@ export function SignInScreen() {
         <Text style={styles.navButtonText}>{'Đăng nhập bằng vân tay '}</Text>
         <Ionicons name="finger-print" color={Colors.secondary} size={25} />
       </TouchableOpacity>
-
+      <TouchableOpacity style={styles.forgotButton} onPress={() => {}}>
+        <Text style={styles.version}>Version: {version}</Text>
+      </TouchableOpacity>
       {/* <TouchableOpacity
         style={styles.forgotButton}
         onPress={() => navigation.navigate('SignUp')}>
@@ -133,6 +136,10 @@ const styles = StyleSheet.create({
   },
   forgotButton: {
     marginTop: 50,
+  },
+  version: {
+    color: Colors.caption,
+    fontSize: normalize(16),
   },
   finger: {
     //marginVertical: 20,

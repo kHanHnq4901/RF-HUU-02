@@ -12,6 +12,7 @@ import {
   onSavePress,
   onSetChanelPress,
 } from './handleButton';
+import {RadioButton} from '../../component/radioButton/radioButton';
 
 export const SettingAndAlarmScreen = () => {
   GetHookProps();
@@ -212,20 +213,43 @@ export const SettingAndAlarmScreen = () => {
               <TextInputInteractive
                 placeholder=""
                 keyboardType="numeric"
+                editable={false}
                 value={hookProps.state.chanelRF}
                 textInputStyle={styles.valueTextInput}
-                onChangeText={text => {
-                  hookProps.setState(state => {
-                    state.chanelRF = text;
-                    return {...state};
-                  });
-                }}
+                // onChangeText={text => {
+                //   hookProps.setState(state => {
+                //     state.chanelRF = text;
+                //     return {...state};
+                //   });
+                // }}
               />
               <Button
                 style={styles.buttonSmall}
                 label="Cài"
                 onPress={onSavePress}
               />
+            </View>
+            <View style={styles.chanelRF}>
+              {hookProps.state.chanelRFRadio.map((item, index) => {
+                return (
+                  <RadioButton
+                    key={item}
+                    label={item}
+                    value={item}
+                    checked={
+                      hookProps.state.chanelRF === index.toString()
+                        ? true
+                        : false
+                    }
+                    onPress={() => {
+                      hookProps.setState(state => {
+                        state.chanelRF = index.toString();
+                        return {...state};
+                      });
+                    }}
+                  />
+                );
+              })}
             </View>
           </>
         )}
@@ -241,6 +265,13 @@ const styles = StyleSheet.create({
   contain: {
     backgroundColor: Colors.backgroundColor,
     flex: 1,
+  },
+  chanelRF: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    marginVertical: 5,
+    marginBottom: 50,
   },
   container: {
     flex: 1,
