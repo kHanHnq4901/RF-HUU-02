@@ -19,6 +19,7 @@ import {
   onDeclarePress,
   onLineSelected,
   onModelMeterSelected,
+  test,
 } from './handleButton';
 
 export const DeclareMeterScreen = () => {
@@ -208,6 +209,14 @@ export const DeclareMeterScreen = () => {
           onDeclarePress();
         }}
       />
+      {/* <Button
+        // labelStyle={{color: 'black'}}
+        style={styles.styleBtn}
+        label="Test"
+        onPress={() => {
+          test();
+        }}
+      /> */}
     </View>
   );
 };
@@ -243,9 +252,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   styleBtn: {
-    marginBottom: 10,
+    marginBottom: 20,
     alignSelf: 'center',
     width: '50%',
+    //height: 45 * scale,
     // backgroundColor: Colors.backgroundColor,
   },
   containerLoader: {
@@ -264,6 +274,7 @@ const styles = StyleSheet.create({
     fontSize: normalize(20),
     borderRadius: 3,
     paddingHorizontal: 10,
+    fontFamily: 'Lato-Regular',
     margin: 10,
   },
   dropdown: {
@@ -271,6 +282,7 @@ const styles = StyleSheet.create({
     margin: 5,
     marginTop: 0,
     width: '45%',
+    marginBottom: 5 * scale,
   },
   buttonDropdown: {
     backgroundColor: 'white',
@@ -280,13 +292,15 @@ const styles = StyleSheet.create({
     //height: 35 * scale,
   },
   textDropdown: {
-    fontSize: normalize(18),
+    fontSize: normalize(16),
     color: Colors.text,
+    fontFamily: 'Lato-Regular',
   },
   textDropdownSmall: {
     fontSize: normalize(15),
     color: Colors.text,
     marginLeft: -10,
+    fontFamily: 'Lato-Regular',
   },
   dropdownDrop: {
     backgroundColor: 'white',
@@ -302,5 +316,6 @@ const styles = StyleSheet.create({
     fontSize: normalize(16),
     color: Colors.caption,
     marginBottom: 5,
+    fontFamily: 'Lato-Regular',
   },
 });

@@ -102,7 +102,17 @@ export const requestGps = async (): Promise<boolean> => {
 
 export const GetHookProps = (): HookProps => {
   const [state, setState] = useState<HookState>({
-    infoDeclare: {} as PropsDeclareMeter,
+    infoDeclare: {
+      seriMeter: '',
+      phoneNumber: '',
+      customerName: '',
+      customerCode: '',
+      address: '',
+      idStation: '',
+      typeMeter: '',
+      selectedModelMeter: null,
+      selectedStation: null,
+    },
     status: '',
     isBusy: false,
   });
@@ -146,33 +156,44 @@ export const onInit = async () => {
     },
   );
   requestGps();
-  if (ListStationObj.length === 0) {
-    const response = await GetListLine();
-    if (response.bSucceeded) {
-      ListStationObj = response.obj;
-      lisStationName = [];
-      for (let obj of ListStationObj) {
-        lisStationName.push(obj.LINE_NAME);
+  if (ListStationObj.length === 0 || ListModelMeterObj.length === 0) {
+    hookProps.setState(state => {
+      state.isBusy = true;
+      return {...state};
+    });
+    if (ListStationObj.length === 0) {
+      let response = await GetListLine();
+      if (response.bSucceeded) {
+        ListStationObj = response.obj;
+        lisStationName = [];
+        for (let obj of ListStationObj) {
+          lisStationName.push(obj.LINE_NAME);
+        }
+        console.log('update list line succeed');
+        //console.log('lisStationName:', lisStationName);
+      } else {
+        console.log('update list line failed: ', response);
       }
-      console.log('update list line succeed');
-      //console.log('lisStationName:', lisStationName);
-    } else {
-      console.log('update list line failed: ', response);
     }
-  }
-  if (ListModelMeterObj.length === 0) {
-    const response = await GetMeterModel();
-    if (response.bSucceeded) {
-      ListModelMeterObj = response.obj;
-      listModelMeterName = [];
-      for (let obj of ListModelMeterObj) {
-        listModelMeterName.push(obj.METER_MODEL_DESC);
+
+    if (ListModelMeterObj.length === 0) {
+      let response = await GetMeterModel();
+      if (response.bSucceeded) {
+        ListModelMeterObj = response.obj;
+        listModelMeterName = [];
+        for (let obj of ListModelMeterObj) {
+          listModelMeterName.push(obj.METER_MODEL_DESC);
+        }
+        console.log('update list model meter succeed');
+        //console.log('lisStationName:', lisStationName);
+      } else {
+        console.log('update list model meter failed: ', response);
       }
-      console.log('update list model meter succeed');
-      //console.log('lisStationName:', lisStationName);
-    } else {
-      console.log('update list model meter failed: ', response);
     }
+    hookProps.setState(state => {
+      state.isBusy = false;
+      return {...state};
+    });
   }
 };
 

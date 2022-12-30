@@ -3,6 +3,7 @@ import {PropsAddMeter} from '../../service/api';
 export type PropsAddMoreEntity = {
   ID: string;
   IS_SENT: boolean | null;
+  DATE_CREATE: string;
 };
 
 export type PropsDeclareMeterEntity = PropsAddMeter & PropsAddMoreEntity;
@@ -22,4 +23,5 @@ export const dumyEntity: PropsDeclareMeterEntity = {
   Coordinate: '',
   ID: '',
   IS_SENT: false,
+  DATE_CREATE: '',
 };

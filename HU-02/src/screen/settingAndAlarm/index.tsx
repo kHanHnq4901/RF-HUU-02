@@ -104,7 +104,7 @@ export const SettingAndAlarmScreen = () => {
               {/* <Text style={styles.textThreshold}>Nhỏ hơn:</Text> */}
               <TextInputInteractive
                 placeholder=""
-                keyboardType="numeric"
+                //keyboardType="numeric"
                 value={store.state.appSetting.server.host}
                 textInputStyle={styles.textIP}
                 onChangeText={text => {
@@ -255,7 +255,7 @@ export const SettingAndAlarmScreen = () => {
         )}
       </ScrollView>
       <View style={styles.btnBottom}>
-        <Button style={styles.button} label="Lưu" onPress={onSetChanelPress} />
+        <Button style={styles.button} label="Lưu" onPress={onSavePress} />
       </View>
     </View>
   );

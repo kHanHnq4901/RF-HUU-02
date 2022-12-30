@@ -1,40 +1,37 @@
+import {useNavigation} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
 import {useContext} from 'react';
+import {Alert, DeviceEventEmitter, EmitterSubscription} from 'react-native';
+import RNFS from 'react-native-fs';
+import {checkTabelDBIfExist} from '../../../database/repository';
+import {checkTabelDeclareMeterIfExist} from '../../../database/repository/declareMeterRepository';
+import {StackRootList} from '../../../navigation/model/model';
 import {bleManagerEmitter} from '../../../screen/ble/controller';
 import {
   ListenEventSucceedError,
   onReceiveSharingIntent,
 } from '../../../service/event';
-import {requestPermissionWriteExternalStorage} from '../../../service/permission';
-import {
-  PATH_IMPORT_CSDL,
-  PATH_EXECUTE_CSDL,
-  PATH_EXPORT_CSDL,
-  PATH_IMPORT_XML,
-  PATH_EXPORT_XML,
-  PATH_EXPORT_XML_EXTERNAL,
-} from '../../../shared/path';
-import {PropsStore, storeContext} from '../../../store';
-import RNFS from 'react-native-fs';
-import {updateValueAppSettingFromNvm} from '../../../service/storage';
-import {Alert, DeviceEventEmitter, EmitterSubscription} from 'react-native';
 import {UPDATE_FW_HHU} from '../../../service/event/constant';
-import {checkTabelDBIfExist} from '../../../database/repository';
-import {ObjSend} from '../../../service/hhu/Ble/hhuFunc';
 import {
   connectLatestBLE,
   handleUpdateValueForCharacteristic,
 } from '../../../service/hhu/Ble/bleHhuFunc';
+import {ObjSend} from '../../../service/hhu/Ble/hhuFunc';
+import {requestPermissionWriteExternalStorage} from '../../../service/permission';
+import {updateValueAppSettingFromNvm} from '../../../service/storage';
+import {USER_ROLE_TYPE, getLineList} from '../../../service/user';
 import {
-  USER_ROLE_TYPE,
-  getLineList,
-  getMeterByAccount,
-} from '../../../service/user';
+  PATH_EXECUTE_CSDL,
+  PATH_EXPORT_CSDL,
+  PATH_EXPORT_XML,
+  PATH_EXPORT_XML_EXTERNAL,
+  PATH_IMPORT_CSDL,
+  PATH_IMPORT_XML,
+} from '../../../shared/path';
+import {PropsStore, storeContext} from '../../../store';
 import {showAlert} from '../../../util';
-import {useNavigation} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {StackRootList} from '../../../navigation/model/model';
-import {GetListChangeTypeMeter} from '../../../service/api';
-import {checkTabelDeclareMeterIfExist} from '../../../database/repository/declareMeterRepository';
+import NetInfo from '@react-native-community/netinfo';
+import {SendUnsentDeclareMeterProcess} from '../../../database/service/declareMeterService';
 
 const TAG = 'controllerDrawerContent:';
 
@@ -48,6 +45,8 @@ let hhuReceiveDataListener: any = null;
 let updateFWListener: EmitterSubscription | undefined;
 
 let timerCheckValidToken: any;
+
+let unsubscribeNet;
 
 export const GetHookProps = () => {
   store = useContext(storeContext);
@@ -111,7 +110,7 @@ export const onInit = async navigation => {
     try {
       //await getMeterByAccount();
 
-      await getLineList();
+      //await getLineList();
 
       checkTokenValidInterval();
     } catch (err) {
@@ -161,10 +160,18 @@ export const onInit = async navigation => {
         console.log(TAG, err.message);
       }
 
-      onReceiveSharingIntent();
+      //onReceiveSharingIntent();
 
       await checkTabelDBIfExist();
       await checkTabelDeclareMeterIfExist();
+
+      unsubscribeNet = NetInfo.addEventListener(state => {
+        console.log('Connection type', state.type);
+        console.log('Is connected?', state.isConnected);
+        if (state.isConnected) {
+          SendUnsentDeclareMeterProcess();
+        }
+      });
     }
 
     //exportXmlController.createDirectory();
@@ -206,5 +213,8 @@ export const onDeInit = async () => {
   hhuReceiveDataListener = null;
   if (timerCheckValidToken) {
     clearInterval(timerCheckValidToken);
+  }
+  if (unsubscribeNet) {
+    unsubscribeNet();
   }
 };

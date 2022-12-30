@@ -1,24 +1,17 @@
-import ReceiveSharingIntent from 'react-native-receive-sharing-intent';
-import {getFilExtension} from '../../util';
+import {Alert, BackHandler, DeviceEventEmitter, Vibration} from 'react-native';
 import RNFS from 'react-native-fs';
+import ReceiveSharingIntent from 'react-native-receive-sharing-intent';
+import SoundPlayer from 'react-native-sound-player';
 import {PATH_IMPORT_CSDL, PATH_IMPORT_XML} from '../../shared/path';
+import {getFilExtension} from '../../util';
+import {importXmlFromPath} from '../../xml/xmlUtil';
 import {
-  Alert,
-  DeviceEventEmitter,
-  BackHandler,
-  EventEmitter,
-  Vibration,
-} from 'react-native';
-import {
+  EVENT_ERROR,
   EVENT_SUCCEEDED,
   PACKAGE_NAME,
   RECEIVE_FILE_CSDL,
   RECEIVE_FILE_XML,
-  EVENT_ERROR,
 } from './constant';
-import {closeConnection} from '../../database/repository';
-import {importXmlFromPath} from '../../xml/xmlUtil';
-import SoundPlayer from 'react-native-sound-player';
 
 const TAG = 'EVENT: ';
 

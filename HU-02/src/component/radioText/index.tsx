@@ -60,5 +60,7 @@ const styles = StyleSheet.create({
     fontSize: normalize(18),
     fontFamily: 'Lato-Regular',
     paddingHorizontal: 10,
+    elevation: 1,
+    backgroundColor: 'white',
   },
 });

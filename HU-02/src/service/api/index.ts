@@ -276,20 +276,22 @@ export async function AddMeter(
   try {
     const url = `http://${store.state.appSetting.server.host}:${store.state.appSetting.server.port}/api/AddMeter`;
 
+    const params = {
+      MeterNo: props.MeterNo,
+      MeterName: props.MeterName,
+      MeterModelID: props.MeterModelID,
+      LineID: props.LineID,
+      CustomerCode: props.CustomerCode,
+      CustomerName: props.CustomerName,
+      CustomerAddress: props.CustomerAddress,
+      CustomerPhone: props.CustomerPhone,
+      SIM: props.SIM,
+      Coordinate: props.Coordinate,
+      Token: store.state.userInfo.TOKEN,
+    };
+
     const rest = await axios.get(url, {
-      params: {
-        MeterNo: props.MeterNo,
-        MeterName: props.MeterName,
-        MeterModelID: props.MeterModelID,
-        LineID: props.LineID,
-        CustomerCode: props.CustomerCode,
-        CustomerName: props.CustomerName,
-        CustomerAddress: props.CustomerAddress,
-        CustomerPhone: props.CustomerPhone,
-        SIM: props.SIM,
-        Coordinate: props.Coordinate,
-        Token: store.state.userInfo.TOKEN,
-      },
+      params: params,
     });
     const ret = rest.data as {CODE: string; MESSAGE: string};
     if (ret.CODE === '1') {

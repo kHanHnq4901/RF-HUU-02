@@ -37,6 +37,8 @@ export const onNumRetriesReadSubmit = (text: string) => {
 };
 
 export async function onSavePress() {
+  console.log('save');
+
   await saveValueAppSettingToNvm(store.state.appSetting as PropsAppSetting);
   showToast('Đã lưu');
 }

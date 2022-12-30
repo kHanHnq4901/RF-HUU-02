@@ -46,13 +46,13 @@ export const WriteOpticalScreen = () => {
                   return;
                 }
                 const text = e.nativeEvent.text.trim();
-                if (isAllNumeric(text) === false) {
+                if (isAllNumeric(text) === false || text.length !== 10) {
                   await showAlert('Số không hợp lệ');
                   // console.log('value:', hookProps.refSeriMeter.current?.state?.value);
                   hookProps.refSeriMeter.current?.clear();
                   return;
                 }
-                console.log(text);
+                //console.log(text);
 
                 console.log('value:', hookProps.refSeriMeter.current?.props);
 
@@ -85,13 +85,11 @@ export const WriteOpticalScreen = () => {
                   return;
                 }
                 const text = e.nativeEvent.text.trim();
-                if (isAllNumeric(text) === false) {
+                if (isAllNumeric(text) === false || text.length !== 10) {
                   await showAlert('Số không hợp lệ');
                   hookProps.refSeriModule.current?.clear();
                   return;
                 }
-                console.log(text);
-
                 hookProps.setState(state => {
                   state.seriModule.value = text;
                   return {...state};

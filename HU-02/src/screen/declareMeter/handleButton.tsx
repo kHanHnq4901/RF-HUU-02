@@ -7,8 +7,16 @@ import {isAllNumeric} from '../../util/index';
 import {ListModelMeterObj, ListStationObj, hookProps} from './controller';
 import {emitEventSuccess} from '../../service/event';
 import {emitEventFailure} from '../../service/event/index';
-import {AddDeclareMeter} from '../../database/service/declareMeterService';
+import {
+  AddDeclareMeter,
+  GetUnsentDeclareMeter,
+  SendUnsentDeclareMeterProcess,
+} from '../../database/service/declareMeterService';
 import {PropsAddMeter} from '../../service/api/index';
+import {
+  deleteDB,
+  deleteDataDB,
+} from '../../database/repository/declareMeterRepository';
 
 const TAG = 'Declare Meter Handle Button';
 
@@ -43,7 +51,7 @@ function checkCondition(): boolean {
     return false;
   }
   if (
-    hookProps.state.infoDeclare.seriMeter.length <= 5 ||
+    hookProps.state.infoDeclare.seriMeter.length !== 10 ||
     isAllNumeric(hookProps.state.infoDeclare.seriMeter) === false
   ) {
     showAlert('Số seri cơ khí không hợp lệ');
@@ -61,6 +69,12 @@ function checkCondition(): boolean {
   }
 
   return true;
+}
+
+export async function test() {
+  //deleteDB();
+  await SendUnsentDeclareMeterProcess();
+  return;
 }
 
 export async function onDeclarePress() {
@@ -107,7 +121,7 @@ export async function onDeclarePress() {
         Coordinate: loacaion
           ? loacaion?.coords.latitude.toString() +
             ',' +
-            loacaion?.coords.longitude.toString
+            loacaion?.coords.longitude.toString()
           : ' ',
         CustomerAddress: address,
         CustomerCode: customerCode,
@@ -119,6 +133,8 @@ export async function onDeclarePress() {
         MeterNo: strSeri,
         SIM: '',
       };
+      console.log('props:', props);
+
       const response = await AddMeter(props);
       if (response.bSucceeded === true) {
         message = 'Khai báo thành công ' + strSeri;
@@ -144,6 +160,7 @@ export async function onDeclarePress() {
         if (response.strMessage.trim() === 'Network Error') {
           saveDatabase = true;
           AddDeclareMeter(props);
+          succeeded = true;
         }
       }
     } else {
@@ -169,7 +186,7 @@ export async function onDeclarePress() {
         `);
       emitEventFailure();
     }
-    if (succeeded === true) {
+    if (succeeded === true && saveDatabase === false) {
       emitEventSuccess();
     }
 

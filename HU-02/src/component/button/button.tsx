@@ -9,7 +9,7 @@ import {
   TextStyle,
 } from 'react-native';
 import {Button as Btn, useTheme} from 'react-native-paper';
-import Theme, {Fonts, normalize} from '../../theme';
+import Theme, {Fonts, normalize, scale} from '../../theme';
 
 type Props = {
   label: string;
@@ -46,9 +46,9 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: Theme.Colors.primary,
-    borderRadius: 25,
+    borderRadius: 35,
     elevation: 10,
-    height: 40,
+    height: 40 * scale,
     justifyContent: 'center',
     alignItems: 'center',
   },
