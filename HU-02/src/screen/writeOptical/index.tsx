@@ -1,15 +1,13 @@
+import throttle from 'lodash.throttle';
 import React, {useEffect} from 'react';
 import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {Button} from '../../component/button/button';
 import Loader3 from '../../component/loader3';
 import {RadioText} from '../../component/radioText';
-import Theme, {Colors, CommonFontSize, sizeScreen} from '../../theme';
-import {isAllNumeric, showAlert} from '../../util';
-import {GetHookProps, hookProps, onDeInit, onInit, store} from './controller';
-import throttle from 'lodash.throttle';
-import {onReadOpticalPress, onWriteOpticalPress} from './handleButton';
 import {USER_ROLE_TYPE} from '../../service/user';
-import {isNumeric} from '../../util/index';
+import Theme, {Colors, CommonFontSize, sizeScreen} from '../../theme';
+import {GetHookProps, hookProps, onDeInit, onInit, store} from './controller';
+import {onReadOpticalPress, onWriteOpticalPress} from './handleButton';
 
 export const WriteOpticalScreen = () => {
   GetHookProps();
@@ -41,25 +39,8 @@ export const WriteOpticalScreen = () => {
                   return {...state};
                 });
               }}
-              onEndEditing={async e => {
-                if (!e.nativeEvent?.text) {
-                  return;
-                }
-                const text = e.nativeEvent.text.trim();
-                if (isAllNumeric(text) === false || text.length !== 10) {
-                  await showAlert('Số không hợp lệ');
-                  // console.log('value:', hookProps.refSeriMeter.current?.state?.value);
-                  hookProps.refSeriMeter.current?.clear();
-                  return;
-                }
-                //console.log(text);
-
-                console.log('value:', hookProps.refSeriMeter.current?.props);
-
-                hookProps.setState(state => {
-                  state.seriMeter.value = text;
-                  return {...state};
-                });
+              onChangeText={text => {
+                hookProps.data.seriMeter = text;
               }}
               defaultValue={hookProps.state.seriMeter.value}
               maxLength={10}
@@ -80,20 +61,8 @@ export const WriteOpticalScreen = () => {
                   return {...state};
                 });
               }}
-              onEndEditing={async e => {
-                if (!e.nativeEvent?.text) {
-                  return;
-                }
-                const text = e.nativeEvent.text.trim();
-                if (isAllNumeric(text) === false || text.length !== 10) {
-                  await showAlert('Số không hợp lệ');
-                  hookProps.refSeriModule.current?.clear();
-                  return;
-                }
-                hookProps.setState(state => {
-                  state.seriModule.value = text;
-                  return {...state};
-                });
+              onChangeText={text => {
+                hookProps.data.seriModule = text;
               }}
               defaultValue={hookProps.state.seriModule.value}
               maxLength={10}
@@ -113,22 +82,8 @@ export const WriteOpticalScreen = () => {
                   return {...state};
                 });
               }}
-              onEndEditing={async e => {
-                if (!e.nativeEvent?.text) {
-                  return;
-                }
-                const text = e.nativeEvent.text.trim();
-                if (isNumeric(text) === false) {
-                  await showAlert('Số không hợp lệ');
-                  hookProps.refImmediateData.current?.clear();
-                  return;
-                }
-                console.log(text);
-
-                hookProps.setState(state => {
-                  state.immediateData.value = text;
-                  return {...state};
-                });
+              onChangeText={text => {
+                hookProps.data.immediateData = text;
               }}
               defaultValue={hookProps.state.immediateData.value}
               maxLength={10}

@@ -1,22 +1,17 @@
 import Geolocation, {
   GeolocationResponse,
 } from '@react-native-community/geolocation';
+import {
+  AddDeclareMeter,
+  SendUnsentDeclareMeterProcess,
+} from '../../database/service/declareMeterService';
 import {AddMeter} from '../../service/api';
+import {PropsAddMeter} from '../../service/api/index';
+import {emitEventSuccess} from '../../service/event';
+import {emitEventFailure} from '../../service/event/index';
 import {showAlert} from '../../util';
 import {isAllNumeric} from '../../util/index';
 import {ListModelMeterObj, ListStationObj, hookProps} from './controller';
-import {emitEventSuccess} from '../../service/event';
-import {emitEventFailure} from '../../service/event/index';
-import {
-  AddDeclareMeter,
-  GetUnsentDeclareMeter,
-  SendUnsentDeclareMeterProcess,
-} from '../../database/service/declareMeterService';
-import {PropsAddMeter} from '../../service/api/index';
-import {
-  deleteDB,
-  deleteDataDB,
-} from '../../database/repository/declareMeterRepository';
 
 const TAG = 'Declare Meter Handle Button';
 
@@ -42,6 +37,7 @@ async function getGeolocation(): Promise<GeolocationResponse | null> {
 }
 
 function checkCondition(): boolean {
+  let text = '';
   if (!hookProps.state.infoDeclare.selectedStation) {
     showAlert('Chưa chọn trạm');
     return false;
@@ -50,19 +46,19 @@ function checkCondition(): boolean {
     showAlert('Chưa chọn loại đồng hồ');
     return false;
   }
-  if (
-    hookProps.state.infoDeclare.seriMeter.length !== 10 ||
-    isAllNumeric(hookProps.state.infoDeclare.seriMeter) === false
-  ) {
+  text = hookProps.data.infoDeclare.seriMeter.trim();
+  if (text.length !== 10 || isAllNumeric(text) === false) {
     showAlert('Số seri cơ khí không hợp lệ');
     return false;
   }
-  if (hookProps.state.infoDeclare.customerName.length === 0) {
+  text = hookProps.data.infoDeclare.customerName.trim();
+  if (text.length === 0) {
     showAlert('Bổ sung thông tin Tên khách hàng');
     return false;
   }
-  if (hookProps.state.infoDeclare.phoneNumber.length > 0) {
-    if (isAllNumeric(hookProps.state.infoDeclare.phoneNumber) === false) {
+  text = hookProps.data.infoDeclare.phoneNumber.trim();
+  if (text.length > 0) {
+    if (isAllNumeric(text) === false) {
       showAlert('Số điện thoại không hợp lệ');
       return false;
     }
@@ -92,11 +88,11 @@ export async function onDeclarePress() {
     return;
   }
 
-  const strSeri = hookProps.state.infoDeclare.seriMeter;
-  const customerName = hookProps.state.infoDeclare.customerName;
-  const customerCode = hookProps.state.infoDeclare.customerCode;
-  const address = hookProps.state.infoDeclare.address;
-  const phoneNumber = hookProps.state.infoDeclare.phoneNumber;
+  const strSeri = hookProps.data.infoDeclare.seriMeter;
+  const customerName = hookProps.data.infoDeclare.customerName;
+  const customerCode = hookProps.data.infoDeclare.customerCode;
+  const address = hookProps.data.infoDeclare.address;
+  const phoneNumber = hookProps.data.infoDeclare.phoneNumber;
   const modelMeter = hookProps.state.infoDeclare.selectedModelMeter;
 
   try {
@@ -138,18 +134,20 @@ export async function onDeclarePress() {
       const response = await AddMeter(props);
       if (response.bSucceeded === true) {
         message = 'Khai báo thành công ' + strSeri;
-        // showAlert(`
-        // Khai báo thành công:
-        //  seri: ${strSeri}
-        //  KH: ${customerName}
-        // `);
-        hookProps.setState(state => {
-          state.infoDeclare.seriMeter = '';
-          state.infoDeclare.customerName = '';
-          state.infoDeclare.customerCode = '';
-          state.infoDeclare.phoneNumber = '';
-          return {...state};
-        });
+
+        // hookProps.setState(state => {
+        //   state.infoDeclare.seriMeter = '';
+        //   state.infoDeclare.customerName = '';
+        //   state.infoDeclare.customerCode = '';
+        //   state.infoDeclare.phoneNumber = '';
+        //   return {...state};
+        // });
+
+        hookProps.data.infoDeclare.seriMeter = '';
+        hookProps.data.infoDeclare.customerName = '';
+        hookProps.data.infoDeclare.customerCode = '';
+        hookProps.data.infoDeclare.phoneNumber = '';
+
         hookProps.refPhoneNUmber.current?.clear();
         hookProps.refSeriMeter.current?.clear();
         hookProps.refCustomerName.current?.clear();
@@ -189,10 +187,10 @@ export async function onDeclarePress() {
     if (succeeded === true && saveDatabase === false) {
       emitEventSuccess();
     }
-
+    const date = new Date();
     hookProps.setState(state => {
       state.isBusy = false;
-      state.status = message;
+      state.status = message + ' ' + date.toLocaleTimeString('vi');
       return {...state};
     });
   }

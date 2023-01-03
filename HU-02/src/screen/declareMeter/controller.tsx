@@ -13,14 +13,24 @@ import {
 } from '../../service/api/index';
 import {flowRight} from 'lodash';
 
-type PropsDeclareMeter = {
+type InfoDeclareType = {
   seriMeter: string;
   phoneNumber: string;
   customerName: string;
   customerCode: string;
   address: string;
-  idStation: string;
-  typeMeter: string;
+};
+
+type DataType = {
+  infoDeclare: InfoDeclareType;
+};
+
+type PropsDeclareMeter = {
+  // seriMeter: string;
+  // phoneNumber: string;
+  // customerName: string;
+  // customerCode: string;
+  // address: string;
   selectedModelMeter: string | null;
   selectedStation: string | null;
 };
@@ -39,20 +49,13 @@ export type HookProps = {
   refAddress: React.RefObject<TextInput>;
   state: HookState;
   setState: React.Dispatch<React.SetStateAction<HookState>>;
+  data: DataType;
 };
 
 const TAG = 'Header Controller: ';
 
 export const hookProps = {} as HookProps;
 export let store = {} as PropsStore;
-
-export const ListModelMeter: TYPE_MODEL_METER[] = [
-  'EW001C_EW-15P1',
-  'EW001D_EW-15M1',
-  'EW001E_EW-15M1',
-  'EW001F_EW-15M2',
-  'EW002C_EW-15P2',
-];
 
 export let ListStationObj: PropsReturnGetListLine = [];
 export let lisStationName: string[] = [];
@@ -103,13 +106,12 @@ export const requestGps = async (): Promise<boolean> => {
 export const GetHookProps = (): HookProps => {
   const [state, setState] = useState<HookState>({
     infoDeclare: {
-      seriMeter: '',
-      phoneNumber: '',
-      customerName: '',
-      customerCode: '',
-      address: '',
-      idStation: '',
-      typeMeter: '',
+      // seriMeter: '',
+      // phoneNumber: '',
+      // customerName: '',
+      // customerCode: '',
+      // address: '',
+      // typeMeter: '',
       selectedModelMeter: null,
       selectedStation: null,
     },
@@ -119,6 +121,15 @@ export const GetHookProps = (): HookProps => {
   hookProps.state = state;
   hookProps.setState = setState;
   store = React.useContext(storeContext) as PropsStore;
+  hookProps.data = {
+    infoDeclare: {
+      address: '',
+      customerCode: '',
+      customerName: '',
+      phoneNumber: '',
+      seriMeter: '',
+    },
+  };
 
   const [enabled, requestResolution] = useLocationSettings(
     {

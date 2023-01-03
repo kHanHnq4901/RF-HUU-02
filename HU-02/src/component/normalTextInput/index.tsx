@@ -45,6 +45,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Lato-Regular',
     fontSize: normalize(18),
     padding: 10 * scale,
+    color: Colors.text,
     //borderWidth: 1,
   },
 });

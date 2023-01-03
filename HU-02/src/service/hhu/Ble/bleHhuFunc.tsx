@@ -93,75 +93,79 @@ export const BleFunc_TryConnectToLatest = async (): Promise<{
 };
 
 export const connectLatestBLE = async (store: PropsStore) => {
-  console.log(TAG, 'try connect to latest');
-  showToast('Đang thử kết nối với thiết bị Bluetooth trước đó ...');
-  store.setState(state => {
-    state.hhu.connect = 'CONNECTING';
-    return {...state};
-  });
-  await BleManager.start({showAlert: false});
-  await BleManager.enableBluetooth();
-  let data = await BleFunc_TryConnectToLatest();
-  //console.log('k');
-  if (data.result) {
+  try {
+    console.log(TAG, 'try connect to latest');
+    showToast('Đang thử kết nối với thiết bị Bluetooth trước đó ...');
     store.setState(state => {
-      state.hhu.connect = 'CONNECTED';
-      state.hhu.idConnected = data.id;
+      state.hhu.connect = 'CONNECTING';
       return {...state};
     });
-    ObjSend.id = data.id;
-    let result;
-    for (let k = 0; k < 2; k++) {
-      await sleep(500);
-      result = await ShakeHand();
-      if (result === true || result === 1) {
-        ObjSend.isShakeHanded = true;
-        break;
-      } else {
-        ObjSend.isShakeHanded = false;
-      }
+    await BleManager.start({showAlert: false});
+    await BleManager.enableBluetooth();
+    let data = await BleFunc_TryConnectToLatest();
+    //console.log('k');
+    if (data.result) {
+      store.setState(state => {
+        state.hhu.connect = 'CONNECTED';
+        state.hhu.idConnected = data.id;
+        return {...state};
+      });
+      ObjSend.id = data.id;
+      let result;
+      for (let k = 0; k < 2; k++) {
+        await sleep(500);
+        result = await ShakeHand();
+        if (result === true || result === 1) {
+          ObjSend.isShakeHanded = true;
+          break;
+        } else {
+          ObjSend.isShakeHanded = false;
+        }
 
-      console.log('Try shakehand');
-    }
-    if (ObjSend.isShakeHanded === false) {
-      console.log('ShakeHand failed. Disconnect');
-      showToast('ShakeHand failed. Disconnect');
-      await BleManager.disconnect(ObjSend.id, true);
-    } else {
-      showToast('Bắt tay thành công');
-      if (result === true) {
-        for (let k = 0; k < 2; k++) {
-          await sleep(500);
-          const version = await readVersion();
-          if (version) {
-            let arr = version.split('.');
-            arr = arr.slice(0, 2);
-            const shortVersion = arr
-              .join('.')
-              .toLocaleLowerCase()
-              .replace('v', '');
-            store.setState(state => {
-              state.hhu.version = version;
-              state.hhu.shortVersion = shortVersion;
-              return {...state};
-            });
-            console.log('Read version succeed: ' + version);
-            checkUpdateHHU();
-            break;
-          } else {
-            console.log('Read version failed');
-            console.log('Try read version');
+        console.log('Try shakehand');
+      }
+      if (ObjSend.isShakeHanded === false) {
+        console.log('ShakeHand failed. Disconnect');
+        showToast('ShakeHand failed. Disconnect');
+        await BleManager.disconnect(ObjSend.id, true);
+      } else {
+        showToast('Bắt tay thành công');
+        if (result === true) {
+          for (let k = 0; k < 2; k++) {
+            await sleep(500);
+            const version = await readVersion();
+            if (version) {
+              let arr = version.split('.');
+              arr = arr.slice(0, 2);
+              const shortVersion = arr
+                .join('.')
+                .toLocaleLowerCase()
+                .replace('v', '');
+              store.setState(state => {
+                state.hhu.version = version;
+                state.hhu.shortVersion = shortVersion;
+                return {...state};
+              });
+              console.log('Read version succeed: ' + version);
+              checkUpdateHHU();
+              break;
+            } else {
+              console.log('Read version failed');
+              console.log('Try read version');
+            }
           }
         }
       }
+    } else {
+      store.setState(state => {
+        state.hhu.connect = 'DISCONNECTED';
+        return {...state};
+      });
+      console.log(TAG + 'hhu:', data);
+      showToast('Kết nối bluetooth thất bại');
     }
-  } else {
-    store.setState(state => {
-      state.hhu.connect = 'DISCONNECTED';
-      return {...state};
-    });
-    console.log(TAG + 'hhu:', data);
-    showToast('Kết nối bluetooth thất bại');
+  } catch (err: any) {
+    console.log(err);
   }
 };
 

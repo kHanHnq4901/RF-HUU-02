@@ -62,5 +62,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     elevation: 1,
     backgroundColor: 'white',
+    color: Colors.text,
   },
 });

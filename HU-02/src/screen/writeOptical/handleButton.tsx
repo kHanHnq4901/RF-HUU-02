@@ -1,3 +1,4 @@
+import {emitEventFailure, emitEventSuccess} from '../../service/event';
 import {
   FieldOpticalResponseProps,
   OpticalDailyProps,
@@ -12,7 +13,7 @@ import {
   Optical_SeriType,
 } from '../../service/hhu/Optical/opticalProtocol';
 import {SIZE_SERIAL} from '../../service/hhu/RF/radioProtocol';
-import {showAlert} from '../../util';
+import {isNumeric, showAlert} from '../../util';
 import {hookProps, RadioTextProps} from './controller';
 import {Buffer} from 'buffer';
 
@@ -215,8 +216,41 @@ export async function onReadOpticalPress() {
   }
 }
 
+async function checkCondition(): Promise<boolean> {
+  let text = '';
+  if (hookProps.state.seriMeter.checked) {
+    text = hookProps.data.seriMeter.trim();
+
+    if (isNumeric(text) === false || text.length !== 10) {
+      await showAlert('Số seri đồng hồ không hợp lệ');
+      hookProps.refSeriMeter.current?.clear();
+      return false;
+    }
+  }
+  if (hookProps.state.seriModule.checked) {
+    text = hookProps.data.seriModule.trim();
+    if (isNumeric(text) === false || text.length !== 10) {
+      await showAlert('Số seri module không hợp lệ');
+      hookProps.refSeriModule.current?.clear();
+      return false;
+    }
+  }
+  if (hookProps.state.immediateData.checked) {
+    text = hookProps.data.immediateData.trim();
+    if (isNumeric(text) === false) {
+      await showAlert('Số không hợp lệ');
+      hookProps.refImmediateData.current?.clear();
+      return false;
+    }
+  }
+
+  return true;
+}
+
 export async function onWriteOpticalPress() {
   let message = '';
+  let bHasError = false;
+
   try {
     if (hookProps.state.isBusy) {
       return;
@@ -226,6 +260,12 @@ export async function onWriteOpticalPress() {
       showAlert('Chưa có item nào được chọn');
       return;
     }
+
+    if ((await checkCondition()) === false) {
+      return;
+    }
+
+    console.log('hook props data:', hookProps.data);
 
     hookProps.setState(state => {
       state.isBusy = true;
@@ -252,7 +292,7 @@ export async function onWriteOpticalPress() {
         payload[index] = Optical_SeriType.OPTICAL_TYPE_SERI_METER;
         index++;
         payload.writeUintLE(
-          Number(hookProps.state.seriMeter.value),
+          Number(hookProps.data.seriMeter),
           index,
           SIZE_SERIAL,
         );
@@ -269,6 +309,7 @@ export async function onWriteOpticalPress() {
             message += 'Cài sei đồng hồ thành công. ';
           } else {
             message += 'Lỗi: ' + response.message + '. ';
+            bHasError = true;
             //setStatus(message);
           }
         }
@@ -280,7 +321,7 @@ export async function onWriteOpticalPress() {
         payload[index] = Optical_SeriType.OPTICAL_TYPE_SERI_MODULE;
         index++;
         payload.writeUintLE(
-          Number(hookProps.state.seriModule.value),
+          Number(hookProps.data.seriModule),
           index,
           SIZE_SERIAL,
         );
@@ -297,6 +338,7 @@ export async function onWriteOpticalPress() {
             message += 'Cài sei module thành công. ';
           } else {
             message += 'Lỗi: ' + response.message + '. ';
+            bHasError = true;
             //setStatus(message);
           }
         }
@@ -305,11 +347,7 @@ export async function onWriteOpticalPress() {
         cmd = OPTICAL_CMD.OPTICAL_SET_DATA_NO_FACTOR_PULSE;
         payload = Buffer.alloc(4);
         index = 0;
-        payload.writeUintLE(
-          Number(hookProps.state.immediateData.value),
-          index,
-          4,
-        );
+        payload.writeUintLE(Number(hookProps.data.immediateData), index, 4);
         index += 4;
         header.u8Length = payload.byteLength;
         header.u8Command = cmd;
@@ -320,10 +358,11 @@ export async function onWriteOpticalPress() {
             timeout: timeout,
           });
           if (response.bSucceed) {
-            message += 'Cài sei chỉ số thành công. ';
+            message += 'Cài chỉ số thành công. ';
           } else {
             message += 'Lỗi: ' + response.message + '. ';
             //setStatus(message);
+            bHasError = true;
           }
         }
       }
@@ -332,10 +371,16 @@ export async function onWriteOpticalPress() {
   } catch (e: any) {
     message += e.message;
   } finally {
+    const date = new Date();
     hookProps.setState(state => {
-      state.status = message;
+      state.status = message + ' ' + date.toLocaleTimeString('vi');
       state.isBusy = false;
       return {...state};
     });
+    if (bHasError) {
+      emitEventFailure();
+    } else {
+      emitEventSuccess();
+    }
   }
 }

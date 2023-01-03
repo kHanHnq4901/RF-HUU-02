@@ -147,9 +147,11 @@ async function readInfo() {
   }
 
   const arrCommand: OPTICAL_CMD[] = [];
+
+  arrCommand.push(OPTICAL_CMD.OPTICAL_GET_VERSION);
   arrCommand.push(OPTICAL_CMD.OPTICAL_GET_SERIAL); // meter
   arrCommand.push(OPTICAL_CMD.OPTICAL_GET_SERIAL); // module
-  arrCommand.push(OPTICAL_CMD.OPTICAL_GET_VERSION);
+
   arrCommand.push(OPTICAL_CMD.OPTICAL_GET_MORE);
   arrCommand.push(OPTICAL_CMD.OPTICAL_GET_RTC);
 

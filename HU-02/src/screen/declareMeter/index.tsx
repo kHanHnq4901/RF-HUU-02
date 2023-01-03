@@ -8,7 +8,6 @@ import {NormalTextInput} from '../../component/normalTextInput';
 import Theme, {Colors, normalize, scale, scaleWidth} from '../../theme';
 import {
   GetHookProps,
-  ListModelMeter,
   hookProps,
   lisStationName,
   listModelMeterName,
@@ -19,7 +18,6 @@ import {
   onDeclarePress,
   onLineSelected,
   onModelMeterSelected,
-  test,
 } from './handleButton';
 
 export const DeclareMeterScreen = () => {
@@ -124,12 +122,15 @@ export const DeclareMeterScreen = () => {
           label="Seri cơ khí:(*)"
           keyboardType="number-pad"
           maxLength={10}
-          onEndEditing={e => {
-            e.persist();
-            hookProps.setState(state => {
-              state.infoDeclare.seriMeter = e.nativeEvent?.text.trim();
-              return {...state};
-            });
+          // onEndEditing={e => {
+          //   e.persist();
+          //   hookProps.setState(state => {
+          //     state.infoDeclare.seriMeter = e.nativeEvent?.text.trim();
+          //     return {...state};
+          //   });
+          // }}
+          onChangeText={text => {
+            hookProps.data.infoDeclare.seriMeter = text;
           }}
           ref={hookProps.refSeriMeter}
           onSubmitEditing={() => {
@@ -139,12 +140,15 @@ export const DeclareMeterScreen = () => {
         />
         <NormalTextInput
           label="Tên khách hàng:(*)"
-          onEndEditing={e => {
-            e.persist();
-            hookProps.setState(state => {
-              state.infoDeclare.customerName = e.nativeEvent?.text.trim();
-              return {...state};
-            });
+          // onEndEditing={e => {
+          //   e.persist();
+          //   hookProps.setState(state => {
+          //     state.infoDeclare.customerName = e.nativeEvent?.text.trim();
+          //     return {...state};
+          //   });
+          // }}
+          onChangeText={text => {
+            hookProps.data.infoDeclare.customerName = text;
           }}
           ref={hookProps.refCustomerName}
           onSubmitEditing={() => {
@@ -154,12 +158,15 @@ export const DeclareMeterScreen = () => {
         />
         <NormalTextInput
           label="Mã khách hàng:"
-          onEndEditing={e => {
-            e.persist();
-            hookProps.setState(state => {
-              state.infoDeclare.customerCode = e.nativeEvent?.text.trim();
-              return {...state};
-            });
+          // onEndEditing={e => {
+          //   e.persist();
+          //   hookProps.setState(state => {
+          //     state.infoDeclare.customerCode = e.nativeEvent?.text.trim();
+          //     return {...state};
+          //   });
+          // }}
+          onChangeText={text => {
+            hookProps.data.infoDeclare.customerCode = text;
           }}
           ref={hookProps.refCustomerCode}
           onSubmitEditing={() => {
@@ -169,12 +176,15 @@ export const DeclareMeterScreen = () => {
         />
         <NormalTextInput
           label="Địa chỉ:"
-          onEndEditing={e => {
-            e.persist();
-            hookProps.setState(state => {
-              state.infoDeclare.address = e.nativeEvent?.text.trim();
-              return {...state};
-            });
+          // onEndEditing={e => {
+          //   e.persist();
+          //   hookProps.setState(state => {
+          //     state.infoDeclare.address = e.nativeEvent?.text.trim();
+          //     return {...state};
+          //   });
+          // }}
+          onChangeText={text => {
+            hookProps.data.infoDeclare.address = text;
           }}
           ref={hookProps.refAddress}
           onSubmitEditing={() => {
@@ -186,12 +196,15 @@ export const DeclareMeterScreen = () => {
           label="Số điện thoại:"
           maxLength={12}
           keyboardType="number-pad"
-          onEndEditing={e => {
-            e.persist();
-            hookProps.setState(state => {
-              state.infoDeclare.phoneNumber = e.nativeEvent?.text.trim();
-              return {...state};
-            });
+          // onEndEditing={e => {
+          //   e.persist();
+          //   hookProps.setState(state => {
+          //     state.infoDeclare.phoneNumber = e.nativeEvent?.text.trim();
+          //     return {...state};
+          //   });
+          // }}
+          onChangeText={text => {
+            hookProps.data.infoDeclare.phoneNumber = text;
           }}
           ref={hookProps.refPhoneNUmber}
           // onSubmitEditing={() => {

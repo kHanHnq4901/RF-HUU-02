@@ -7,6 +7,12 @@ export type RadioTextProps = {
   value: string;
 };
 
+type DataType = {
+  seriMeter: string;
+  seriModule: string;
+  immediateData: string;
+};
+
 export type HookState = {
   seriMeter: RadioTextProps;
   seriModule: RadioTextProps;
@@ -21,6 +27,7 @@ export type HookProps = {
   refSeriMeter: React.RefObject<TextInput>;
   refSeriModule: React.RefObject<TextInput>;
   refImmediateData: React.RefObject<TextInput>;
+  data: DataType;
 };
 
 const TAG = 'Header Controller: ';
@@ -51,6 +58,12 @@ export const GetHookProps = (): HookProps => {
   hookProps.refSeriModule = React.createRef<TextInput>();
   hookProps.refSeriMeter = React.createRef<TextInput>();
   hookProps.refImmediateData = React.createRef<TextInput>();
+
+  hookProps.data = {
+    seriMeter: '',
+    seriModule: '',
+    immediateData: '',
+  };
 
   store = React.useContext(storeContext) as PropsStore;
   return hookProps;
