@@ -222,7 +222,9 @@ async function checkCondition(): Promise<boolean> {
     text = hookProps.data.seriMeter.trim();
 
     if (isNumeric(text) === false || text.length !== 10) {
+      console.log('text 1:', text);
       await showAlert('Số seri đồng hồ không hợp lệ');
+
       hookProps.refSeriMeter.current?.clear();
       return false;
     }
@@ -230,6 +232,7 @@ async function checkCondition(): Promise<boolean> {
   if (hookProps.state.seriModule.checked) {
     text = hookProps.data.seriModule.trim();
     if (isNumeric(text) === false || text.length !== 10) {
+      console.log('text 2:', text);
       await showAlert('Số seri module không hợp lệ');
       hookProps.refSeriModule.current?.clear();
       return false;
@@ -238,6 +241,7 @@ async function checkCondition(): Promise<boolean> {
   if (hookProps.state.immediateData.checked) {
     text = hookProps.data.immediateData.trim();
     if (isNumeric(text) === false) {
+      console.log('text 3:', text);
       await showAlert('Số không hợp lệ');
       hookProps.refImmediateData.current?.clear();
       return false;

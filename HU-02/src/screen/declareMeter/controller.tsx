@@ -57,6 +57,16 @@ const TAG = 'Header Controller: ';
 export const hookProps = {} as HookProps;
 export let store = {} as PropsStore;
 
+hookProps.data = {
+  infoDeclare: {
+    address: '',
+    customerCode: '',
+    customerName: '',
+    phoneNumber: '',
+    seriMeter: '',
+  },
+};
+
 export let ListStationObj: PropsReturnGetListLine = [];
 export let lisStationName: string[] = [];
 export let ListModelMeterObj: PropsReturnGetModelMeter = [];
@@ -121,15 +131,6 @@ export const GetHookProps = (): HookProps => {
   hookProps.state = state;
   hookProps.setState = setState;
   store = React.useContext(storeContext) as PropsStore;
-  hookProps.data = {
-    infoDeclare: {
-      address: '',
-      customerCode: '',
-      customerName: '',
-      phoneNumber: '',
-      seriMeter: '',
-    },
-  };
 
   const [enabled, requestResolution] = useLocationSettings(
     {

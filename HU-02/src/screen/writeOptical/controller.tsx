@@ -35,6 +35,12 @@ const TAG = 'Header Controller: ';
 export const hookProps = {} as HookProps;
 export let store = {} as PropsStore;
 
+hookProps.data = {
+  seriMeter: '',
+  seriModule: '',
+  immediateData: '',
+};
+
 export const GetHookProps = (): HookProps => {
   const [state, setState] = useState<HookState>({
     seriMeter: {
@@ -58,12 +64,6 @@ export const GetHookProps = (): HookProps => {
   hookProps.refSeriModule = React.createRef<TextInput>();
   hookProps.refSeriMeter = React.createRef<TextInput>();
   hookProps.refImmediateData = React.createRef<TextInput>();
-
-  hookProps.data = {
-    seriMeter: '',
-    seriModule: '',
-    immediateData: '',
-  };
 
   store = React.useContext(storeContext) as PropsStore;
   return hookProps;

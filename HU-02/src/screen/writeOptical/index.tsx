@@ -40,6 +40,8 @@ export const WriteOpticalScreen = () => {
                 });
               }}
               onChangeText={text => {
+                //console.log('seri text:', text);
+
                 hookProps.data.seriMeter = text;
               }}
               defaultValue={hookProps.state.seriMeter.value}
@@ -83,6 +85,7 @@ export const WriteOpticalScreen = () => {
                 });
               }}
               onChangeText={text => {
+                //console.log('seri data:', text);
                 hookProps.data.immediateData = text;
               }}
               defaultValue={hookProps.state.immediateData.value}
