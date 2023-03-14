@@ -3,7 +3,7 @@ import {PropsStore, storeContext} from '../../store';
 import Geolocation from '@react-native-community/geolocation';
 import LocationEnabler from 'react-native-location-enabler';
 import {turnOnLocation} from '../ble/controller';
-import {TextInput} from 'react-native';
+import {ScrollView, TextInput} from 'react-native';
 import {TYPE_MODEL_METER} from '../../service/hhu/defineWM';
 import {
   GetListLine,
@@ -47,6 +47,7 @@ export type HookProps = {
   refCustomerName: React.RefObject<TextInput>;
   refCustomerCode: React.RefObject<TextInput>;
   refAddress: React.RefObject<TextInput>;
+  refScroll: React.RefObject<ScrollView>;
   state: HookState;
   setState: React.Dispatch<React.SetStateAction<HookState>>;
   data: DataType;
@@ -149,6 +150,7 @@ export const GetHookProps = (): HookProps => {
   hookProps.refCustomerName = React.createRef<TextInput>();
   hookProps.refCustomerCode = React.createRef<TextInput>();
   hookProps.refAddress = React.createRef<TextInput>();
+  hookProps.refScroll = React.createRef<ScrollView>();
 
   return hookProps;
 };

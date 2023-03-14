@@ -5,6 +5,7 @@ import {getUserStorage} from '../../service/storage/user';
 import {PropsStore, storeContext} from '../../store';
 import {StackRootList} from '../../navigation/model/model';
 import {updateValueAppSettingFromNvm} from '../../service/storage';
+import {onFingerPress} from './handle';
 
 type PropsState = {
   password: string;
@@ -57,6 +58,7 @@ export async function onInit() {
     //console.log('e:', e);
     e.preventDefault();
   });
+  onFingerPress(false);
 }
 
 export function onDeInit() {}

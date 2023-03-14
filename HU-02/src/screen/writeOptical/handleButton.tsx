@@ -61,6 +61,7 @@ function clearBeforeRead() {
 
 export async function onReadOpticalPress() {
   let message = '';
+  let bHasError = false;
   try {
     if (hookProps.state.isBusy) {
       return;
@@ -81,6 +82,7 @@ export async function onReadOpticalPress() {
     let bRet = await opticalShakeHand('00000000');
     if (!bRet) {
       message += 'Bắt tay cổng quang lỗi. ';
+      bHasError = true;
     } else {
       const timeout = 3000;
 
@@ -118,10 +120,11 @@ export async function onReadOpticalPress() {
               hookProps.refSeriMeter.current?.setNativeProps({
                 text: strSeriMeter,
               });
-              hookProps.setState(state => {
-                state.seriMeter.value = strSeriMeter as string;
-                return {...state};
-              });
+              hookProps.data.seriMeter = strSeriMeter as string;
+              // hookProps.setState(state => {
+              //   state.seriMeter.value = strSeriMeter as string;
+              //   return {...state};
+              // });
             }
           } else {
             message += 'Lỗi: ' + response.message + '. ';
@@ -153,10 +156,11 @@ export async function onReadOpticalPress() {
               hookProps.refSeriModule.current?.setNativeProps({
                 text: strSeriModule,
               });
-              hookProps.setState(state => {
-                state.seriModule.value = strSeriModule as string;
-                return {...state};
-              });
+              // hookProps.setState(state => {
+              //   state.seriModule.value = strSeriModule as string;
+              //   return {...state};
+              // });
+              hookProps.data.seriModule = strSeriModule as string;
             }
           } else {
             message += 'Lỗi: ' + response.message + '. ';
@@ -191,10 +195,11 @@ export async function onReadOpticalPress() {
               hookProps.refImmediateData.current?.setNativeProps({
                 text: strImmediateData,
               });
-              hookProps.setState(state => {
-                state.immediateData.value = strImmediateData as string;
-                return {...state};
-              });
+              // hookProps.setState(state => {
+              //   state.immediateData.value = strImmediateData as string;
+              //   return {...state};
+              // });
+              hookProps.data.immediateData = strImmediateData as string;
             }
           } else {
             message += 'Lỗi: ' + response.message + '. ';
@@ -207,12 +212,18 @@ export async function onReadOpticalPress() {
     }
   } catch (e: any) {
     message += e.message;
+    bHasError = true;
   } finally {
     hookProps.setState(state => {
       state.status = message;
       state.isBusy = false;
       return {...state};
     });
+    if (bHasError) {
+      emitEventFailure();
+    } else {
+      emitEventSuccess();
+    }
   }
 }
 
@@ -279,6 +290,7 @@ export async function onWriteOpticalPress() {
     let bRet = await opticalShakeHand('12345', Optical_PasswordType.PW_TYPE_P2);
     if (!bRet) {
       message += 'Bắt tay cổng quang lỗi. ';
+      bHasError = true;
     } else {
       const timeout = 2000;
 
@@ -310,7 +322,7 @@ export async function onWriteOpticalPress() {
             timeout: timeout,
           });
           if (response.bSucceed) {
-            message += 'Cài sei đồng hồ thành công. ';
+            message += 'Cài seri đồng hồ thành công. ';
           } else {
             message += 'Lỗi: ' + response.message + '. ';
             bHasError = true;
@@ -339,7 +351,7 @@ export async function onWriteOpticalPress() {
             timeout: timeout,
           });
           if (response.bSucceed) {
-            message += 'Cài sei module thành công. ';
+            message += 'Cài seri module thành công. ';
           } else {
             message += 'Lỗi: ' + response.message + '. ';
             bHasError = true;
@@ -374,6 +386,7 @@ export async function onWriteOpticalPress() {
     }
   } catch (e: any) {
     message += e.message;
+    bHasError = true;
   } finally {
     const date = new Date();
     hookProps.setState(state => {

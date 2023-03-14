@@ -1,14 +1,11 @@
-import React, { useState } from 'react';
-import { PropsKHCMISModel } from '../../database/model';
-import { TYPE_READ_RF } from '../../service/hhu/defineEM';
-import { PropsStore, storeContext } from '../../store';
-import { getIndexOfHeader } from '../WriteRegister/controller';
-import { PropsData } from './index';
+import React, {useState} from 'react';
+import {PropsKHCMISModel} from '../../database/model';
+import {TYPE_READ_RF} from '../../service/hhu/defineEM';
+import {PropsStore, storeContext} from '../../store';
+import {PropsData} from './index';
 
 export type HookState = {
   CS_Moi: string;
-  Pmax: string;
-  NgayPmax: string;
   datePick: Date;
   ghichu: string;
   status: string;
@@ -29,8 +26,6 @@ export let store = {} as PropsStore;
 export const GetHook = (): HookProps => {
   const [state, setState] = useState<HookState>({
     CS_Moi: '',
-    Pmax: '',
-    NgayPmax: '',
     datePick: new Date(),
     ghichu: '',
     status: '',
@@ -47,26 +42,21 @@ export const GetHook = (): HookProps => {
 
 export const onInit = async () => {};
 
-export const onBeforeInit = async (
-  item: PropsKHCMISModel,
-  isManyPrice: boolean,
-) => {
+export const onBeforeInit = async (item: PropsKHCMISModel) => {
   hookProps.setState(state => {
-    state.CS_Moi = item.CS_MOI.toString();
-    if (isManyPrice) {
-      state.Pmax = item.PMAX.toString();
-      state.NgayPmax = item.NGAY_PMAX.toString();
-    }
+    state.CS_Moi = '0';
+
     if (
-      item.LoaiDoc === TYPE_READ_RF.READ_FAILED ||
-      item.LoaiDoc === TYPE_READ_RF.ABNORMAL_CAPACITY
+      item.TYPE_READ === TYPE_READ_RF.READ_FAILED ||
+      item.TYPE_READ === TYPE_READ_RF.WRITE_BY_HAND ||
+      item.TYPE_READ === TYPE_READ_RF.ABNORMAL_CAPACITY
     ) {
       state.allowWrite = true;
     } else {
       state.allowWrite = false;
     }
 
-    return { ...state };
+    return {...state};
   });
 };
 
@@ -76,24 +66,25 @@ export const getTableContent = (item: PropsKHCMISModel): PropsData => {
   const data: PropsData = [];
   data.push({
     label: 'KH',
-    content: item.TEN_KHANG,
+    content: item.CUSTOMER_NAME,
   });
   data.push({
     label: 'Đ/c',
-    content: item.DIA_CHI,
+    content: item.ADDRESS,
   });
-  data.push({
-    label: 'Bộ CS',
-    content: item.LOAI_BCS,
-  });
-  data.push({
-    label: 'CS cũ',
-    content: item.CS_CU + ' (kWh)',
-  });
-  data.push({
-    label: 'SL cũ',
-    content: item.SL_CU + ' (kWh)',
-  });
-
+  if (item.DATA?.length) {
+    let i = 1;
+    for (let objData of item.DATA) {
+      data.push({
+        label: 'Thời điểm chốt ' + i,
+        content: objData.time,
+      });
+      data.push({
+        label: 'Chỉ số(m3)',
+        content: ((objData.cwRegister - objData.uCwRegister) / 1000).toFixed(3),
+      });
+      i++;
+    }
+  }
   return data;
 };

@@ -27,13 +27,17 @@ import {
   IdentitySensor,
   Identity_SensorProps,
   OPTICAL_CMD,
+  OPTICAL_TYPE_GET_DATA_DAILY,
   Optical_HeaderProps,
   Optical_HeaderType,
   Optical_MoreInfoProps,
   Optical_MoreInfoType,
   Optical_PasswordType,
   Optical_SeriType,
+  Rtc_CalendarProps,
+  Rtc_CalendarType,
 } from './opticalProtocol';
+import {PropsRead} from '../RF/RfFunc';
 
 const TAG = 'opticalFunc:';
 
@@ -460,5 +464,170 @@ export async function waitOpticalAdvance(
 
   response.bSucceed = true;
   response.obj = data;
+  return response;
+}
+
+export async function OpticalFunc_Read(
+  props: PropsRead,
+): Promise<PropsResponse> {
+  console.log(TAG, props);
+
+  const response = {} as PropsResponse;
+
+  response.bSucceed = false;
+  response.message = '';
+
+  let message: string = '';
+
+  let bRet = await opticalShakeHand(
+    '00000000',
+    Optical_PasswordType.PW_TYPE_P1,
+  );
+  if (!bRet) {
+    message += 'Bắt tay cổng quang lỗi';
+    response.message = message;
+    return response;
+  }
+
+  const header = {} as Optical_HeaderProps;
+  let payload: Buffer | undefined;
+
+  // read serial then check
+  let typeSeri = Optical_SeriType.OPTICAL_TYPE_SERI_METER;
+  let cmd = OPTICAL_CMD.OPTICAL_GET_SERIAL;
+  payload = Buffer.alloc(1);
+
+  header.u8FSN = 0xff;
+  header.u8Length = 0;
+  payload[0] = typeSeri;
+  header.u8Length = payload.byteLength;
+  header.u8Command = cmd;
+  bRet = await opticalSend(header, payload);
+  if (bRet) {
+    const res = await waitOpticalAdvance({
+      desiredCmd: cmd,
+      timeout: 2000,
+    });
+    if (res.bSucceed) {
+      console.log(response.obj);
+    } else {
+      return res;
+    }
+    if (res.obj) {
+      const data = res.obj as {
+        [key in FieldOpticalResponseProps]: string | OpticalDailyProps[];
+      };
+      if (data['Seri đồng hồ']) {
+        if (props.seri === data['Seri đồng hồ']) {
+          // do below
+        } else {
+          response.message += 'seri meter not match.';
+          return response;
+        }
+      } else {
+        response.message += 'Not find field seri meter.';
+        return response;
+      }
+    }
+  } else {
+    response.message += 'Send Optical error.';
+    return response;
+  }
+
+  // after check seri meter ok, read data
+  console.log('\nget data after check serial\n');
+  let index = 0;
+  cmd = OPTICAL_CMD.OPTICAL_GET_LIST_DATA_DAILY;
+
+  header.u8FSN = 0xff;
+  header.u8Command = cmd;
+
+  if (props.typeRead === 'Theo thời gian') {
+    const calendar = {} as Rtc_CalendarProps;
+
+    header.u8Length =
+      1 /*type get */ + 1 /** is0h */ + 2 * sizeof(Rtc_CalendarType);
+    payload = Buffer.alloc(header.u8Length);
+    index = 0;
+    payload[index] = OPTICAL_TYPE_GET_DATA_DAILY.TYPE_GET_BY_TIME;
+    index++;
+    if (props.is0h === true) {
+      payload[index] = 1;
+    } else {
+      payload[index] = 0;
+    }
+    index++;
+
+    if (!(props.dateEnd && props.dateStart)) {
+      response.message = 'No have props.dateEnd && props.dateStatrt';
+      return response;
+    }
+    calendar.u16Year = props.dateStart.getFullYear();
+    calendar.u8Month = props.dateStart.getMonth() + 1;
+    calendar.u8DayOfMonth = props.dateStart.getDate();
+    calendar.u8Hours = props.dateStart.getHours();
+    calendar.u8Minutes = props.dateStart.getMinutes();
+    calendar.u8Seconds = props.dateStart.getSeconds();
+
+    console.log('start time: ', calendar);
+
+    Struct2Array(Rtc_CalendarType, calendar, payload, index);
+    index += sizeof(Rtc_CalendarType);
+
+    calendar.u16Year = props.dateEnd.getFullYear();
+    calendar.u8Month = props.dateEnd.getMonth() + 1;
+    calendar.u8DayOfMonth = props.dateEnd.getDate();
+    calendar.u8Hours = props.dateEnd.getHours();
+    calendar.u8Minutes = props.dateEnd.getMinutes();
+    calendar.u8Seconds = props.dateEnd.getSeconds();
+
+    console.log('end time: ', calendar);
+
+    Struct2Array(Rtc_CalendarType, calendar, payload, index);
+    index += sizeof(Rtc_CalendarType);
+  } else {
+    index = 0;
+    header.u8Length = 3; /** type get + is 0h + num nearest */
+    payload = Buffer.alloc(header.u8Length);
+    payload[index] = OPTICAL_TYPE_GET_DATA_DAILY.TYPE_GET_BY_NEAREST;
+    index++;
+    if (props.is0h === true) {
+      payload[index] = 1;
+    } else {
+      payload[index] = 0;
+    }
+    index++;
+    payload[index] = props.numNearest ?? 8;
+    index++;
+  }
+  bRet = await opticalSend(header, payload);
+
+  if (bRet) {
+    const res = await waitOpticalAdvance({
+      desiredCmd: cmd,
+      timeout: 5000,
+    });
+    if (res.bSucceed) {
+      console.log(response.obj);
+    } else {
+      return res;
+    }
+    if (res.obj) {
+      const data = res.obj as {
+        [key in FieldOpticalResponseProps]: string | OpticalDailyProps[];
+      };
+      if (data['Dữ liệu hàng ngày']) {
+        response.obj = data['Dữ liệu hàng ngày'];
+        response.bSucceed = true;
+      } else {
+        response.message += 'Not find field Dữ liệu hàng ngày.';
+        return response;
+      }
+    }
+  } else {
+    response.message += 'Send Optical error.';
+    return response;
+  }
+
   return response;
 }

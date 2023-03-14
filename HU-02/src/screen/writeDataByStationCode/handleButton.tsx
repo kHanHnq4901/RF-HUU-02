@@ -1,32 +1,33 @@
-import {Vibration} from 'react-native';
-import {
-  getRFCodeBySeriAndStockRFCode,
-  TYPE_READ_RF,
-} from '../../service/hhu/defineEM';
-import {
-  PropsModelRadio,
-  RfFunc_Read,
-  TypeReadRF,
-} from '../../service/hhu/RF/RfFunc';
-import {sleep} from '../../util';
-import {
-  addMoreItemToRender,
-  hookProps,
-  navigation,
-  PropsDataTable,
-  PropsTable,
-  store,
-} from './controller';
-import {hookProps as selectStationCodeHook} from '../selectStationCode/controller';
+import {store} from '../../component/drawer/drawerContent/controller';
 import {PropsDataModel} from '../../database/model';
+import {PushDataToServer} from '../../service/api';
 import {
   PropsUpdateData2DB,
   updateDataToDB,
   updateReadFailToDb,
   updateSentToDb,
 } from '../../service/database';
-import {PushDataToServer} from '../../service/api';
+import {emitEventFailure} from '../../service/event';
 import {PropsResponse} from '../../service/hhu/Ble/hhuFunc';
+import {TYPE_READ_RF} from '../../service/hhu/defineEM';
+import {
+  OpticalDailyProps,
+  OpticalFunc_Read,
+} from '../../service/hhu/Optical/opticalFunc';
+import {
+  PropsModelRadio,
+  RfFunc_Read,
+  TypeReadRF,
+} from '../../service/hhu/RF/RfFunc';
+import {sleep} from '../../util';
+import {hookProps as selectStationCodeHook} from '../selectStationCode/controller';
+import {
+  addMoreItemToRender,
+  hookProps,
+  navigation,
+  PropsDataTable,
+  PropsTable,
+} from './controller';
 
 const TAG = 'Handle Btn Write Data By Column Code: ';
 
@@ -63,7 +64,7 @@ export function onItemPress(item: PropsDataTable) {
   hookProps.setState(state => {
     for (let key in state.dataTable) {
       state.dataTable[key] = state.dataTable[key].map(itm => {
-        if (itm.data.NO_MODULE === item.data.NO_MODULE) {
+        if (itm.data.NO_METER === item.data.NO_METER) {
           if (
             item.data.TYPE_READ === TYPE_READ_RF.READ_SUCCEED ||
             item.data.TYPE_READ === TYPE_READ_RF.WRITE_BY_HAND
@@ -329,8 +330,7 @@ export function onPencilPress(props: PropsPencil) {
 async function pushDataServer(listUpdate: PropsUpdateData2DB[]) {
   console.log(TAG, 'push data to server');
   for (let itemUpdate of listUpdate) {
-    // eslint-disable-next-line no-undef
-    console.log('here:', JSON.stringify(itemUpdate.data));
+    //console.log('here:', JSON.stringify(itemUpdate.data));
 
     let ret = await PushDataToServer({
       seri: itemUpdate.seri,
@@ -388,6 +388,8 @@ const readData = async () => {
   if (numRetries <= 0) {
     numRetries = 1;
   }
+
+  const typeReadData = hookProps.state.typeRead;
   console.log('numRetries:', numRetries);
   for (
     let index = 0;
@@ -416,57 +418,82 @@ const readData = async () => {
         dateStart.setDate(dateEnd.getDate() - 8);
         console.log('strSeri:', strSeri);
         setStatus('Đang đọc ' + strSeri + ' ...');
+
+        const dataDailyList: PropsDataModel = [];
+
         for (let j = 0; j < numRetries; j++) {
-          result = await RfFunc_Read({
-            seri: strSeri,
-            typeAffect: 'Đọc 1',
-            typeRead: typeReadRf,
-            is0h: is0h,
-            numNearest: 10,
-            dateStatrt: dateStart,
-            dateEnd: dateEnd,
-          });
+          if (typeReadData === 'RF(Lora)') {
+            result = await RfFunc_Read({
+              seri: strSeri,
+              typeAffect: 'Đọc 1',
+              typeRead: typeReadRf,
+              is0h: is0h,
+              numNearest: 10,
+              dateStart: dateStart,
+              dateEnd: dateEnd,
+            });
+          } else {
+            result = await OpticalFunc_Read({
+              seri: strSeri,
+              typeAffect: 'Đọc 1',
+              typeRead: typeReadRf,
+              is0h: is0h,
+              numNearest: 10,
+              dateStart: dateStart,
+              dateEnd: dateEnd,
+            });
+          }
+
           console.log(TAG, 'result:', JSON.stringify(result));
 
           if (result.bSucceed === true) {
-            const modelRadio: PropsModelRadio = result.obj;
-
-            // for (let key in modelRadio.info) {
-            //   if (modelRadio.info[key]) {
-            //     row = [];
-            //     row.push(key);
-            //     row.push(modelRadio.info[key] + getUnitByLabel(key as PropsLabel));
-            //     //console.log(row);
-            //     rows.push(row);
-            //   }
-            // }
-
-            //console.log('modelRadio.data:', modelRadio.data);
-
-            if (!modelRadio.data.length) {
-              console.log('len data = 0');
-
-              result.bSucceed = false;
-            }
-            if (result.bSucceed === true) {
-              const data: PropsDataModel = [];
-              for (let dat of modelRadio.data) {
-                data.push({
-                  time: dat['Thời điểm chốt (full time)'] as unknown as string,
-                  cwRegister: Number(dat.Xuôi),
-                  uCwRegister: Number(dat.Ngược),
-                });
+            if (typeReadData === 'RF(Lora)') {
+              const modelRadio: PropsModelRadio = result.obj;
+              if (!modelRadio.data.length) {
+                console.log('len data = 0');
+                result.bSucceed = false;
+              } else {
+                for (let dat of modelRadio.data) {
+                  dataDailyList.push({
+                    // time: dat[
+                    //   'Thời điểm chốt (full time)'
+                    // ] as unknown as string,
+                    time: dat['Thời điểm chốt'] ?? 'here',
+                    cwRegister: Number(dat.Xuôi),
+                    uCwRegister: Number(dat.Ngược),
+                  });
+                }
               }
+            } else {
+              const dataDaily = result.obj as OpticalDailyProps[];
+              if (!dataDaily.length) {
+                console.log('len data = 0');
+                result.bSucceed = false;
+              } else {
+                for (let dat of dataDaily) {
+                  dataDailyList.push({
+                    // time: dat[
+                    //   'Thời điểm chốt (full time)'
+                    // ] as unknown as string,
+                    time: dat['Thời điểm chốt'] ?? 'here',
+                    cwRegister: Number(dat['Dữ liệu xuôi']),
+                    uCwRegister: Number(dat['Dữ liệu ngược']),
+                  });
+                }
+              }
+            }
+
+            if (result.bSucceed === true) {
               const listUpdate: PropsUpdateData2DB[] = [];
 
-              // only get curent dât, no need updae hook
+              // only get listUpdate, no need update hook
               hookProps.setState(state => {
                 for (let key in state.dataTable) {
                   state.dataTable[key] = state.dataTable[key].map(itm => {
-                    if (itm.data.NO_MODULE === strSeri) {
+                    if (itm.data.NO_METER === strSeri) {
                       listUpdate.push({
                         seri: strSeri,
-                        data: data,
+                        data: dataDailyList,
                         typeRead: TYPE_READ_RF.READ_SUCCEED,
                         dateQuery: dateQuery,
                       });
@@ -476,7 +503,6 @@ const readData = async () => {
                 }
                 return state;
               });
-              let bcsReadSucced = '';
               let statusWriteFailed = '';
               let totalUpdateFailed = 0;
               for (let itemUpdate of listUpdate) {
@@ -515,6 +541,9 @@ const readData = async () => {
                         ...state.dataTable[key][indexCurRow].data,
                       };
                       state.dataTable[key][indexCurRow].checked = false;
+
+                      console.log('test here');
+
                       // state.dataTable[key][indexCurRow].data.TYPE_READ =
                       //   TYPE_READ_RF.READ_SUCCEED;
                       if (
@@ -532,10 +561,7 @@ const readData = async () => {
                           state.dataTable[key][indexCurRow].data.NOTE =
                             itemUpdate.note;
                         }
-                        // console.log(
-                        //   'here:',
-                        //   JSON.stringify(state.dataTable[key][indexCurRow]),
-                        // );
+                        console.log('data here:', itemUpdate.data);
                       }
                       // node = state.dataTable[key][indexCurRow];
                     }
@@ -558,16 +584,10 @@ const readData = async () => {
                 return {...state};
               });
               //push data to server
+              console.log('comment pushData 2 Sever');
 
-              pushDataServer(listUpdate);
-              // if (node) {
-              //   refScroll.current?.scrollResponderScrollTo({
-              //     x: 0,
-              //     y: findNodeHandle(node),
-              //     animated: true,
-              //   });
-              // }
-              //}
+              //pushDataServer(listUpdate);
+
               index = -1; // reset index -1 ++ = 0
               break;
             } else {
@@ -575,12 +595,13 @@ const readData = async () => {
           }
         }
         if (result.bSucceed !== true) {
+          emitEventFailure();
           hookProps.setState(state => {
             state.status =
               'Đọc thất bại seri ' + strSeri + ': ' + result.message;
             for (let key in state.dataTable) {
               state.dataTable[key] = state.dataTable[key].map(itm => {
-                if (itm.data.SERY_CTO === strSeri) {
+                if (itm.data.NO_METER === strSeri) {
                   itm = {...itm};
                   itm.data = {...itm.data};
                   itm.checked = false;
@@ -594,6 +615,7 @@ const readData = async () => {
             }
             return {...state};
           });
+          //console.log('comment pushData 2 Sever');
           let writeFailed = await updateReadFailToDb(strSeri, dateQuery);
           if (writeFailed !== true) {
             console.log('Update Read failed to DB is Failed');
@@ -601,6 +623,7 @@ const readData = async () => {
         }
       } catch (err) {
         console.log(TAG, err.message);
+        emitEventFailure();
         return;
       }
     }
@@ -633,7 +656,7 @@ export const onBtnReadPress = async () => {
       state.status = 'Chưa kết nối bluetooth';
       return {...state};
     });
-    Vibration.vibrate([100, 200, 100]);
+    emitEventFailure();
     return;
   }
 

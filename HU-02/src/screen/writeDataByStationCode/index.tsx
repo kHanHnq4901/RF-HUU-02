@@ -1,4 +1,5 @@
 import {RouteProp, useRoute} from '@react-navigation/native';
+import _ from 'lodash';
 import throttle from 'lodash.throttle';
 import React, {useRef} from 'react';
 import {
@@ -11,23 +12,27 @@ import {
 } from 'react-native';
 import {Checkbox} from 'react-native-paper';
 import SelectDropdown from 'react-native-select-dropdown';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import Entypo from 'react-native-vector-icons/Entypo';
+import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import {Button} from '../../component/button/button';
-import Loader1 from '../../component/loader1';
 import {CheckboxButton} from '../../component/checkbox/checkbox';
+import Loader1 from '../../component/loader1';
 import {ModalWriteRegister} from '../../component/modal/modalWriteRegister';
 import {StackWriteDataByStationCodeList} from '../../navigation/model/model';
 import {TYPE_READ_RF} from '../../service/hhu/defineEM';
 import {Colors, normalize, scale, scaleHeight, scaleWidth} from '../../theme';
 import {sizeScreen} from '../../theme/index';
+import {hookProps as selectStationCodeHook} from '../selectStationCode/controller';
 import {
   GetHookProps,
+  PropsDataTable,
+  arrTypeRead,
   hookProps,
   isCloseToBottom,
   onDeInit,
   onInit,
   onScrollToEnd,
-  PropsDataTable,
-  variable,
 } from './controller';
 import {
   onBtnReadPress,
@@ -36,14 +41,11 @@ import {
   onItemPress,
   onPencilPress,
   onSelectAllPress,
-  onSelectedItemDropdown,
   onStopReadPress,
 } from './handleButton';
-import Entypo from 'react-native-vector-icons/Entypo';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import EvilIcons from 'react-native-vector-icons/EvilIcons';
-import _ from 'lodash';
-import {hookProps as selectStationCodeHook} from '../selectStationCode/controller';
+import {store} from '../../component/drawer/drawerContent/controller';
+import {RadioButton} from '../../component/radioButton/radioButton';
+
 export const SubRow1Memo = React.memo(
   (props: {
     STATION_CODE: string;
@@ -83,9 +85,10 @@ export const SubRow2Memo = React.memo(
     TT: string;
     NO_METER: string;
     labelMeter: string;
-    NO_MODULE: string;
+    // NO_MODULE: string;
   }) => {
-    //console.log('ren SubRow2Memo');
+    // console.log('ren SubRow2Memo:', props.labelMeter);
+    //console.log('type:', typeof props.labelMeter === undefined);
     return (
       <>
         <Text style={styleItemRow.textNormal}>
@@ -93,7 +96,7 @@ export const SubRow2Memo = React.memo(
           <Text style={styleItemRow.textNormal}>. CK: </Text>
           <Text style={styleItemRow.textImpress}>{props.NO_METER}</Text>
           <Text style={styleItemRow.textNormal}> - {props.labelMeter}</Text>
-          <Text style={styleItemRow.textImpress}>{props.NO_MODULE}</Text>
+          {/* <Text style={styleItemRow.textNormal}>{props.NO_MODULE}</Text> */}
         </Text>
       </>
     );
@@ -104,25 +107,39 @@ export const SubRow2Memo = React.memo(
 export const SubRow3Memo = React.memo(
   (props: {
     CS_MOI: number;
-    CS_CU: number;
-    SL_CU: number;
+    CS_XUOI: number;
+    CS_NGUOC: number;
     DateLatch: string;
   }) => {
     //console.log('ren SubRow3Memo');
-    const SL_Moi =
-      Number(props.CS_MOI) === 0
-        ? ' '
-        : (Number(props.CS_MOI) - Number(props.CS_CU)).toFixed(2);
+    // const SL_Moi =
+    //   Number(props.CS_MOI) === 0
+    //     ? ' '
+    //     : (Number(props.CS_MOI) - Number(props.CS_CU)).toFixed(2);
     return (
       <>
         <Text style={styleItemRow.textNormal}>
-          CS mới: <Text style={styleItemRow.textImpress}>{props.CS_MOI}</Text>
-          {' - '}
-          cũ: <Text style={styleItemRow.textImpress}>{props.CS_CU}</Text>
+          CS mới:{' '}
+          <Text style={styleItemRow.textImpress}>
+            {(props.CS_MOI / 1000).toFixed(3)}
+          </Text>
+          {' m3 '}
+          {/* cũ: <Text style={styleItemRow.textImpress}>{props.CS_CU}</Text>
           {'     '}
           SL mới: <Text style={styleItemRow.textImpress}>{SL_Moi}</Text>
           {' - '}
-          cũ: <Text style={styleItemRow.textImpress}>{props.SL_CU}</Text>
+          cũ: <Text style={styleItemRow.textImpress}>{props.SL_CU}</Text> */}
+        </Text>
+        <Text style={styleItemRow.textNormal}>
+          Xuôi:{' '}
+          <Text style={styleItemRow.textNormal}>
+            {(props.CS_XUOI / 1000).toFixed(3)}
+          </Text>
+          {'     '}
+          Ngược:{' '}
+          <Text style={styleItemRow.textNormal}>
+            {(props.CS_NGUOC / 1000).toFixed(3)}
+          </Text>
         </Text>
         <Text style={styleItemRow.textNormal}>
           Ngày chốt:{' '}
@@ -149,8 +166,6 @@ const IconPencilMemo = React.memo((props: {item: PropsDataTable}) => {
 });
 const IconSentStatusMemo = React.memo(
   (props: {status: boolean | null}) => {
-    //console.log('status Is Sent:', props.status);
-
     return (
       <TouchableOpacity style={styleItemRow.sentStatus}>
         {props.status === true ? (
@@ -161,7 +176,10 @@ const IconSentStatusMemo = React.memo(
       </TouchableOpacity>
     );
   },
-  (prev, next) => _.isEqual(prev.status, next.status),
+  (prev, next) => {
+    const ret = prev.status === next.status; //_.isEqual(prev.status, next.status);
+    return ret;
+  },
 );
 
 //ListRenderItemInfo<PropsDatatable>
@@ -208,7 +226,7 @@ function ItemStock(item: PropsDataTable) {
         <SubRow2Memo
           TT={item.stt}
           NO_METER={item.data.NO_METER}
-          NO_MODULE={item.data.NO_MODULE}
+          // NO_MODULE={item.data.NO_MODULE}
           labelMeter={item.labelMeter}
         />
       </View>
@@ -225,8 +243,8 @@ function ItemStock(item: PropsDataTable) {
             ? item.data.DATA[0].cwRegister - item.data.DATA[0].uCwRegister
             : 0
         }
-        CS_CU={0}
-        SL_CU={0}
+        CS_XUOI={item.data.DATA.length ? item.data.DATA[0].cwRegister : 0}
+        CS_NGUOC={item.data.DATA.length ? item.data.DATA[0].uCwRegister : 0}
         DateLatch={item.data.DATA.length ? item.data.DATA[0].time : ' '}
       />
     </TouchableOpacity>
@@ -269,10 +287,10 @@ export const WriteStationCodeScreen = () => {
   return (
     <View style={styles.container}>
       <ModalWriteRegister
-        title={variable.modalAlert.title}
-        info={variable.modalAlert.content}
-        onDismiss={variable.modalAlert.onDissmiss}
-        onOKPress={variable.modalAlert.onOKPress}
+        title={store.state.modal.modalAlert.title}
+        info={store.state.modal.modalAlert.content}
+        onDismiss={store.state.modal.modalAlert.onDissmiss}
+        onOKPress={store.state.modal.modalAlert.onOKPress}
       />
       <View style={{backgroundColor: 'white'}}>
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
@@ -373,6 +391,22 @@ export const WriteStationCodeScreen = () => {
                 key={item.label}
                 onPress={() => {
                   onCheckBoxTypeReadChange(item.label);
+                }}
+              />
+            ))}
+          </View>
+          <View style={styles.containerTypeRead}>
+            {arrTypeRead.map(item => (
+              <RadioButton
+                key={item}
+                value={item}
+                label={item}
+                checked={hookProps.state.typeRead === item}
+                onPress={() => {
+                  hookProps.setState(state => {
+                    state.typeRead = item;
+                    return {...state};
+                  });
                 }}
               />
             ))}

@@ -4,7 +4,7 @@ import {TextInput} from 'react-native';
 
 export type RadioTextProps = {
   checked: boolean;
-  value: string;
+  // value: string;
 };
 
 type DataType = {
@@ -45,15 +45,15 @@ export const GetHookProps = (): HookProps => {
   const [state, setState] = useState<HookState>({
     seriMeter: {
       checked: false,
-      value: '',
+      // value: '',
     },
     seriModule: {
       checked: false,
-      value: '',
+      // value: '',
     },
     immediateData: {
       checked: false,
-      value: '',
+      // value: '',
     },
     isBusy: false,
     status: '',

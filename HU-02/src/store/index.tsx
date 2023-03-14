@@ -41,6 +41,12 @@ type PropsState = {
   modal: {
     showInfo: boolean;
     showWriteRegister: boolean;
+    modalAlert: {
+      title: string;
+      content: string;
+      onOKPress: () => void;
+      onDissmiss?: () => void;
+    };
   };
   userInfo: PropsInfoUser;
   meter: PropsStoreMeter;
@@ -84,6 +90,11 @@ export const StoreProvider = ({children}) => {
     modal: {
       showInfo: false,
       showWriteRegister: false,
+      modalAlert: {
+        title: 'no content',
+        content: 'no content',
+        onOKPress: () => {},
+      },
     },
     userInfo: userInfo,
     meter: {

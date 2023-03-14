@@ -34,7 +34,7 @@ export function ListenEventSucceedError() {
       console.log('cannot play the sound file', e);
     }
   });
-  DeviceEventEmitter.addListener(EVENT_ERROR, () => {
+    DeviceEventEmitter.addListener(EVENT_ERROR, () => {
     Vibration.vibrate();
   });
 }

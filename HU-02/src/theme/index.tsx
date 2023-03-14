@@ -49,11 +49,14 @@ export const scaleHeight = getSaleHeight(SCREEN_HEIGHT);
 export const scale = scaleWidth < scaleHeight ? scaleWidth : scaleHeight;
 
 export function normalize(size) {
+  const obj = Dimensions.get('screen');
   const newSize = size * scale;
   if (Platform.OS === 'ios') {
-    return Math.round(PixelRatio.roundToNearestPixel(newSize));
+    return Math.round(PixelRatio.roundToNearestPixel(newSize / obj.fontScale));
   } else {
-    return Math.round(PixelRatio.roundToNearestPixel(newSize)) - 2;
+    return (
+      Math.round(PixelRatio.roundToNearestPixel(newSize / obj.fontScale)) - 2
+    );
   }
 }
 

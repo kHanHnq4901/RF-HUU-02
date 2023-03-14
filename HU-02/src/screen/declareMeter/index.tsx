@@ -103,7 +103,9 @@ export const DeclareMeterScreen = () => {
         </View>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        ref={hookProps.refScroll}>
         {/* <View style={styles.containerSeri}>
           <TextInput
             style={styles.seri}
@@ -157,7 +159,7 @@ export const DeclareMeterScreen = () => {
           blurOnSubmit={false}
         />
         <NormalTextInput
-          label="Mã khách hàng:"
+          label="Mã khách hàng:(*)"
           // onEndEditing={e => {
           //   e.persist();
           //   hookProps.setState(state => {

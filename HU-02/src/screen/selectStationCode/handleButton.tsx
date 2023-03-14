@@ -84,12 +84,16 @@ export async function upDateMissData(
       state.isLoading = true;
       return {...state};
     });
+    console.log('à');
+
     const dataTable: PropsTabel[] = [];
     for (let data of hookProps.state.dataTabel) {
       const response = await getMeterListMissByLine(
         data.meterLine.line.LINE_ID,
         date,
       );
+      //console.log(TAG, 'response', response);
+
       if (response.succeed === true) {
         lastDateExecute = date;
         data.meterLine.listMeter = response.data;

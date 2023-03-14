@@ -1,8 +1,16 @@
+import {PushDataToServer} from '../../service/api';
+import {updateDataToDB, updateSentToDb} from '../../service/database';
+import {emitEventSuccess} from '../../service/event';
+import {TYPE_READ_RF} from '../../service/hhu/defineEM';
+import {formatDateTimeDB} from '../../service/hhu/util/utilFunc';
 import {isNumeric} from '../../util';
-import {PropsDatatable} from '../writeDataByBookCode/controller';
+import {PropsDataTable} from '../writeDataByStationCode/controller';
 import {hookProps} from './controller';
+import {emitEventFailure} from '../../service/event/index';
 
-export const checkCondition = (isManyPrice: boolean): boolean => {
+const TAG = 'Handle Btn Write Data By Hand';
+
+export const checkCondition = (): boolean => {
   let status = '';
   let res = true;
   if (isNumeric(hookProps.state.CS_Moi) === false) {
@@ -14,21 +22,7 @@ export const checkCondition = (isManyPrice: boolean): boolean => {
       res = false;
     }
   }
-  if (isManyPrice) {
-    if (isNumeric(hookProps.state.Pmax) === false) {
-      status += 'Pmax không hợp lệ ';
-      res = false;
-    } else {
-      if (Number(hookProps.state.Pmax) <= 0) {
-        status += 'Pmax phải lớn hơn 0 ';
-        res = false;
-      }
-    }
-    if (!hookProps.state.datePick) {
-      status += 'Chưa chọn ngày Pmax ';
-      res = false;
-    }
-  }
+
   if (res === false) {
     hookProps.setState(state => {
       state.status = status;
@@ -40,48 +34,64 @@ export const checkCondition = (isManyPrice: boolean): boolean => {
   }
 };
 
-export const onWriteByHandDone = async (props: PropsDatatable) => {
-  // hookProps.setState(state => {
-  //   state.status = status;
-  //   state.isWriting = true;
-  //   return {...state};
-  // });
+export const onWriteByHandDone = async (props: PropsDataTable) => {
+  hookProps.setState(state => {
+    state.status = status;
+    state.isWriting = true;
+    return {...state};
+  });
 
-  // const NO = props.data.SERY_CTO;
-  // const loaiBCS = props.data.LOAI_BCS;
-  // const RF = props.data.RF;
-  // const isManyPrice = props.isManyPrice;
+  const NO = props.data.NO_METER;
+  const register = Number(hookProps.state.CS_Moi) * 1000;
+  const data = [...props.data.DATA];
+  data.push({
+    time: formatDateTimeDB(new Date()),
+    cwRegister: register,
+    uCwRegister: 0,
+  });
+  const writeDBSuccess = await updateDataToDB({
+    seri: NO,
+    dateQuery: props.data.DATE_QUERY,
+    data: data,
+    typeRead: TYPE_READ_RF.WRITE_BY_HAND,
+    note:
+      hookProps.state.ghichu.trim().length === 0
+        ? undefined
+        : hookProps.state.ghichu,
+  });
+  try {
+    let ret = await PushDataToServer({
+      seri: NO,
+      data: data,
+    });
+    if (ret) {
+      console.log('sent to server successfully');
+      ret = await updateSentToDb(NO, props.data.DATE_QUERY, true);
+      if (ret) {
+        console.log('updateSentToDb succeed');
+      } else {
+        console.log('updateSentToDb failed');
+      }
+    } else {
+      console.log('sent to server failed');
+    }
+  } catch (err: any) {
+    console.log(TAG, err.message);
+  }
 
-  // const writeDBSuccess = await updateDataToDB({
-  //   seri: NO,
-  //   BCSCMIS: loaiBCS,
-  //   RfCode: RF,
-  //   newCapacity: 0, // dont care
-  //   oldCapacity: 0, // dont care
-  //   date: new Date(),
-  //   T0: hookProps.state.CS_Moi,
-  //   Pmax: isManyPrice ? hookProps.state.Pmax : undefined,
-  //   datePmax: isManyPrice ? formatDateTimeDB(hookProps.state.datePick) : '',
-  //   isWriteHand: true,
-  //   ghiChu:
-  //     hookProps.state.ghichu.trim().length === 0
-  //       ? undefined
-  //       : hookProps.state.ghichu,
-  // });
+  let status = '';
 
-  // let status = '';
+  if (writeDBSuccess === true) {
+    status = 'Ghi tay thành công seri ' + NO;
+    emitEventSuccess();
+  } else {
+    status = 'Ghi DB lỗi';
+    emitEventFailure();
+  }
 
-  // if (writeDBSuccess === true) {
-  //   status = 'Ghi tay thành công ' + loaiBCS + ' của ' + NO;
-  // } else {
-  //   status = 'Ghi DB lỗi';
-  // }
-
-  // hookProps.setState(state => {
-  //   state.status = status;
-  //   state.isWriting = false;
-  //   return {...state};
-  // });
-
-  console.log('not done');
+  hookProps.setState(state => {
+    state.status = status;
+    state.isWriting = false;
+    return {...state};
+  });
 };

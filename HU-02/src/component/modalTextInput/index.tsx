@@ -33,9 +33,10 @@ export function ModalTextInput(props: Props) {
           </View>
           <View style={styles.content}>
             <TextInput
-              onSubmitEditing={e => {
-                valueTextInput = e.nativeEvent.text;
-              }}
+              // onSubmitEditing={e => {
+              //   valueTextInput = e.nativeEvent.text;
+              // }}
+              onChangeText={text => (valueTextInput = text)}
               style={styles.textInput}
               {...props}
             />

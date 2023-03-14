@@ -1,11 +1,13 @@
 import {DrawerNavigationProp} from '@react-navigation/drawer';
 import {NavigatorScreenParams} from '@react-navigation/native';
 import type {StackNavigationProp} from '@react-navigation/stack';
+import {PropsDataTable} from '../../screen/writeDataByStationCode/controller';
 export type StackRootList = {
   SignIn: undefined;
   SignUp: undefined;
   Drawer: NavigatorScreenParams<DrawerParamsList>;
   BleScreen: undefined;
+  Setting: undefined;
 };
 
 export type StackWriteDataList = {
@@ -18,7 +20,7 @@ export type StackWriteDataList = {
 export type StackViewDataList = {
   ViewRegister: ParamsDrawerProps;
   ViewRegisterDetailed: {
-    data: PropsDatatable;
+    data: PropsDataTable;
   };
 };
 
@@ -35,7 +37,7 @@ export type StackWriteDataByBookCodeList = {
   WriteBook: PropsRouteParamsWriteBook;
   WriteByHand: {
     // navigation: StackWriteBookCodeNavigationProp;
-    data: PropsDatatable;
+    data: PropsDataTable;
   };
 };
 export type StackWriteDataByStationCodeList = {
@@ -43,7 +45,7 @@ export type StackWriteDataByStationCodeList = {
   WriteStation: PropsRouteParamsWriteStation;
   WriteByHand: {
     // navigation: StackWriteBookCodeNavigationProp;
-    data: PropsDatatable;
+    data: PropsDataTable;
   };
 };
 

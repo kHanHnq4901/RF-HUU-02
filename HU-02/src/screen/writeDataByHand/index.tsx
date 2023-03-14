@@ -54,7 +54,7 @@ export const WriteDataByHandScreen = () => {
   const navigation = useNavigation();
 
   React.useLayoutEffect(() => {
-    onBeforeInit(props.data.data, props.data.isManyPrice);
+    onBeforeInit(props.data.data);
   }, []);
 
   // useEffect(() => {
@@ -71,13 +71,13 @@ export const WriteDataByHandScreen = () => {
         }}>
         <Ionicons name="chevron-back" size={30} color={Colors.secondary} />
       </TouchableOpacity>
-      <Text style={styles.NO}>{props.data.data.SERY_CTO}</Text>
+      <Text style={styles.NO}>{props.data.data.NO_METER}</Text>
       <Text style={styles.status}>{hookProps.state.status}</Text>
       <ScrollView>
         <View style={styles.body}>
-          {data.map(item => (
+          {data.map((item, index) => (
             <RowTable
-              key={item.label}
+              key={item.label + index}
               label={item.label}
               content={item.content}
             />
@@ -85,7 +85,7 @@ export const WriteDataByHandScreen = () => {
           <View style={{marginTop: 15}} />
           <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
             <View style={styles.itemInputContainer}>
-              <Text style={styles.title4}>Chỉ số mới:(kWh)</Text>
+              <Text style={styles.title4}>Chỉ số mới:(m3)</Text>
               <TextInput
                 value={hookProps.state.CS_Moi}
                 onChangeText={text => {
@@ -101,65 +101,42 @@ export const WriteDataByHandScreen = () => {
                 placeholderTextColor={Colors.primary}
               />
             </View>
-            {props.data.isManyPrice && (
-              <View style={styles.itemInputContainer}>
-                <Text style={styles.title4}>Pmax:(kW)</Text>
-                <TextInput
-                  value={hookProps.state.Pmax}
-                  onChangeText={text => {
-                    hookProps.setState(state => {
-                      state.Pmax = text;
-                      return {...state};
-                    });
-                  }}
-                  editable={hookProps.state.allowWrite}
-                  keyboardType="numeric"
-                  textInputStyle={styles.title3}
-                  placeholder="0"
-                  placeholderTextColor={Colors.primary}
-                />
-              </View>
-            )}
-            {props.data.isManyPrice && (
-              <View style={styles.itemInputContainer}>
-                <Text style={styles.title4}>Ngày Pmax:</Text>
-                <TouchableOpacity
-                  style={styles.selectDate}
-                  onPress={() => {
-                    if (hookProps.state.allowWrite !== true) {
-                      return;
-                    }
-                    DateTimePickerAndroid.open({
-                      value: hookProps.state.datePick,
-                      mode: 'date',
-                      display: 'calendar',
-                      onChange: date => {
-                        console.log(JSON.stringify(date));
 
-                        if (date.type === 'set') {
-                          console.log('setDate');
-                          hookProps.setState(state => {
-                            state.datePick = new Date(
-                              date.nativeEvent.timestamp as number,
-                            );
-                            return {...state};
-                          });
-                        }
-                      },
-                    });
-                  }}>
-                  <TextInput
-                    placeholder="Chọn ngày"
-                    value={hookProps.state.datePick?.toLocaleDateString()}
-                    textInputStyle={styles.title3}
-                    //style={styles.searchText}
-                    editable={false}
-                    placeholderTextColor={Colors.primary}
-                    //textInputStyle={styles.selectDate}
-                  />
-                </TouchableOpacity>
-              </View>
-            )}
+            {/* <TouchableOpacity
+              style={styles.selectDate}
+              onPress={() => {
+                if (hookProps.state.allowWrite !== true) {
+                  return;
+                }
+                DateTimePickerAndroid.open({
+                  value: hookProps.state.datePick,
+                  mode: 'date',
+                  display: 'calendar',
+                  onChange: date => {
+                    console.log(JSON.stringify(date));
+
+                    if (date.type === 'set') {
+                      console.log('setDate');
+                      hookProps.setState(state => {
+                        state.datePick = new Date(
+                          date.nativeEvent.timestamp as number,
+                        );
+                        return {...state};
+                      });
+                    }
+                  },
+                });
+              }}>
+              <TextInput
+                placeholder="Chọn ngày"
+                value={hookProps.state.datePick?.toLocaleDateString()}
+                textInputStyle={styles.title3}
+                //style={styles.searchText}
+                editable={false}
+                placeholderTextColor={Colors.primary}
+                //textInputStyle={styles.selectDate}
+              />
+            </TouchableOpacity> */}
           </View>
 
           <View>
@@ -204,7 +181,7 @@ export const WriteDataByHandScreen = () => {
             label={hookProps.state.isWriting ? 'Đang ghi' : 'Ghi'}
             style={{width: '50%', alignSelf: 'center', height: 55}}
             onPress={throttle(() => {
-              const ok = checkCondition(props.data.isManyPrice);
+              const ok = checkCondition();
               if (ok) {
                 onWriteByHandDone(props.data);
               }
@@ -230,17 +207,18 @@ const styles = StyleSheet.create({
   },
   rowTable: {
     flexDirection: 'row',
+    marginVertical: 3,
   },
   title3: {
     color: Colors.primary,
-    fontSize: normalize(18),
+    fontSize: normalize(20),
     marginVertical: 5,
     width: 150 * scale,
     backgroundColor: '#f0ebec',
     height: CommonHeight,
   },
   lableTable: {
-    width: '20%',
+    width: '30%',
     borderWidth: 1,
     borderColor: '#dadadd',
     paddingHorizontal: 3,
@@ -298,7 +276,7 @@ const styles = StyleSheet.create({
   },
   title2: {
     color: Colors.text,
-    fontSize: normalize(18),
+    fontSize: normalize(20),
     marginVertical: 5,
   },
   title4: {

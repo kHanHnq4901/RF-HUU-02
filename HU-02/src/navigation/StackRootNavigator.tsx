@@ -5,6 +5,7 @@ import {SignInScreen} from '../screen/signIn';
 import {SignUpScreen} from '../screen/signUp';
 import {DrawerNavigator} from './DrawerNavigator';
 import {StackRootList} from './model/model';
+import {SettingAndAlarmScreen} from '../screen/settingAndAlarm';
 
 const Stack = createNativeStackNavigator<StackRootList>();
 export function StackRootNavigator() {
@@ -19,6 +20,11 @@ export function StackRootNavigator() {
         name="BleScreen"
         component={SetUpBleScreen}
         options={{headerShown: true, title: 'Bluetooth'}}
+      />
+      <Stack.Screen
+        name="Setting"
+        component={SettingAndAlarmScreen}
+        options={{headerShown: true, title: 'Cài đặt địa chỉ host'}}
       />
     </Stack.Navigator>
   );

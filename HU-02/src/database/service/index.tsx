@@ -71,6 +71,14 @@ const convertEntity2Model = (entity: PropsKHCMISEntity): PropsKHCMISModel => {
       model[KHCMISModelFields[i]] = entity[KHCMISModelFields[i]];
     }
   }
+  // console.log('model.IS_SENT:', model.IS_SENT);
+  // console.log('typeof model.IS_SENT:', typeof model.IS_SENT);
+
+  if ((model.IS_SENT as unknown as string) === 'true') {
+    model.IS_SENT = true;
+  } else {
+    model.IS_SENT = false;
+  }
   return model;
 };
 

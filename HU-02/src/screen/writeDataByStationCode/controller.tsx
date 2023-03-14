@@ -8,12 +8,7 @@ import {
   PropsRouteParamsWriteStation,
   StackWriteStationCodeNavigationProp,
 } from '../../navigation/model/model';
-import {
-  getLabelAndIsManyPriceBy3Character,
-  TYPE_READ_RF,
-} from '../../service/hhu/defineEM';
-import {PropsInfoWM} from '../../service/user';
-import {PropsStore, storeContext} from '../../store';
+import {TYPE_READ_RF} from '../../service/hhu/defineEM';
 import {sizeScreen} from '../../theme';
 import {hookProps as selectStationCodeHook} from '../selectStationCode/controller';
 
@@ -23,16 +18,15 @@ type PropsCheckBox = {
   // value: 'Chưa đọc' | 'Đọc lỗi' | 'Ghi tay' | 'Bất thường';
 };
 
-const itemPerRender = 10;
+// type PropsTypeReadData = {
+//   value: string;
+//   label: 'RF(Lora)' | 'Cổng quang';
+// };
+type PropsTypeReadData = 'RF(Lora)' | 'Cổng quang';
 
-export const variable = {
-  modalAlert: {
-    title: '',
-    content: '',
-    onDissmiss: (value?: any) => {},
-    onOKPress: () => {},
-  },
-};
+export const arrTypeRead: PropsTypeReadData[] = ['Cổng quang', 'RF(Lora)'];
+
+const itemPerRender = 10;
 
 export type PropsDataTable = {
   id: string;
@@ -56,6 +50,7 @@ export type HookState = {
   totalSucceed: string;
   totalSent2ServerSucceed: string;
   selectedColumn: string | null;
+  typeRead: PropsTypeReadData;
 };
 
 export type HookProps = {
@@ -71,7 +66,6 @@ export type PropsTable = {
 const TAG = ' Controller: ';
 
 export const hookProps = {} as HookProps;
-export let store = {} as PropsStore;
 export let navigation: StackWriteStationCodeNavigationProp;
 
 export function isCloseToBottom({
@@ -162,10 +156,10 @@ export const GetHookProps = (): HookProps => {
     selectedColumn: null,
     requestStop: false,
     totalSent2ServerSucceed: '0',
+    typeRead: 'Cổng quang',
   });
   hookProps.state = state;
   hookProps.setState = setState;
-  store = React.useContext(storeContext) as PropsStore;
   navigation = useNavigation<StackWriteStationCodeNavigationProp>();
   return hookProps;
 };

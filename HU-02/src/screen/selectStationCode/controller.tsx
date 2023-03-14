@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import {store} from '../../component/drawer/drawerContent/controller';
 import {PropsKHCMISModel} from '../../database/model';
 import {CMISKHServices} from '../../database/service';
 import {TypeReadRF} from '../../service/hhu/RF/RfFunc';
@@ -7,8 +8,8 @@ import {
   PropsInfoWM,
   PropsLineServer,
 } from '../../service/user';
-import {PropsStore, storeContext} from '../../store';
 import {upDateMissData} from './handleButton';
+import {GetListLine} from '../../service/api';
 
 // type PropsDataDB = {
 //   item: PropsKHCMISModel;
@@ -53,7 +54,6 @@ export type HookProps = {
 const TAG = ' Controller: ';
 
 export const hookProps = {} as HookProps;
-export let store = {} as PropsStore;
 
 export const GetHookProps = (): HookProps => {
   const dateEnd = new Date();
@@ -81,9 +81,13 @@ export const GetHookProps = (): HookProps => {
   });
   hookProps.state = state;
   hookProps.setState = setState;
-  store = React.useContext(storeContext) as PropsStore;
   return hookProps;
 };
+
+export const dataReadRadioButton: TypeReadRF[] = Array.from(
+  new Set<TypeReadRF>(['Dữ liệu gần nhất', 'Theo thời gian']),
+);
+
 const getDataDb = async () => {
   let items: PropsKHCMISModel[];
   let dataDB: PropsKHCMISModel[] = [];
@@ -160,35 +164,85 @@ const getDataDb = async () => {
   }
 };
 
+async function upDateLineAndMeterFromServer(): Promise<PropsMeterLine[]> {
+  const ret: PropsMeterLine[] = [];
+
+  try {
+    const response = await GetListLine();
+    if (response.bSucceeded) {
+      const listStationObj: PropsLineServer[] = response.obj; //PropsReturnGetListLine
+      // lisStationName = [];
+      // for (let obj of ListStationObj) {
+      //   lisStationName.push(obj.LINE_NAME);
+      // }
+      console.log('update list line succeed');
+
+      for (let line of listStationObj) {
+        const lineAndMeterObj: PropsMeterLine = {
+          listMeter: [],
+          line: {} as PropsLineServer,
+        };
+        lineAndMeterObj.line = line;
+        ret.push(lineAndMeterObj);
+      }
+      //console.log('lisStationName:', lisStationName);
+    } else {
+      console.log('update list line failed: ', response);
+    }
+  } catch (err: any) {
+    console.log(TAG, 'err', err.mess);
+  }
+
+  return ret;
+}
+
 export const onInit = async (navigation, ref) => {
   navigation.addListener('focus', async () => {
-    if ((await checkNetworkStatus()) === true) {
-      //getDataDb(ref);
-      const dataTable: PropsTabel[] = [];
-      for (let line of store.state.meter.listLine) {
-        const item = {
-          meterLine: {},
-        } as PropsTabel;
-        item.checked = false;
-        item.id = line.LINE_ID;
-        item.show = true;
-        item.meterLine.line = line;
-        item.meterLine.listMeter = [];
-
-        dataTable.push(item);
-      }
-
+    try {
       hookProps.setState(state => {
-        state.dataTabel = dataTable;
+        state.isLoading = true;
         return {...state};
       });
-      if (hookProps.state.typeRead === 'Dữ liệu gần nhất') {
-        upDateMissData(new Date(), true);
+
+      if ((await checkNetworkStatus()) === true) {
+        //getDataDb(ref);
+
+        const listLineAndMeter = await upDateLineAndMeterFromServer();
+
+        const dataTable: PropsTabel[] = [];
+        for (let lineAndMeter of listLineAndMeter) {
+          //console.log('line:', line);
+
+          const item = {
+            meterLine: {},
+          } as PropsTabel;
+          item.checked = false;
+          item.id = lineAndMeter.line.LINE_ID;
+          item.show = true;
+          item.meterLine.line = lineAndMeter.line;
+          item.meterLine.listMeter = lineAndMeter.listMeter;
+
+          dataTable.push(item);
+        }
+
+        hookProps.setState(state => {
+          state.dataTabel = dataTable;
+          return {...state};
+        });
+        if (hookProps.state.typeRead === 'Dữ liệu gần nhất') {
+          upDateMissData(new Date(), true);
+        } else {
+          upDateMissData(hookProps.state.dateEnd, true);
+        }
       } else {
-        upDateMissData(hookProps.state.dateEnd, true);
+        //await getDataDb();
       }
-    } else {
-      await getDataDb();
+    } catch (err: any) {
+    } finally {
+      hookProps.setState(state => {
+        state.isLoading = false;
+        return {...state};
+      });
     }
   });
 };

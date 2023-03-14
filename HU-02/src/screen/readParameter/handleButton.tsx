@@ -83,7 +83,7 @@ const readData = async (props: PropsRead) => {
   try {
     for (let j = 0; j < numRetries; j++) {
       if (props.typeRead === 'Theo thời gian') {
-        console.log('dateStart:' + props.dateStatrt?.toLocaleString());
+        console.log('dateStart:' + props.dateStart?.toLocaleString());
         console.log('dateEnd:' + props.dateEnd?.toLocaleString());
       }
 
@@ -200,7 +200,7 @@ export const onBtnReadPress = async () => {
     typeRead: hookProps.state.typeRead,
     is0h: hookProps.state.is0h,
     numNearest: 10,
-    dateStatrt: hookProps.state.dateStart,
+    dateStart: hookProps.state.dateStart,
     dateEnd: hookProps.state.dateEnd,
   });
   //await BleFunc_StopNotification(ObjSend.id);

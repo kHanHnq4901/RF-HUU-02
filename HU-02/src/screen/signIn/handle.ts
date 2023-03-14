@@ -119,20 +119,25 @@ export async function onLoginPress(props?: PropsLogin) {
   }
 }
 
-export async function onFingerPress() {
+export async function onFingerPress(isShowAlert: boolean) {
   let isSupport: any;
   try {
     isSupport = await TouchID.isSupported();
   } catch (err: any) {
     console.log('err:', err);
-    showAlert('Thiết bị lỗi Touch ID hoặc không hỗ trợ');
+    if (isShowAlert) {
+      showAlert('Thiết bị lỗi Touch ID hoặc không hỗ trợ');
+    }
   }
 
   try {
     if (isSupport) {
       const credential = await Keychain.getGenericPassword();
       if (!credential) {
-        showAlert('Chưa cài đặt chức năng này trong ứng dụng');
+        if (isShowAlert) {
+          showAlert('Chưa cài đặt chức năng này trong ứng dụng');
+        }
+
         return;
       }
 
@@ -174,4 +179,8 @@ export async function onFingerPress() {
   // } catch (error) {
   //   console.log("Keychain couldn't be accessed!", error);
   // }
+}
+
+export function onBtnSettingPress() {
+  navigation.navigate('Setting');
 }

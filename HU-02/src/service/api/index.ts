@@ -183,7 +183,7 @@ export async function PushDataToServer(
 
     const rest = await axios.get(url, {
       params: {
-        ModuleNo: props.seri,
+        MeterNo: props.seri,
         DataTime: GetFormatTime(new Date(data.time)),
         ActiveTotal: data.cwRegister.toString(),
         NegactiveTotal: data.uCwRegister.toString(),
@@ -289,6 +289,11 @@ export async function AddMeter(
       Coordinate: props.Coordinate,
       Token: store.state.userInfo.TOKEN,
     };
+
+    console.log('params:', params);
+
+    // response.bSucceeded = true;
+    // return response;
 
     const rest = await axios.get(url, {
       params: params,

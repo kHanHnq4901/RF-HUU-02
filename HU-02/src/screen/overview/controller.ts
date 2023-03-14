@@ -110,6 +110,8 @@ export const onInit = async navigation => {
     console.log('Get Percentage Read');
 
     const dataDB = await CMISKHServices.findAll();
+    console.log('length dataDB:', dataDB?.length);
+
     //const result = await CMISKHServices.getPercentRead();
     //console.log('resultcc:', result);
 
@@ -122,13 +124,13 @@ export const onInit = async navigation => {
     };
 
     dataDB.forEach(item => {
-      if (item.LoaiDoc === TYPE_READ_RF.READ_SUCCEED) {
+      if (item.TYPE_READ === TYPE_READ_RF.READ_SUCCEED) {
         result.readSucceed++;
-      } else if (item.LoaiDoc === TYPE_READ_RF.READ_FAILED) {
+      } else if (item.TYPE_READ === TYPE_READ_RF.READ_FAILED) {
         result.readFailed++;
-      } else if (item.LoaiDoc === TYPE_READ_RF.ABNORMAL_CAPACITY) {
+      } else if (item.TYPE_READ === TYPE_READ_RF.ABNORMAL_CAPACITY) {
         result.abnormalRead++;
-      } else if (item.LoaiDoc === TYPE_READ_RF.WRITE_BY_HAND) {
+      } else if (item.TYPE_READ === TYPE_READ_RF.WRITE_BY_HAND) {
         result.writeByHand++;
       } else {
         result.haveNotRead++;
@@ -183,7 +185,7 @@ export const onInit = async navigation => {
       //console.log(state.graphicData);
       //console.log(state.percent);
 
-      state.detailDB = getDbDetail(dataDB);
+      //state.detailDB = getDbDetail(dataDB);
 
       return {...state};
     });
@@ -193,135 +195,4 @@ export const onInit = async navigation => {
 export const onDeInit = navigation => {
   navigation.removeListener('focus', () => {});
   navigation.removeListener('beforeRemove', () => {});
-};
-
-const getUniqueStationCode = (dataDB: PropsKHCMISModel[]): string[] => {
-  const stationSet = new Set<string>();
-  for (let item of dataDB) {
-    stationSet.add(item.MA_TRAM);
-  }
-
-  return Array.from(stationSet);
-};
-const getUniqueBookCode = (
-  dataDB: PropsKHCMISModel[],
-  stationCode: string,
-): string[] => {
-  const arrSet = new Set<string>();
-  for (let item of dataDB) {
-    if (item.MA_TRAM === stationCode) {
-      arrSet.add(item.MA_QUYEN);
-    }
-  }
-  return Array.from(arrSet);
-};
-const getUniqueColumnCode = (
-  dataDB: PropsKHCMISModel[],
-  stationCode: string,
-  bookCode: string,
-): string[] => {
-  const arrSet = new Set<string>();
-  for (let item of dataDB) {
-    if (item.MA_TRAM === stationCode && item.MA_QUYEN === bookCode) {
-      arrSet.add(item.MA_COT);
-    }
-  }
-  return Array.from(arrSet);
-};
-
-const getInfoColumn = (
-  dataDB: PropsKHCMISModel[],
-  stationCode: string,
-  bookCode: string,
-  column: string,
-): PropsItemColumn => {
-  const result = {} as PropsItemColumn;
-  result.totalBCS = 0;
-  result.totalMeter = 0;
-  result.totalSucceed = 0;
-  const arrSet = new Set<string>();
-  for (let item of dataDB) {
-    if (
-      item.MA_TRAM === stationCode &&
-      item.MA_QUYEN === bookCode &&
-      item.MA_COT === column
-    ) {
-      arrSet.add(item.MA_COT);
-      if (
-        item.LoaiDoc === TYPE_READ_RF.READ_SUCCEED ||
-        item.LoaiDoc === TYPE_READ_RF.WRITE_BY_HAND
-      ) {
-        result.totalSucceed++;
-      }
-      result.totalBCS++;
-    }
-  }
-
-  result.totalMeter = arrSet.size;
-  result.columnName = column;
-
-  return result;
-};
-
-const getItemBook = (
-  dataDB: PropsKHCMISModel[],
-  station: string,
-  book: string,
-): PropsItemBook => {
-  const itemBook = {} as PropsItemBook;
-
-  const listColumn = getUniqueColumnCode(dataDB, station, book).sort();
-  const arrItemColumn: PropsItemColumn[] = [];
-  for (let column of listColumn) {
-    arrItemColumn.push(getInfoColumn(dataDB, station, book, column));
-  }
-
-  itemBook.bookName = book;
-  itemBook.totalBCS = 0;
-  itemBook.totalMeter = 0;
-  itemBook.totalSucceed = 0;
-  itemBook.listColumn = arrItemColumn;
-  for (let item of arrItemColumn) {
-    itemBook.totalBCS += item.totalBCS;
-    itemBook.totalMeter += item.totalMeter;
-    itemBook.totalSucceed += item.totalSucceed;
-  }
-
-  return itemBook;
-};
-
-const getItemStation = (
-  dataDB: PropsKHCMISModel[],
-  station: string,
-): PropsItemStation => {
-  const itemStation = {} as PropsItemStation;
-
-  const listItemBook: PropsItemBook[] = [];
-  const listBook = getUniqueBookCode(dataDB, station);
-  for (let book of listBook) {
-    listItemBook.push(getItemBook(dataDB, station, book));
-  }
-
-  itemStation.stationName = station;
-  itemStation.totalBCS = 0;
-  itemStation.totalMeter = 0;
-  itemStation.totalSucceed = 0;
-  itemStation.listBook = listItemBook;
-  for (let item of listItemBook) {
-    itemStation.totalBCS += item.totalBCS;
-    itemStation.totalMeter += item.totalMeter;
-    itemStation.totalSucceed += item.totalSucceed;
-  }
-
-  return itemStation;
-};
-
-const getDbDetail = (dataDB: PropsKHCMISModel[]): PropsItemStation[] => {
-  const listItemStation: PropsItemStation[] = [];
-  const listStation = getUniqueStationCode(dataDB);
-  for (let station of listStation) {
-    listItemStation.push(getItemStation(dataDB, station));
-  }
-
-  return listItemStation;
 };

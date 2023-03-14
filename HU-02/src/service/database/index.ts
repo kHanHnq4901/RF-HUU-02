@@ -45,6 +45,9 @@ export async function updateDataToDB(
   }
   //console.log('valueSet[dataDBTable.DATA.id]:', valueSet[dataDBTable.DATA.id]);
 
+  // console.log('conditions:', conditions);
+  // console.log('valueSet:', valueSet);
+
   const res = await CMISKHServices.update(conditions, valueSet);
 
   return res;

@@ -464,7 +464,7 @@ export type PropsRead = {
   typeAffect: TypeEfectRF;
   is0h: boolean;
   numNearest?: number;
-  dateStatrt?: Date;
+  dateStart?: Date;
   dateEnd?: Date;
 };
 
@@ -494,7 +494,7 @@ export async function RfFunc_Read(props: PropsRead): Promise<PropsResponse> {
 
     is0h: props.is0h,
     dateEnd: props.dateEnd,
-    dateStart: props.dateStatrt,
+    dateStart: props.dateStart,
     numNearest: props.numNearest,
   });
 
@@ -502,7 +502,7 @@ export async function RfFunc_Read(props: PropsRead): Promise<PropsResponse> {
     const headerGet: RfFunc_InfoGetProps = {
       au8Seri: Buffer.alloc(SIZE_SERIAL),
       s8Rssi: 0,
-      u8TimeWor: 6,
+      u8TimeWor: 8,
       u8TypeEffect:
         props.typeAffect === 'Đọc 1'
           ? TYPE_EFFECT.TYPE_EFFECT_ONE

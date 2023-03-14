@@ -56,6 +56,11 @@ function checkCondition(): boolean {
     showAlert('Bổ sung thông tin Tên khách hàng');
     return false;
   }
+  text = hookProps.data.infoDeclare.customerCode.trim();
+  if (text.length === 0) {
+    showAlert('Bổ sung thông tin Mã khách hàng');
+    return false;
+  }
   text = hookProps.data.infoDeclare.phoneNumber.trim();
   if (text.length > 0) {
     if (isAllNumeric(text) === false) {
@@ -80,6 +85,11 @@ export async function onDeclarePress() {
   // const loacaion = await getGeolocation();
   // console.log('const loacaion = :', loacaion);
   // return;
+
+  hookProps.refScroll.current?.scrollTo(0);
+  console.log('hookProps.refScroll:', hookProps.refScroll);
+
+  return;
 
   if (hookProps.state.isBusy) {
     return;
@@ -152,6 +162,8 @@ export async function onDeclarePress() {
         hookProps.refSeriMeter.current?.clear();
         hookProps.refCustomerName.current?.clear();
         hookProps.refCustomerCode.current?.clear();
+
+        hookProps.refScroll.current?.scrollTo(0);
       } else {
         message = response.strMessage;
         succeeded = false;

@@ -10,6 +10,7 @@ import {
 import {
   OPTICAL_CMD,
   Optical_HeaderProps,
+  Optical_PasswordType,
   Optical_SeriType,
   OPTICAL_TYPE_GET_DATA_DAILY,
   Rtc_CalendarProps,

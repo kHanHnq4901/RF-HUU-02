@@ -31,7 +31,14 @@ import {
 import {PropsStore, storeContext} from '../../../store';
 import {showAlert} from '../../../util';
 import NetInfo from '@react-native-community/netinfo';
-import {SendUnsentDeclareMeterProcess} from '../../../database/service/declareMeterService';
+import {
+  ClearAllDeclareMeterForGarbage,
+  SendUnsentDeclareMeterProcess,
+} from '../../../database/service/declareMeterService';
+import {
+  ClearAllSentDataMeterForGarbage,
+  SendDataUnsentMeterProcess,
+} from '../../../database/service/dataMeterService';
 
 const TAG = 'controllerDrawerContent:';
 
@@ -165,13 +172,18 @@ export const onInit = async navigation => {
       await checkTabelDBIfExist();
       await checkTabelDeclareMeterIfExist();
 
-      unsubscribeNet = NetInfo.addEventListener(state => {
+      unsubscribeNet = NetInfo.addEventListener(async state => {
         console.log('Connection type', state.type);
         console.log('Is connected?', state.isConnected);
         if (state.isConnected) {
-          SendUnsentDeclareMeterProcess();
+          await SendUnsentDeclareMeterProcess();
+
+          await SendDataUnsentMeterProcess();
         }
       });
+
+      await ClearAllDeclareMeterForGarbage();
+      await ClearAllSentDataMeterForGarbage();
     }
 
     //exportXmlController.createDirectory();
