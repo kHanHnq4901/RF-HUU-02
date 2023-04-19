@@ -1,5 +1,9 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import {PATH_EXECUTE_CSDL, PATH_EXPORT_XML} from '../../shared/path';
+import {aes_128_dec, aes_128_en} from '../../util/aes128';
+import {ByteArrayFromString, ByteArrayToString} from '../../util/index';
+import {PropsKeyAesStore, getDefaultKeyAesStore} from '../../store';
+import {Buffer} from 'buffer';
 
 const KEY_SETTING = 'APP_SETTING';
 const TAG = 'STORAGE SERVICE:';
@@ -15,6 +19,11 @@ export type PropsSettingAndAlarm = {
   lowerThresholdValue: string;
 };
 
+export type PropsKeyAesStorage = {
+  keyOptical: string;
+  keyRadio: string;
+};
+
 export type PropsAppSetting = {
   userAdmin: string;
   passwordAdmin: string;
@@ -28,7 +37,50 @@ export type PropsAppSetting = {
     host: string;
     port: string;
   };
+  keyAes: PropsKeyAesStorage;
 };
+
+export function getKeyToSaveStorage(
+  keyAesStore: PropsKeyAesStore,
+): PropsKeyAesStorage {
+  const key: Buffer = Buffer.from([
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6,
+  ]);
+
+  const dataKeyOptical = Buffer.from(keyAesStore.keyOptical);
+  const dataKeyRadio = Buffer.from(keyAesStore.keyRadio);
+
+  aes_128_en(key, dataKeyOptical, 0);
+  aes_128_en(key, dataKeyRadio, 0);
+
+  const keyStorage: PropsKeyAesStorage = {
+    keyOptical: ByteArrayToString(dataKeyOptical, 0, 16, 16),
+    keyRadio: ByteArrayToString(dataKeyRadio, 0, 16, 16),
+  };
+
+  return keyStorage;
+}
+
+export function convertKeyStorageToKeyStore(
+  keyStorage: PropsKeyAesStorage,
+): PropsKeyAesStore {
+  const keyStore = {} as PropsKeyAesStore;
+
+  const key: Buffer = Buffer.from([
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6,
+  ]);
+
+  const keyOptical = ByteArrayFromString(keyStorage.keyOptical);
+  const keyRadio = ByteArrayFromString(keyStorage.keyRadio);
+
+  aes_128_dec(key, keyOptical, 0);
+  aes_128_dec(key, keyRadio, 0);
+
+  keyStore.keyOptical = keyOptical;
+  keyStore.keyRadio = keyRadio;
+
+  return keyStore;
+}
 
 export const getDefaultStorageValue = (): PropsAppSetting => {
   const storageVariable = {} as PropsAppSetting;
@@ -48,6 +100,9 @@ export const getDefaultStorageValue = (): PropsAppSetting => {
     host: '222.252.14.147',
     port: '5050',
   };
+
+  storageVariable.keyAes = getKeyToSaveStorage(getDefaultKeyAesStore());
+
   // storageVariable.showResultOKInWriteData = false;
   // storageVariable.setting = {
   //   typeAlarm: 'Percent',
@@ -85,17 +140,17 @@ export const updateValueAppSettingFromNvm =
         for (let i in storageVariable) {
           if (storageVariable[i] === undefined || storageVariable[i] === null) {
             storageVariable = getDefaultStorageValue();
-            //console.log('meet here:', i);
+            console.log('meet here:', i);
             break;
           }
         }
       } else {
-        //console.log('meet here 1');
+        console.log('meet here 1');
         storageVariable = getDefaultStorageValue();
       }
     } catch (err) {
       console.log(TAG, err.message);
-      //console.log('meet here 2');
+      console.log('meet here 2');
       storageVariable = getDefaultStorageValue();
     }
 

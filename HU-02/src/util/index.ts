@@ -62,16 +62,37 @@ export const getCurrentTime = (): string => {
   return strDate;
 };
 
+export function ByteArrayFromString(hexString: string): Buffer {
+  if (hexString.length % 2 !== 0) {
+    return Buffer.alloc(0);
+  } /* w w w.  jav  a2 s .  c o  m*/
+  let numBytes = hexString.length / 2;
+  let byteArray = Buffer.alloc(numBytes);
+  for (let i = 0; i < numBytes; i++) {
+    const str = hexString.substring(i * 2, i * 2 + 2);
+    byteArray[i] = parseInt(str, 16);
+  }
+  return byteArray;
+}
+
 export function ByteArrayToString(
-  byteArray: number[],
+  buff: Buffer,
+  index: number,
+  length: number,
   factor?: 0 | 2 | 8 | 16,
   addition?: boolean,
 ): string {
   let addStr = addition ? ' ' : '';
-  return byteArray
-    .map(value => ('0' + (value & 0xff).toString(factor)).slice(-2))
-    .join(addStr);
+  let str = '';
+  for (let i = index; i < index + length; i++) {
+    str += ('0' + buff[i].toString(16)).slice(-2);
+    if (addition) {
+      str += addStr;
+    }
+  }
+  return str;
 }
+
 export function BufferToString(
   buffer: Buffer,
   offset: number,
@@ -124,27 +145,3 @@ export function isAllNumeric(value: string): boolean {
 export function isValidText(str: string) {
   return /^[0-9a-zA-Z()]+$/.test(str);
 }
-// export function ArrayBufferToString(
-//   byteArray: ArrayBuffer,
-//   factor?: 0 | 2 | 8 | 16,
-// ): string {
-//   let str = '';
-//   for (let i = 0; i < byteArray.byteLength; i++) {
-//     str += ('0' + (byteArray[i] & 0xff).toString(factor)).slice(-2);
-//   }
-//   return str;
-// }
-// export const ArrayToUtf16 = (intArray) => {
-//   var str = '';
-//   for (var i = 0; i < intArray.length; i++) {
-//     str += String.fromCharCode(intArray[i]);
-//   }
-//   return str;
-// };
-// export function StringToArrayBuffer(str: string) {
-//   const arr = new ArrayBuffer(str.length);
-//   for (let i = 0; i < str.length; i++) {
-//     arr[i] = str.charCodeAt(i);
-//   }
-//   return arr;
-// }

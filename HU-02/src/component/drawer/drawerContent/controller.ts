@@ -18,7 +18,10 @@ import {
 } from '../../../service/hhu/Ble/bleHhuFunc';
 import {ObjSend} from '../../../service/hhu/Ble/hhuFunc';
 import {requestPermissionWriteExternalStorage} from '../../../service/permission';
-import {updateValueAppSettingFromNvm} from '../../../service/storage';
+import {
+  convertKeyStorageToKeyStore,
+  updateValueAppSettingFromNvm,
+} from '../../../service/storage';
 import {USER_ROLE_TYPE, getLineList} from '../../../service/user';
 import {
   PATH_EXECUTE_CSDL,
@@ -29,7 +32,7 @@ import {
   PATH_IMPORT_XML,
 } from '../../../shared/path';
 import {PropsStore, storeContext} from '../../../store';
-import {showAlert} from '../../../util';
+import {ByteArrayToString, showAlert} from '../../../util';
 import NetInfo from '@react-native-community/netinfo';
 import {
   ClearAllDeclareMeterForGarbage,
@@ -39,6 +42,7 @@ import {
   ClearAllSentDataMeterForGarbage,
   SendDataUnsentMeterProcess,
 } from '../../../database/service/dataMeterService';
+import {log} from 'react-native-reanimated';
 
 const TAG = 'controllerDrawerContent:';
 
@@ -84,8 +88,20 @@ function checkTokenValidInterval() {
 
 export const onInit = async navigation => {
   let appSetting = await updateValueAppSettingFromNvm();
+  const keyAesStore = convertKeyStorageToKeyStore(appSetting.keyAes);
+
+  // console.log(
+  //   'Key optical:',
+  //   ByteArrayToString(keyAesStore.keyOptical, 0, 16, 16, true),
+  // );
+  // console.log(
+  //   'Key radio:',
+  //   ByteArrayToString(keyAesStore.keyRadio, 0, 16, 16, true),
+  // );
+
   store.setState(state => {
     state.appSetting = appSetting;
+    state.keyAes = keyAesStore;
     return {...state};
   });
 

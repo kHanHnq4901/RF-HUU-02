@@ -1,16 +1,32 @@
 import React, {Dispatch, useState} from 'react';
-import {getDefaultStorageValue, PropsAppSetting} from '../service/storage';
-import {
-  PropsInfoUser,
-  PropsInfoWM,
-  PropsLineServer,
-  USER_ROLE_TYPE,
-} from '../service/user';
+import {PropsAppSetting, getDefaultStorageValue} from '../service/storage';
+import {PropsInfoUser, PropsInfoWM, PropsLineServer} from '../service/user';
+import {Buffer} from 'buffer';
 
 export type PropsStoreMeter = {
   listLine: PropsLineServer[];
   data: PropsInfoWM[];
 };
+
+export type PropsKeyAesStore = {
+  keyOptical: Buffer;
+  keyRadio: Buffer;
+};
+
+export function getDefaultKeyAesStore(): PropsKeyAesStore {
+  const dataKeyOptical = Buffer.from([
+    0x2e, 0x7e, 0x15, 0x12, 0x20, 0x04, 0xd4, 0xa6, 0xab, 0xf7, 0x14, 0x88,
+    0x09, 0xca, 0x4d, 0x3c,
+  ]);
+  const dataKeyRadio = Buffer.from([
+    0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88,
+    0x09, 0xcf, 0x4f, 0x3c,
+  ]);
+  return {
+    keyOptical: dataKeyOptical,
+    keyRadio: dataKeyRadio,
+  };
+}
 
 type PropsState = {
   hhu: {
@@ -50,6 +66,7 @@ type PropsState = {
   };
   userInfo: PropsInfoUser;
   meter: PropsStoreMeter;
+  keyAes: PropsKeyAesStore;
 };
 
 export type PropsStore = {
@@ -101,6 +118,7 @@ export const StoreProvider = ({children}) => {
       listLine: [],
       data: [],
     },
+    keyAes: getDefaultKeyAesStore(),
   });
 
   const initialValue: PropsStore = {

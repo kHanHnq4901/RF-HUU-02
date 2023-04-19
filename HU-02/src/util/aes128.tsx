@@ -465,25 +465,30 @@ export function aes_enc_dec(
     } // enf for
   } // end if (!dir)
 } // end function
-
-export function aes_128_en(data: Buffer, offset: number, num?: number) {
+// 0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88,
+//       0x09, 0xcf, 0x4f, 0x3c,
+export function aes_128_en(
+  keyAes: Buffer,
+  data: Buffer,
+  offset: number,
+  num?: number,
+) {
   const number_code = num ? num : 1;
   for (let i = 0; i < number_code; i++) {
-    let key = Buffer.from([
-      0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88,
-      0x09, 0xcf, 0x4f, 0x3c,
-    ]);
+    let key = Buffer.from(keyAes);
     aes_enc_dec(data, offset, key, 0);
     offset += 16;
   }
 }
-export function aes_128_dec(data: Buffer, offset: number, num?: number) {
+export function aes_128_dec(
+  keyAes: Buffer,
+  data: Buffer,
+  offset: number,
+  num?: number,
+) {
   const number_code = num ? num : 1;
   for (let i = 0; i < number_code; i++) {
-    let key = Buffer.from([
-      0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88,
-      0x09, 0xcf, 0x4f, 0x3c,
-    ]);
+    let key = Buffer.from(keyAes);
     aes_enc_dec(data, offset, key, 1);
     offset += 16;
   }

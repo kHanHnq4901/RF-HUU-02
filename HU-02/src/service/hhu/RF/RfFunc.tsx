@@ -42,6 +42,7 @@ import {
 import {PropsLabel} from '../defineWM';
 import {formatDateTimeDB, SimpleTimeToSTring} from '../util/utilFunc';
 import {BufferToString} from '../../../util';
+import {store} from '../../../component/drawer/drawerContent/controller';
 
 const TAG = 'Rf Func';
 
@@ -116,7 +117,12 @@ export async function AnalysisRF(payload: Buffer): Promise<PropsResponse> {
   index += sizeof(RfFunc_InfoGetType);
 
   let lengthPayloadRadio = payload.length - sizeof(RfFunc_InfoGetType);
-  aes_128_dec(payload, index, Math.floor(lengthPayloadRadio / 16));
+  aes_128_dec(
+    store.state.keyAes.keyRadio,
+    payload,
+    index,
+    Math.floor(lengthPayloadRadio / 16),
+  );
   responseRadio.header = Array2Struct(payload, index, RP_HeaderType);
   const crcRfCalculate = crc16_offset(
     payload,
@@ -445,7 +451,7 @@ export const RfFunc_EncodePayloadRadio = (
   // console.log(PayloadRadio);
   // encode aes128
 
-  aes_128_en(PayloadRadio, 0, num16Data);
+  aes_128_en(store.state.keyAes.keyRadio, PayloadRadio, 0, num16Data);
 
   // console.log(TAG, 'payload radio after encode: ');
   // console.log(PayloadRadio);

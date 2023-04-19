@@ -1,31 +1,30 @@
 import {Buffer} from 'buffer';
-import {crc16} from '../../../util/crc16';
+import {crc16, crc16_offset} from '../../../util/crc16';
 import {
-  sizeof,
-  Struct2Array,
   Array2Struct,
+  Struct2Array,
+  sizeof,
 } from '../../../util/struct-and-array';
-import {BufferToString} from '../../../util';
 import {
+  PropsResponse,
+  TYPE_HHU_CMD,
+  TYPE_OBJ,
   hhuFunc_HeaderProps,
   hhuFunc_PropsObjAnalysis,
   hhuFunc_Send,
   hhuFunc_wait,
-  PropsResponse,
-  TYPE_HHU_CMD,
-  TYPE_OBJ,
 } from '../Ble/hhuFunc';
+import {PropsRead} from '../RF/RfFunc';
 import {
   Rtc_SimpleTimeProps,
   Rtc_SimpleTimeType,
   SIZE_SERIAL,
 } from '../RF/radioProtocol';
-import {formatDateTimeDB, SimpleTimeToSTring} from '../util/utilFunc';
+import {SimpleTimeToSTring, formatDateTimeDB} from '../util/utilFunc';
 import {
   DataManager_IlluminateRecordProps,
   DataManager_IlluminateRecordType,
   IdentitySensor,
-  Identity_SensorProps,
   OPTICAL_CMD,
   OPTICAL_TYPE_GET_DATA_DAILY,
   Optical_HeaderProps,
@@ -37,11 +36,15 @@ import {
   Rtc_CalendarProps,
   Rtc_CalendarType,
 } from './opticalProtocol';
-import {PropsRead} from '../RF/RfFunc';
+import {aes_128_dec, aes_128_en} from '../../../util/aes128';
+import {store} from '../../../component/drawer/drawerContent/controller';
+import {log} from 'react-native-reanimated';
 
 const TAG = 'opticalFunc:';
 
 const OPTICAL_SIZE_PASS = 8;
+
+let bAesOptical = true;
 
 export type FieldOpticalResponseProps =
   | 'Seri đồng hồ'
@@ -83,34 +86,39 @@ export async function opticalShakeHand(
     console.log('password is too length');
     return false;
   }
-  const header = {} as Optical_HeaderProps;
-  let index = 0;
-  const buffPass = Buffer.from(password);
-  const payload = Buffer.alloc(1 /* type password */ + OPTICAL_SIZE_PASS);
-  payload.fill(0);
-  if (typePassword) {
-    payload[index] = typePassword;
-  } else {
-    payload[index] = Optical_PasswordType.PW_TYPE_P1;
+
+  for (let i = 0; i < 2; i++) {
+    const header = {} as Optical_HeaderProps;
+    let index = 0;
+    const buffPass = Buffer.from(password);
+    const payload = Buffer.alloc(1 /* type password */ + OPTICAL_SIZE_PASS);
+    payload.fill(0);
+    if (typePassword) {
+      payload[index] = typePassword;
+    } else {
+      payload[index] = Optical_PasswordType.PW_TYPE_P1;
+    }
+
+    index++;
+    buffPass.copy(payload, index, 0, buffPass.byteLength);
+
+    header.u8Command = OPTICAL_CMD.OPTICAL_START_SHAKE_HAND;
+    header.u8Length = payload.byteLength;
+    header.u8FSN = 0xff;
+
+    let bRet = await opticalSend(header, payload);
+    if (!bRet) {
+      return false;
+    }
+
+    const response = await waitOptical(2000);
+    if (!response.bSucceed) {
+      console.log(TAG, response.message);
+      bAesOptical = !bAesOptical;
+      console.log(TAG, 'change bAesOptical');
+    }
   }
 
-  index++;
-  buffPass.copy(payload, index, 0, buffPass.byteLength);
-
-  header.u8Command = OPTICAL_CMD.OPTICAL_START_SHAKE_HAND;
-  header.u8Length = payload.byteLength;
-  header.u8FSN = 0xff;
-
-  let bRet = await opticalSend(header, payload);
-  if (!bRet) {
-    return false;
-  }
-
-  const response = await waitOptical(2000);
-  if (!response.bSucceed) {
-    console.log(TAG, response.message);
-    return false;
-  }
   return true;
 }
 
@@ -142,7 +150,7 @@ function encodeOptical(
   let index = 0;
   const lengthPayloadOptical =
     sizeof(Optical_HeaderType) + header.u8Length + 2; /* crc */
-  const payloadOptical = Buffer.alloc(lengthPayloadOptical);
+  let payloadOptical = Buffer.alloc(lengthPayloadOptical);
   Struct2Array(Optical_HeaderType, header, payloadOptical, 0);
   index += sizeof(Optical_HeaderType);
   if (payload && header.u8Length > 0) {
@@ -152,6 +160,29 @@ function encodeOptical(
   const crc = crc16(payloadOptical, index);
   payloadOptical.writeUintLE(crc, index, 2);
   index += 2;
+
+  if (bAesOptical) {
+    const u8LengthNeedEncrypt = header.u8Length + 2; /* crc */
+    let u8NumBatch16 = 0;
+    if (u8LengthNeedEncrypt % 16 === 0) {
+      u8NumBatch16 = u8LengthNeedEncrypt / 16;
+    } else {
+      u8NumBatch16 = (0xff & (u8LengthNeedEncrypt / 16)) + 1; // math ceil
+    }
+    let u8LengthEncrypt = u8NumBatch16 * 16;
+
+    let u8LengthSend = sizeof(Optical_HeaderType) + u8LengthEncrypt;
+
+    const payloadWithAes = Buffer.alloc(u8LengthSend);
+    payloadOptical.copy(payloadWithAes);
+    aes_128_en(
+      store.state.keyAes.keyOptical,
+      payloadWithAes,
+      sizeof(Optical_HeaderType),
+      u8NumBatch16,
+    );
+    payloadOptical = payloadWithAes;
+  }
 
   return encodeIdentityOptical(payloadOptical);
 }
@@ -227,6 +258,46 @@ export async function AnalysisHhuOptical(
     Optical_HeaderType,
   );
 
+  let crc_buff = 0;
+  let u16Crc = 0;
+  if (bAesOptical) {
+    let lengthFrame = payload.length - index;
+    let u8NumBatchAes = lengthFrame - sizeof(Optical_HeaderType);
+
+    if (u8NumBatchAes % 16 != 0) {
+      console.log(TAG, 'length % 16\n');
+
+      response.bSucceed = false;
+      response.message = 'length % 16\n';
+
+      return response;
+    }
+    u8NumBatchAes /= 16;
+
+    aes_128_dec(
+      store.state.keyAes.keyOptical,
+      payload,
+      index + sizeof(Optical_HeaderType),
+      u8NumBatchAes,
+    );
+  } else {
+  }
+  u16Crc = crc16_offset(
+    payload,
+    index,
+    sizeof(Optical_HeaderType) + headerOptical.u8Length,
+  );
+  crc_buff = payload.readUintLE(
+    index + sizeof(Optical_HeaderType) + headerOptical.u8Length,
+    2,
+  );
+
+  if (u16Crc !== crc_buff) {
+    response.bSucceed = false;
+    response.message = 'crc optical not match';
+    return response;
+  }
+
   index += sizeof(Optical_HeaderType);
 
   response.bSucceed = true;
@@ -236,7 +307,10 @@ export async function AnalysisHhuOptical(
   // const newPayload = Buffer.alloc(headerOptical.u8Length);
   // payload.copy(newPayload, 0, index, headerOptical.u8Length);
 
-  response.obj.payload = payload.slice(index, index + headerOptical.u8Length);
+  response.obj.payload = payload.subarray(
+    index,
+    index + headerOptical.u8Length,
+  ); //payload.slice(index, index + headerOptical.u8Length);
 
   return response;
 }

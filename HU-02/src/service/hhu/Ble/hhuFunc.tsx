@@ -145,7 +145,7 @@ export async function hhuFunc_Send(
   // copy payload header to buffer
   payload?.copy(HhuObj.buffTx, sizeof(hhuFunc_HeaderType), 0, header.u16Length);
 
-  /**caculate crc16 for frame uart */
+  /** calculate crc16 for frame uart */
   const crcUart = crc16_offset(HhuObj.buffTx, 0, lengthPayload);
 
   HhuObj.buffTx.writeUIntLE(crcUart, lengthPayload, 2);
