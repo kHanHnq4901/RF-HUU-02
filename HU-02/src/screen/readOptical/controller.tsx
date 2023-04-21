@@ -1,5 +1,7 @@
 import React, {useState} from 'react';
 import {PropsStore, storeContext} from '../../store';
+import {USER_ROLE_TYPE} from '../../service/user';
+import {store} from '../../component/drawer/drawerContent/controller';
 
 type RadioButton_Value = 'Dữ liệu gần nhất' | 'Theo thời gian' | 'Tức thời';
 
@@ -61,7 +63,6 @@ export type HookProps = {
 const TAG = 'Header Controller: ';
 
 export const hookProps = {} as HookProps;
-export let store = {} as PropsStore;
 
 function getInitialState(): HookState {
   const endDate = new Date();
@@ -96,6 +97,15 @@ function getInitialState(): HookState {
     requestStop: false,
     is0h: false,
   };
+  if (
+    store.state.userInfo.USER_TYPE === USER_ROLE_TYPE.ADMIN ||
+    store.state.userInfo.USER_TYPE === USER_ROLE_TYPE.STAFF
+  ) {
+    value.typeData.items.push({
+      label: 'Sensor',
+      value: 'Sensor',
+    });
+  }
 
   // value.typeData.items.push({
   //   label: 'Nbiot',
@@ -117,7 +127,6 @@ export const GetHookProps = (): HookProps => {
   const [state, setState] = useState<HookState>(getInitialState());
   hookProps.state = state;
   hookProps.setState = setState;
-  store = React.useContext(storeContext) as PropsStore;
   return hookProps;
 };
 

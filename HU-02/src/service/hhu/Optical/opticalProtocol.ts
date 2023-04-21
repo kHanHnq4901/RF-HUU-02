@@ -1,6 +1,6 @@
 import struct from '../../../util/cstruct';
 import {Buffer} from 'buffer';
-import {float, uint16_t, uint8_t} from '../../../util/custom_typedef';
+import {float, uint16_t, uint32_t, uint8_t} from '../../../util/custom_typedef';
 import {Rtc_SimpleTimeProps, Rtc_SimpleTimeType} from '../RF/radioProtocol';
 
 export enum OPTICAL_CMD {
@@ -162,4 +162,46 @@ export type DataManager_IlluminateRecordProps = {
   SimpleTime: Rtc_SimpleTimeProps;
   au8CwData: Buffer;
   au8UcwData: Buffer;
+};
+
+export const Sensor_NvmErrorType = struct`
+    uint32_t u32Increase;
+    uint32_t u32Decrease;
+    uint32_t u32NumReset;
+    uint32_t u32PositionUserReset;
+    uint16_t u16ResetState;
+    uint8_t u8ResetStateByUser;
+`;
+
+export type Sensor_NvmErrorProps = {
+  u32Increase: uint32_t;
+  u32Decrease: uint32_t;
+  u32NumReset: uint32_t;
+  u32PositionUserReset: uint32_t;
+  u16ResetState: uint16_t;
+  u8ResetStateByUser: uint8_t;
+  u16Crc: uint16_t;
+};
+
+const Optical_SubSensorType = struct`
+    uint8_t u8Max;        
+    uint8_t u8Min;        
+    uint8_t u8CenterLine; 
+`;
+
+type Optical_SubSensorProps = {
+  u8Max: uint8_t;
+  u8Min: uint8_t;
+  u8CenterLine: uint8_t;
+};
+
+/**
+ * @brief          struct info of 3 sensor
+ */
+export const Optical_SensorInfoType = struct`
+    ${Optical_SubSensorType} sensor[3];
+`;
+
+export type Optical_SensorInfoProps = {
+  sensor: Optical_SubSensorProps[];
 };

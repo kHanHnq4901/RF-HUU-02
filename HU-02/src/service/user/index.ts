@@ -31,6 +31,7 @@ export type PropsInfoUser = {
   TOKEN: string;
   TOKEN_EXPIRED: string | Date;
   USER_TYPE: USER_ROLE_TYPE;
+  ROLE_NAME: 'DVKH' | 'UNKNOWN';
 };
 export type PropsInfoWM = {
   ADDRESS: string;

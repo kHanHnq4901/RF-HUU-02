@@ -64,22 +64,27 @@ export function getKeyToSaveStorage(
 export function convertKeyStorageToKeyStore(
   keyStorage: PropsKeyAesStorage,
 ): PropsKeyAesStore {
-  const keyStore = {} as PropsKeyAesStore;
+  try {
+    const keyStore = {} as PropsKeyAesStore;
 
-  const key: Buffer = Buffer.from([
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6,
-  ]);
+    const key: Buffer = Buffer.from([
+      1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6,
+    ]);
 
-  const keyOptical = ByteArrayFromString(keyStorage.keyOptical);
-  const keyRadio = ByteArrayFromString(keyStorage.keyRadio);
+    const keyOptical = ByteArrayFromString(keyStorage.keyOptical);
+    const keyRadio = ByteArrayFromString(keyStorage.keyRadio);
 
-  aes_128_dec(key, keyOptical, 0);
-  aes_128_dec(key, keyRadio, 0);
+    aes_128_dec(key, keyOptical, 0);
+    aes_128_dec(key, keyRadio, 0);
 
-  keyStore.keyOptical = keyOptical;
-  keyStore.keyRadio = keyRadio;
+    keyStore.keyOptical = keyOptical;
+    keyStore.keyRadio = keyRadio;
 
-  return keyStore;
+    return keyStore;
+  } catch (err: any) {
+    console.log(TAG, err.message);
+    return getDefaultKeyAesStore();
+  }
 }
 
 export const getDefaultStorageValue = (): PropsAppSetting => {
@@ -140,17 +145,17 @@ export const updateValueAppSettingFromNvm =
         for (let i in storageVariable) {
           if (storageVariable[i] === undefined || storageVariable[i] === null) {
             storageVariable = getDefaultStorageValue();
-            console.log('meet here:', i);
+            console.log(TAG, 'value is undefined:', i);
             break;
           }
         }
       } else {
-        console.log('meet here 1');
+        console.log('no value for key in storage');
         storageVariable = getDefaultStorageValue();
       }
     } catch (err) {
       console.log(TAG, err.message);
-      console.log('meet here 2');
+      console.log(TAG, 'error get storage');
       storageVariable = getDefaultStorageValue();
     }
 

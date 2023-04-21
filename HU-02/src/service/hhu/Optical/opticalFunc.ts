@@ -32,13 +32,18 @@ import {
   Optical_MoreInfoProps,
   Optical_MoreInfoType,
   Optical_PasswordType,
+  Optical_SensorInfoProps,
+  Optical_SensorInfoType,
   Optical_SeriType,
   Rtc_CalendarProps,
   Rtc_CalendarType,
+  Sensor_NvmErrorProps,
+  Sensor_NvmErrorType,
 } from './opticalProtocol';
 import {aes_128_dec, aes_128_en} from '../../../util/aes128';
 import {store} from '../../../component/drawer/drawerContent/controller';
 import {log} from 'react-native-reanimated';
+import {Get_State_Reset, Get_State_Reset_By_User} from './opticalUtil';
 
 const TAG = 'opticalFunc:';
 
@@ -53,7 +58,14 @@ export type FieldOpticalResponseProps =
   | 'Version'
   | 'Điện áp'
   | 'Dữ liệu'
-  | 'Dữ liệu hàng ngày';
+  | 'Dữ liệu hàng ngày'
+  | 'Reset'
+  | 'UReset'
+  | 'Reset State'
+  | 'UReset State'
+  | 'Sen 0'
+  | 'Sen 1'
+  | 'Sen 2';
 
 export type OpticalDailyProps = {
   'Thời điểm chốt': string;
@@ -86,8 +98,11 @@ export async function opticalShakeHand(
     console.log('password is too length');
     return false;
   }
+  // bAesOptical = false;
 
   for (let i = 0; i < 2; i++) {
+    console.log('i:', i);
+
     const header = {} as Optical_HeaderProps;
     let index = 0;
     const buffPass = Buffer.from(password);
@@ -116,10 +131,12 @@ export async function opticalShakeHand(
       console.log(TAG, response.message);
       bAesOptical = !bAesOptical;
       console.log(TAG, 'change bAesOptical');
+    } else {
+      return true;
     }
   }
 
-  return true;
+  return false;
 }
 
 function encodeIdentityOptical(payload: Buffer): Buffer {
@@ -264,7 +281,7 @@ export async function AnalysisHhuOptical(
     let lengthFrame = payload.length - index;
     let u8NumBatchAes = lengthFrame - sizeof(Optical_HeaderType);
 
-    if (u8NumBatchAes % 16 != 0) {
+    if (u8NumBatchAes % 16 !== 0) {
       console.log(TAG, 'length % 16\n');
 
       response.bSucceed = false;
@@ -307,9 +324,8 @@ export async function AnalysisHhuOptical(
   // const newPayload = Buffer.alloc(headerOptical.u8Length);
   // payload.copy(newPayload, 0, index, headerOptical.u8Length);
 
-  response.obj.payload = payload.subarray(
-    index,
-    index + headerOptical.u8Length,
+  response.obj.payload = Buffer.from(
+    payload.subarray(index, index + headerOptical.u8Length),
   ); //payload.slice(index, index + headerOptical.u8Length);
 
   return response;
@@ -406,12 +422,14 @@ export async function waitOpticalAdvance(
           responseOptical.message = 'Incompatible type seri';
           return responseOptical;
         }
+
         if (typeSeri === Optical_SeriType.OPTICAL_TYPE_SERI_METER) {
           data['Seri đồng hồ'] = objOptical.payload
             .readUintLE(index, SIZE_SERIAL)
             .toString();
           console.log('get serial meter');
         }
+
         if (typeSeri === Optical_SeriType.OPTICAL_TYPE_SERI_MODULE) {
           data['Seri module'] = objOptical.payload
             .readUintLE(index, SIZE_SERIAL)
@@ -519,7 +537,52 @@ export async function waitOpticalAdvance(
         }
         break;
       case OPTICAL_CMD.OPTICAL_GET_TIME_SEND:
+        break;
+      case OPTICAL_CMD.OPTICAL_GET_ERROR_SYSTEM:
         {
+          const error: Sensor_NvmErrorProps = Array2Struct(
+            objOptical.payload,
+            index,
+            Sensor_NvmErrorType,
+          );
+          data.Reset = error.u32NumReset.toString();
+          data.UReset = error.u32PositionUserReset.toString();
+          data['Reset State'] = Get_State_Reset(error.u16ResetState);
+          data['UReset State'] = Get_State_Reset_By_User(
+            error.u8ResetStateByUser,
+          );
+
+          console.log('get error system');
+        }
+        break;
+      case OPTICAL_CMD.OPTICAL_GET_SENSOR_OBJ_INDIRECT_LC:
+        {
+          const sensorObj: Optical_SensorInfoProps = Array2Struct(
+            objOptical.payload,
+            index,
+            Optical_SensorInfoType,
+          );
+          let chanel = 0;
+          data['Sen 0'] = `min:${sensorObj.sensor[chanel].u8Min}-max:${
+            sensorObj.sensor[chanel].u8Max
+          }-tb:${sensorObj.sensor[chanel].u8CenterLine}-delta:${
+            sensorObj.sensor[chanel].u8Max - sensorObj.sensor[chanel].u8Min
+          }`;
+          chanel++;
+          data['Sen 1'] = `min:${sensorObj.sensor[chanel].u8Min}-max:${
+            sensorObj.sensor[chanel].u8Max
+          }-tb:${sensorObj.sensor[chanel].u8CenterLine}-delta:${
+            sensorObj.sensor[chanel].u8Max - sensorObj.sensor[chanel].u8Min
+          }`;
+          chanel++;
+          data['Sen 2'] = `min:${sensorObj.sensor[chanel].u8Min}-max:${
+            sensorObj.sensor[chanel].u8Max
+          }-tb:${sensorObj.sensor[chanel].u8CenterLine}-delta:${
+            sensorObj.sensor[chanel].u8Max - sensorObj.sensor[chanel].u8Min
+          }`;
+          chanel++;
+
+          console.log('get info sensor');
         }
         break;
     }

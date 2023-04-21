@@ -9,20 +9,23 @@ import {
 } from '../../service/hhu/Optical/opticalFunc';
 import {
   OPTICAL_CMD,
-  Optical_HeaderProps,
-  Optical_PasswordType,
-  Optical_SeriType,
   OPTICAL_TYPE_GET_DATA_DAILY,
+  Optical_HeaderProps,
+  Optical_SeriType,
   Rtc_CalendarProps,
   Rtc_CalendarType,
 } from '../../service/hhu/Optical/opticalProtocol';
 import {
-  getUnitByLabelOptical,
   PropsLabelOptical,
+  getUnitByLabelOptical,
 } from '../../service/hhu/util/utilFunc';
+import {USER_ROLE_TYPE} from '../../service/user';
 import {showToast, sleep} from '../../util';
-import {sizeof, Struct2Array} from '../../util/struct-and-array';
-import {hookProps, store} from './controller';
+import {Struct2Array, sizeof} from '../../util/struct-and-array';
+import {hookProps} from './controller';
+import {store} from '../../component/drawer/drawerContent/controller';
+
+const TAG = 'Handle Btn Read Optical';
 
 export function setStatus(message: string) {
   hookProps.setState(state => {
@@ -69,35 +72,43 @@ export async function onBtnReadPress() {
     return;
   }
 
-  hookProps.setState(state => {
-    state.isReading = true;
-    state.requestStop = false;
-    state.seri = '';
-    state.status = 'Đang đọc ...';
-    state.dataTable = [];
-    return {...state};
-  });
+  try {
+    hookProps.setState(state => {
+      state.isReading = true;
+      state.requestStop = false;
+      state.seri = '';
+      state.status = 'Đang đọc ...';
+      state.dataTable = [];
+      return {...state};
+    });
 
-  for (let itm of hookProps.state.typeData.items) {
-    if (itm.checked) {
-      switch (itm.value) {
-        case 'Thông tin':
-          await readInfo();
-          break;
-        case 'Dữ liệu':
-          await readData();
-          break;
+    for (let itm of hookProps.state.typeData.items) {
+      if (itm.checked) {
+        switch (itm.value) {
+          case 'Thông tin':
+            await readInfo();
+            break;
+          case 'Dữ liệu':
+            await readData();
+            break;
+          case 'Sensor':
+            await readSensor();
+            break;
+        }
       }
     }
+  } catch (err: any) {
+    console.log(TAG, 'Error:', err.message);
+  } finally {
+    hookProps.setState(state => {
+      state.isReading = false;
+      if (state.status === 'Đang đọc ...') {
+        state.status = '';
+      }
+      return {...state};
+    });
   }
 
-  hookProps.setState(state => {
-    state.isReading = false;
-    if (state.status === 'Đang đọc ...') {
-      state.status = '';
-    }
-    return {...state};
-  });
   return;
 }
 
@@ -140,23 +151,14 @@ function ConvertObjToHook(objResponse: any) {
   }
 }
 
-async function readInfo() {
+async function commonRead(arrCommand: OPTICAL_CMD[]) {
   let bRet = await opticalShakeHand('00000000');
   if (!bRet) {
     setStatus('Bắt tay cổng quang lỗi');
     return;
   }
 
-  const arrCommand: OPTICAL_CMD[] = [];
-
-  arrCommand.push(OPTICAL_CMD.OPTICAL_GET_VERSION);
-  arrCommand.push(OPTICAL_CMD.OPTICAL_GET_SERIAL); // meter
-  arrCommand.push(OPTICAL_CMD.OPTICAL_GET_SERIAL); // module
-
-  arrCommand.push(OPTICAL_CMD.OPTICAL_GET_MORE);
-  arrCommand.push(OPTICAL_CMD.OPTICAL_GET_RTC);
-
-  let typeSeri = Optical_SeriType.OPTICAL_TYPE_SERI_METER;
+  let typeSeri = 0xff;
 
   const header = {} as Optical_HeaderProps;
   header.u8FSN = 0xff;
@@ -170,9 +172,13 @@ async function readInfo() {
     header.u8Command = cmd;
     if (cmd === OPTICAL_CMD.OPTICAL_GET_SERIAL) {
       payload = Buffer.alloc(1);
+      if (typeSeri === 0xff) {
+        typeSeri = Optical_SeriType.OPTICAL_TYPE_SERI_METER;
+      } else {
+        typeSeri = Optical_SeriType.OPTICAL_TYPE_SERI_MODULE;
+      }
       payload[0] = typeSeri; // first meter then module
       header.u8Length = payload.byteLength;
-      typeSeri = Optical_SeriType.OPTICAL_TYPE_SERI_MODULE;
     }
     bRet = await opticalSend(header, payload);
     if (bRet) {
@@ -192,11 +198,39 @@ async function readInfo() {
     }
     payload = undefined;
     header.u8Length = 0;
-    await sleep(150);
+    await sleep(200);
   }
   if (!hasFailed) {
     setStatus('Đọc xong');
   }
+}
+
+async function readInfo() {
+  const arrCommand: OPTICAL_CMD[] = [];
+
+  arrCommand.push(OPTICAL_CMD.OPTICAL_GET_VERSION);
+  arrCommand.push(OPTICAL_CMD.OPTICAL_GET_SERIAL); // meter
+  arrCommand.push(OPTICAL_CMD.OPTICAL_GET_SERIAL); // module
+
+  arrCommand.push(OPTICAL_CMD.OPTICAL_GET_MORE);
+  arrCommand.push(OPTICAL_CMD.OPTICAL_GET_RTC);
+
+  if (
+    store.state.userInfo.USER_TYPE === USER_ROLE_TYPE.ADMIN ||
+    store.state.userInfo.USER_TYPE === USER_ROLE_TYPE.STAFF
+  ) {
+    arrCommand.push(OPTICAL_CMD.OPTICAL_GET_ERROR_SYSTEM);
+  }
+
+  await commonRead(arrCommand);
+}
+
+async function readSensor() {
+  const arrCommand: OPTICAL_CMD[] = [];
+
+  arrCommand.push(OPTICAL_CMD.OPTICAL_GET_SENSOR_OBJ_INDIRECT_LC);
+
+  await commonRead(arrCommand);
 }
 
 async function readData() {
@@ -301,7 +335,7 @@ async function readData() {
         ConvertObjToHook(response.obj);
       }
     }
-    await sleep(150);
+    await sleep(200);
   }
   if (!hasFailed) {
     setStatus('Đọc xong');
