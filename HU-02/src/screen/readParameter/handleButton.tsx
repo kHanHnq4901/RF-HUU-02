@@ -7,9 +7,12 @@ import {
   RfFunc_Read,
 } from '../../service/hhu/RF/RfFunc';
 import {getUnitByLabel} from '../../service/hhu/util/utilFunc';
-import {isAllNumeric, showToast} from '../../util';
+import {isAllNumeric, showAlert, showToast} from '../../util';
 import * as controller from './controller';
 import {hookProps, store} from './controller';
+import RNFS from 'react-native-fs';
+import {PATH_EXPORT_CSDL} from '../../shared/path';
+import {log} from 'react-native-reanimated';
 
 const TAG = 'handleButton ReadParams';
 
@@ -108,6 +111,8 @@ const readData = async (props: PropsRead) => {
 
         //console.log('modelRadio.data:', modelRadio.data);
 
+        let registerModule: string;
+
         for (let item of modelRadio.data) {
           for (let key in item) {
             if (item[key]) {
@@ -121,6 +126,10 @@ const readData = async (props: PropsRead) => {
                 row.push(key);
                 row.push(item[key] + getUnitByLabel(key as PropsLabel));
                 rows.push(row);
+
+                if (keyTypeScript === 'Chỉ số') {
+                  registerModule = item[key];
+                }
               }
             }
           }
@@ -130,6 +139,7 @@ const readData = async (props: PropsRead) => {
         hookProps.setState(state => {
           state.status = 'Đọc thành công ' + controller.hookProps.state.seri;
           state.dataTable = [...state.dataTable, ...rows];
+          state.registerModule = registerModule;
           //console.log('ok here');
           return {...state};
         });
@@ -185,11 +195,17 @@ export const onBtnReadPress = async () => {
     return;
   }
 
+  hookProps.registerMeter.ref.current?.clear();
+  hookProps.userNote.ref.current?.clear();
+
   hookProps.setState(state => {
     state.isReading = true;
     state.requestStop = false;
     state.status = 'Đang đọc ...';
     state.dataTable = [];
+    state.registerMeter = '';
+    state.deltaRegister = '';
+    state.userNote = '';
     return {...state};
   });
 
@@ -213,3 +229,64 @@ export const onBtnReadPress = async () => {
   });
   return;
 };
+
+export async function onSaveLogPress() {
+  let content = '';
+
+  if (!hookProps.state.dataTable.length) {
+    showAlert('Chưa có dữ liệu');
+    console.log(
+      'hookProps.state.dataTable.length:',
+      hookProps.state.dataTable.length,
+    );
+
+    return;
+  }
+  if (hookProps.state.registerMeter === '') {
+    showAlert('Chưa có chỉ số cơ khí');
+
+    return;
+  }
+
+  for (let data of hookProps.state.dataTable) {
+    let first = true;
+    for (let item of data) {
+      content += item.toString();
+      if (first) {
+        content += ': ';
+        first = false;
+      }
+    }
+    content += ', ';
+  }
+
+  content += `Chỉ số CK: ${hookProps.state.registerMeter}, Sai lệch: ${hookProps.state.deltaRegister}, Ghi chú: ${hookProps.state.userNote}\r\n`;
+
+  try {
+    const date = new Date();
+
+    let nameFile =
+      'Log_Read_Register_' +
+      date.getDate() +
+      '_' +
+      date.getMonth() +
+      '_' +
+      date.getFullYear() +
+      '.txt';
+    const fullPath = PATH_EXPORT_CSDL + '/' + nameFile;
+
+    // const fileExist = await RNFS.exists(PATH_EXPORT_CSDL + '/' + nameFile);
+
+    // if (fileExist) {
+    //   await RNFS.appendFile(fullPath);
+    // }
+
+    console.log('content:', content);
+
+    await RNFS.appendFile(fullPath, content);
+
+    showToast('Lưu thành công');
+  } catch (err) {
+    showToast('Lưu thất bại:' + err.message);
+  }
+}

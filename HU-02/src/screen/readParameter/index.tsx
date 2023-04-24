@@ -28,6 +28,7 @@ import {itemTypeMeter, onDeInit, onInit} from './controller';
 import * as handleButton from './handleButton';
 import {filterSeri, onEditSeriDone} from './handleButton';
 import {CheckboxButton} from '../../component/checkbox/checkbox';
+import {NormalTextInput} from '../../component/normalTextInput';
 
 export const ReadParameterScreen = () => {
   const hookProps = readParamsController.GetHookProps();
@@ -296,6 +297,54 @@ export const ReadParameterScreen = () => {
       </Table>
       <ScrollView style={styles.table}>
         <RenderTable />
+        {hookProps.state.typeRead === 'Tức thời' && (
+          <View style={styles.containerRegisterMeterArea}>
+            <NormalTextInput
+              label="Chỉ số cơ khí (lít): "
+              // value="123456"
+              ref={hookProps.registerMeter.ref}
+              // onChangeText={text => {
+              //   hookProps.registerMeter.value = text;
+              // }}
+              keyboardType="numeric"
+              onEndEditing={e => {
+                let registerMeter = Number(e.nativeEvent.text);
+                let delta: string = hookProps.state.registerModule
+                  ? (
+                      Number(hookProps.state.registerModule) - registerMeter
+                    ).toString()
+                  : ' ';
+                hookProps.setState(state => {
+                  state.registerMeter = e.nativeEvent.text;
+                  state.deltaRegister = delta;
+                  return {...state};
+                });
+              }}
+            />
+            <NormalTextInput
+              label="Sai lệch (lít): "
+              editable={false}
+              value={hookProps.state.deltaRegister}
+              // style={{backgroundColor: Colors.backgroundIcon}}
+            />
+            <NormalTextInput
+              label="Ghi chú: "
+              // value="123456 hfsjfl;s jflsfjls jfsljfls jkfskf;lskfs;  fsklfsklmfsl jfkldfn fjkfkkf klfsdfkn"
+              multiline
+              ref={hookProps.userNote.ref}
+              // onChangeText={text => {
+              //   hookProps.userNote.value = text;
+              // }}
+              onEndEditing={e => {
+                hookProps.setState(state => {
+                  state.userNote = e.nativeEvent.text;
+
+                  return {...state};
+                });
+              }}
+            />
+          </View>
+        )}
       </ScrollView>
       <View style={styles.btnBottom}>
         {hookProps.state.isReading === false ? (
@@ -316,6 +365,13 @@ export const ReadParameterScreen = () => {
                 });
               }
             }}
+          />
+        )}
+        {hookProps.state.typeRead === 'Tức thời' && (
+          <Button
+            style={styles.buttonSave}
+            label="Lưu"
+            onPress={throttle(handleButton.onSaveLogPress, 1000)}
           />
         )}
       </View>
@@ -342,7 +398,14 @@ const styles = StyleSheet.create({
     width: '50%',
     height: 40 * scaleHeight,
     alignSelf: 'center',
-    maxWidth: 350,
+    maxWidth: 150,
+  },
+  buttonSave: {
+    width: '50%',
+    height: 40 * scaleHeight,
+    alignSelf: 'center',
+    maxWidth: 150,
+    backgroundColor: Colors.secondary,
   },
   checkBoxTypeData: {
     marginRight: 5,
@@ -482,5 +545,9 @@ const styles = StyleSheet.create({
 
     //maxWidth: 400,
     //elevation: 1,
+  },
+  containerRegisterMeterArea: {
+    width: '100%',
+    marginVertical: 15,
   },
 });

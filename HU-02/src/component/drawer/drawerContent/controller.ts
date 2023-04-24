@@ -1,3 +1,4 @@
+import NetInfo from '@react-native-community/netinfo';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {useContext} from 'react';
@@ -5,12 +6,17 @@ import {Alert, DeviceEventEmitter, EmitterSubscription} from 'react-native';
 import RNFS from 'react-native-fs';
 import {checkTabelDBIfExist} from '../../../database/repository';
 import {checkTabelDeclareMeterIfExist} from '../../../database/repository/declareMeterRepository';
+import {
+  ClearAllSentDataMeterForGarbage,
+  SendDataUnsentMeterProcess,
+} from '../../../database/service/dataMeterService';
+import {
+  ClearAllDeclareMeterForGarbage,
+  SendUnsentDeclareMeterProcess,
+} from '../../../database/service/declareMeterService';
 import {StackRootList} from '../../../navigation/model/model';
 import {bleManagerEmitter} from '../../../screen/ble/controller';
-import {
-  ListenEventSucceedError,
-  onReceiveSharingIntent,
-} from '../../../service/event';
+import {ListenEventSucceedError} from '../../../service/event';
 import {UPDATE_FW_HHU} from '../../../service/event/constant';
 import {
   connectLatestBLE,
@@ -22,7 +28,7 @@ import {
   convertKeyStorageToKeyStore,
   updateValueAppSettingFromNvm,
 } from '../../../service/storage';
-import {USER_ROLE_TYPE, getLineList} from '../../../service/user';
+import {USER_ROLE_TYPE} from '../../../service/user';
 import {
   PATH_EXECUTE_CSDL,
   PATH_EXPORT_CSDL,
@@ -32,17 +38,7 @@ import {
   PATH_IMPORT_XML,
 } from '../../../shared/path';
 import {PropsStore, storeContext} from '../../../store';
-import {ByteArrayToString, showAlert} from '../../../util';
-import NetInfo from '@react-native-community/netinfo';
-import {
-  ClearAllDeclareMeterForGarbage,
-  SendUnsentDeclareMeterProcess,
-} from '../../../database/service/declareMeterService';
-import {
-  ClearAllSentDataMeterForGarbage,
-  SendDataUnsentMeterProcess,
-} from '../../../database/service/dataMeterService';
-import {log} from 'react-native-reanimated';
+import {showAlert} from '../../../util';
 
 const TAG = 'controllerDrawerContent:';
 

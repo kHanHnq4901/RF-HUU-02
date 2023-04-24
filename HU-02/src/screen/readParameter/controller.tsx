@@ -1,14 +1,10 @@
-import React, {useContext, useState} from 'react';
-import {
-  getMeterSpeciesDropDownProps,
-  PropsCheckBox,
-  PropsDropdown,
-  TYPE_METER,
-} from '../../service/hhu/defineEM';
+import React, {useContext, useRef, useState} from 'react';
 import {TypeReadRF} from '../../service/hhu/RF/RfFunc';
+import {PropsCheckBox, TYPE_METER} from '../../service/hhu/defineEM';
 import {getArrSeri, saveArrSeri} from '../../service/storage';
 import {PropsStore, storeContext} from '../../store';
 import {arrSeri, setArrSeri} from './handleButton';
+import {TextInput} from 'react-native';
 
 type StateProps = {
   status: string;
@@ -22,6 +18,10 @@ type StateProps = {
   numberRetries: string;
   dateStart: Date;
   dateEnd: Date;
+  registerMeter: string;
+  registerModule: string | undefined;
+  userNote: string;
+  deltaRegister: string;
 };
 
 export const itemTypeMeter: PropsCheckBox[] = [
@@ -42,6 +42,14 @@ export const dataReadRadioButton: TypeReadRF[] = Array.from(
 type HookProps = {
   state: StateProps;
   setState: React.Dispatch<React.SetStateAction<StateProps>>;
+  registerMeter: {
+    value: string;
+    ref: React.RefObject<TextInput>;
+  };
+  userNote: {
+    value: string;
+    ref: React.RefObject<TextInput>;
+  };
 };
 
 type RowTableProps = string[][]; //[[string, string]];
@@ -61,7 +69,7 @@ function GetInitialState(): StateProps {
     status: '',
     requestStop: false,
     seri: '',
-    typeRead: 'Dữ liệu gần nhất',
+    typeRead: 'Tức thời',
     dataTable: [
       ['Điện áp', '0 (V)'],
       ['Dữ liệu', '0 (lít)'],
@@ -72,6 +80,10 @@ function GetInitialState(): StateProps {
     dateStart: dateStart,
     dateEnd: dateEnd,
     typeMeter: 'Đồng hồ',
+    registerMeter: '',
+    registerModule: '',
+    userNote: '',
+    deltaRegister: '',
   };
 }
 
@@ -80,6 +92,16 @@ export const GetHookProps = (): HookProps => {
   const [state, setState] = useState<StateProps>(GetInitialState());
   hookProps.state = state;
   hookProps.setState = setState;
+
+  hookProps.registerMeter = {
+    value: '',
+    ref: React.createRef<TextInput>(),
+  };
+  hookProps.userNote = {
+    value: '',
+    ref: React.createRef<TextInput>(),
+  };
+
   //console.log('hookState:', hookProps.state);
   return hookProps;
 };
