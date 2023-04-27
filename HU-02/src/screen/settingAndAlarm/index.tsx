@@ -143,7 +143,7 @@ export const SettingAndAlarmScreen = () => {
         </View>
         <View style={styles.containerIPPort}>
           <View style={styles.containerItemIPPort}>
-            <Text style={styles.title}>IP HHU:</Text>
+            <Text style={styles.title}>IP HU:</Text>
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
               {/* <Text style={styles.textThreshold}>Nhỏ hơn:</Text> */}
               <TextInputInteractive
@@ -164,7 +164,7 @@ export const SettingAndAlarmScreen = () => {
             </View>
           </View>
           <View style={styles.containerItemIPPort}>
-            <Text style={styles.title}>Port HHU:</Text>
+            <Text style={styles.title}>Port HU:</Text>
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
               {/* <Text style={styles.textThreshold}>Nhỏ hơn:</Text> */}
               <TextInputInteractive

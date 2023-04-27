@@ -53,7 +53,7 @@ export const BoardBLEScreen = () => {
   const version =
     store.state.hhu.version?.length === 0
       ? ''
-      : 'HHU: ' + store.state.hhu.version;
+      : 'HU: ' + store.state.hhu.version;
 
   return (
     <View style={styles.container}>

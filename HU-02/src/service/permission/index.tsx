@@ -62,6 +62,7 @@ export const requestPermissionGPS = async () => {
 export const requestPermissionWriteExternalStorage = async () => {
   try {
     //let status;
+
     let result = await permission.check(
       permission.PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE,
     );

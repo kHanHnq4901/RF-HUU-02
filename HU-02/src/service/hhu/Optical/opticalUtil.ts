@@ -21,6 +21,9 @@ export function Get_State_Reset_By_User(state: uint8_t): string {
     case 5:
       str = 'RESET_ID_BY_WDG_TIMEOUT';
       break;
+    case 6:
+      str = 'RESET_ID_BY_SEN_OBJ_ABNORMAL';
+      break;
     default:
       str = 'Unknown state: 0x' + state.toString(16);
       break;

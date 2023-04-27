@@ -12,5 +12,6 @@ export const PATH_EXPORT_CSDL =
   RNFS.ExternalStorageDirectoryPath + '/GLX_HHU_WM/csdl';
 export const PATH_EXPORT_XML_EXTERNAL =
   RNFS.ExternalStorageDirectoryPath + '/GLX_HHU_WM/xml';
+export const PATH_EXPORT_LOG = RNFS.DocumentDirectoryPath + '/log';
 
 export const NAME_CSDL = 'local_csdl.db';

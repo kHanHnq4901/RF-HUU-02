@@ -1,6 +1,12 @@
 import BleManager from '../../util/BleManager';
 import {sleep} from '../../util';
-import {hookProps, requestGps, setStatus, store} from './controller';
+import {
+  hookProps,
+  requestGps,
+  requestPermissionScan,
+  setStatus,
+  store,
+} from './controller';
 import * as Ble from '../../util/ble';
 import {BleFunc_SaveStorage} from '../../service/hhu/Ble/bleHhuFunc';
 import {ObjSend, readVersion, ShakeHand} from '../../service/hhu/Ble/hhuFunc';
@@ -69,7 +75,7 @@ export const connectHandle = async (id: string) => {
           }
         }
       } else if (result === 1) {
-        setStatus('Cần nạp firmware HHU');
+        setStatus('Cần nạp firmware HU');
       } else {
         setStatus('Bắt tay thất bại');
         ObjSend.isShakeHanded = false;
@@ -94,7 +100,9 @@ export const onScanPress = async () => {
     state.status = '';
     return {...state};
   });
-  if ((await requestGps()) === true) {
+  let requestScanPermission = await requestPermissionScan();
+  let requestPermissionGps = await requestGps();
+  if (requestScanPermission === true && requestPermissionGps) {
     await BleManager.enableBluetooth();
     await BleManager.start();
     BleManager.scan([], 5, false)

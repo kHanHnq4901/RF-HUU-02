@@ -87,6 +87,7 @@ export type DrawerParamsList = {
   AbnormalRegister: ParamsDrawerProps;
   ImportExportCSDL: ParamsDrawerProps;
   ExportXml: ParamsDrawerProps;
+  ExportLog: ParamsDrawerProps;
   ImportXml: ParamsDrawerProps;
   ImportExportCMIS: ParamsDrawerProps;
   CkeckSignal: ParamsDrawerProps;

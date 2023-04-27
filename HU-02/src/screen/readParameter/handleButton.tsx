@@ -1,18 +1,17 @@
 import {Keyboard} from 'react-native';
+import RNFS from 'react-native-fs';
 import {ObjSend} from '../../service/hhu/Ble/hhuFunc';
-import {PropsLabel} from '../../service/hhu/defineWM';
 import {
   PropsModelRadio,
   PropsRead,
   RfFunc_Read,
 } from '../../service/hhu/RF/RfFunc';
+import {PropsLabel} from '../../service/hhu/defineWM';
 import {getUnitByLabel} from '../../service/hhu/util/utilFunc';
+import {PATH_EXPORT_LOG} from '../../shared/path';
 import {isAllNumeric, showAlert, showToast} from '../../util';
 import * as controller from './controller';
 import {hookProps, store} from './controller';
-import RNFS from 'react-native-fs';
-import {PATH_EXPORT_CSDL} from '../../shared/path';
-import {log} from 'react-native-reanimated';
 
 const TAG = 'handleButton ReadParams';
 
@@ -273,7 +272,7 @@ export async function onSaveLogPress() {
       '_' +
       date.getFullYear() +
       '.txt';
-    const fullPath = PATH_EXPORT_CSDL + '/' + nameFile;
+    const fullPath = PATH_EXPORT_LOG + '/' + nameFile;
 
     // const fileExist = await RNFS.exists(PATH_EXPORT_CSDL + '/' + nameFile);
 

@@ -100,6 +100,12 @@ export const DrawerContent = props => {
             <Divider />
             {screenDatas.map(element => {
               if (element.component) {
+                if (element.id === 'ExportLog') {
+                  if (store.state.userInfo.ROLE_NAME === 'DVKH') {
+                  } else {
+                    return null;
+                  }
+                }
                 return (
                   <DrawerItem
                     key={element.id}
@@ -224,7 +230,7 @@ export const DrawerContent = props => {
           marginHorizontal: 20,
         }}>
         <Text style={styles.textVersion}>
-          HHU {store.state.hhu.shortVersion}
+          HU {store.state.hhu.shortVersion}
         </Text>
         <Text style={styles.textVersion}>Phiên bản {Shared.version}</Text>
       </View>

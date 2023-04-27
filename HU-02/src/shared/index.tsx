@@ -3,13 +3,14 @@ import {DrawerParamsList} from '../navigation/model/model';
 import {AboutScreen} from '../screen/about';
 import {BoardBLEScreen} from '../screen/boardBLE';
 import {DeclareMeterScreen} from '../screen/declareMeter';
+import {ExportLogScreen} from '../screen/exportLog';
 import {OverViewScreen} from '../screen/overview';
 import {ReadOpticalScreen} from '../screen/readOptical';
 import {ReadParameterScreen} from '../screen/readParameter';
 import {SettingAndAlarmScreen} from '../screen/settingAndAlarm';
 import {WriteOpticalScreen} from '../screen/writeOptical';
 
-export const version = '1.1.2';
+export const version = '1.1.4';
 
 // export const widthScreen = Dimensions.get('screen').width;
 // export const heighScreen = Dimensions.get('screen').height;
@@ -29,7 +30,7 @@ export type TYPE_DEVICE = 'HHU';
 export const screenDatas: DataScreensProps = [
   {
     title: 'Tổng quan',
-    info: 'Hiển thị tỉ lệ thu lập dữ liệu của thiết bị HHU',
+    info: 'Hiển thị tỉ lệ thu lập dữ liệu của thiết bị HU',
     id: 'Overview',
     icon: 'pie-chart',
     component: OverViewScreen,
@@ -143,6 +144,17 @@ export const screenDatas: DataScreensProps = [
     id: 'ExportXml',
     icon: 'md-print',
     component: null,
+  },
+  {
+    title: 'Xuất file log',
+    info: `
+    Xuất file log:
+      +Nhấn nút 'Xuất' trên màn hình
+      +Chọn ứng dụng muốn chia sẻ file log
+    `,
+    id: 'ExportLog',
+    icon: 'md-print',
+    component: ExportLogScreen,
   },
   {
     title: 'Nhập file xml',

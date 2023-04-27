@@ -31,9 +31,8 @@ import {
 import {USER_ROLE_TYPE} from '../../../service/user';
 import {
   PATH_EXECUTE_CSDL,
-  PATH_EXPORT_CSDL,
+  PATH_EXPORT_LOG,
   PATH_EXPORT_XML,
-  PATH_EXPORT_XML_EXTERNAL,
   PATH_IMPORT_CSDL,
   PATH_IMPORT_XML,
 } from '../../../shared/path';
@@ -140,6 +139,8 @@ export const onInit = async navigation => {
   try {
     let result = await requestPermissionWriteExternalStorage();
 
+    console.log(TAG, 'result request:', result);
+
     if (result === true) {
       try {
         let folderExist = await RNFS.exists(PATH_IMPORT_CSDL);
@@ -152,11 +153,6 @@ export const onInit = async navigation => {
           console.log('create folder for excecute csdl');
           await RNFS.mkdir(PATH_EXECUTE_CSDL);
         }
-        folderExist = await RNFS.exists(PATH_EXPORT_CSDL);
-        if (folderExist !== true) {
-          console.log('create folder for export csdl');
-          await RNFS.mkdir(PATH_EXPORT_CSDL);
-        }
 
         folderExist = await RNFS.exists(PATH_IMPORT_XML);
         if (folderExist !== true) {
@@ -166,15 +162,12 @@ export const onInit = async navigation => {
         if (folderExist !== true) {
           await RNFS.mkdir(PATH_EXPORT_XML);
         }
-        folderExist = await RNFS.exists(PATH_EXPORT_XML_EXTERNAL);
+        //console.log('create folder external');
+
+        folderExist = await RNFS.exists(PATH_EXPORT_LOG);
         if (folderExist !== true) {
-          await RNFS.mkdir(PATH_EXPORT_XML_EXTERNAL);
+          await RNFS.mkdir(PATH_EXPORT_LOG);
         }
-        // folderExist = await RNFS.exists(PATH_EXPORT_CSDL);
-        // if (folderExist !== true) {
-        //   console.log('create folder for export csdl');
-        //   await RNFS.mkdir(PATH_EXPORT_CSDL);
-        // }
       } catch (err) {
         console.log(TAG, err.message);
       }

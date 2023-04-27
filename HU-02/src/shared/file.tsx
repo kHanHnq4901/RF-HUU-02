@@ -60,3 +60,29 @@ export const loadXmlFromStorage = async (
   }
   return xmlList;
 };
+
+export const loadLogFileFromStorage = async (
+  path: string,
+): Promise<PropsFileInfo[]> => {
+  console.log('load file log');
+  const listFile: PropsFileInfo[] = [];
+  try {
+    const result = await RNFS.readDir(path);
+    //console.log('result xml:', result);
+    for (let e of result) {
+      if (getFilExtension(e.name.toLocaleLowerCase()) === 'txt') {
+        listFile.push({
+          name: e.name,
+          checked: false,
+          time: new Date(e.mtime).getTime(),
+          path: e.path,
+          date: new Date(e.mtime).toLocaleString(),
+        });
+      }
+    }
+  } catch (err) {
+    console.log(TAG, 'Error: ', err.message, err.code);
+    showToast(err.message);
+  }
+  return listFile;
+};

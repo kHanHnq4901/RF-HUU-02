@@ -178,7 +178,7 @@ export async function hhuFunc_Send(
     //console.log('here a');
     return true;
   } else {
-    showToast('Chưa kết nối HHU');
+    showToast('Chưa kết nối HU');
     return false;
   }
 

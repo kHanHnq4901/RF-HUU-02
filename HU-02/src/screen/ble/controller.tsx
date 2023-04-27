@@ -1,10 +1,11 @@
 import React, {useContext, useState} from 'react';
-import {NativeEventEmitter, NativeModules} from 'react-native';
+import {NativeEventEmitter, NativeModules, Platform} from 'react-native';
 import {PropsStore, storeContext} from '../../store';
 import BleManager from '../../util/BleManager';
 import {check, PERMISSIONS, request, RESULTS} from 'react-native-permissions';
 import {onScanPress} from './handleButton';
 import LocationEnabler from 'react-native-location-enabler';
+import * as permission from 'react-native-permissions';
 
 export type PropsItemBle = {
   isConnectable?: boolean;
@@ -68,6 +69,74 @@ export const requestGps = async (): Promise<boolean> => {
   }
 
   return false;
+};
+
+export const requestPermissionScan = async (): Promise<boolean> => {
+  try {
+    //let status;
+
+    const OsVer = Number(Platform.constants.Release);
+
+    //console.log('OsVer:', JSON.stringify(Platform));
+    console.log('OsVer:', OsVer);
+
+    if (OsVer < 12) {
+      return true;
+    }
+
+    let result = await permission.check(
+      permission.PERMISSIONS.ANDROID.BLUETOOTH_SCAN,
+    );
+    switch (result) {
+      case permission.RESULTS.UNAVAILABLE:
+        console.log(
+          TAG,
+          'BLUETOOTH_SCAN',
+          'This feature is not available (on this device / in this context)',
+        );
+        break;
+      case permission.RESULTS.DENIED:
+        console.log(
+          TAG,
+          'BLUETOOTH_SCAN',
+          'The permission has not been requested / is denied but requestable',
+        );
+        let status = await permission.request(
+          permission.PERMISSIONS.ANDROID.BLUETOOTH_SCAN,
+        );
+        if (
+          status === permission.RESULTS.GRANTED ||
+          status === permission.RESULTS.BLOCKED
+        ) {
+          console.log(TAG, 'BLUETOOTH_SCAN', 'The permission is granted');
+          return true;
+        } else {
+          return false;
+        }
+
+      case permission.RESULTS.LIMITED:
+        console.log(
+          TAG,
+          'BLUETOOTH_SCAN',
+          'The permission is limited: some actions are possible',
+        );
+        break;
+      case permission.RESULTS.GRANTED:
+        console.log(TAG, 'BLUETOOTH_SCAN', 'The permission is granted');
+        return true;
+      case permission.RESULTS.BLOCKED:
+        console.log(
+          TAG,
+          'BLUETOOTH_SCAN',
+          'The permission is denied and not requestable anymore',
+        );
+        return true;
+    }
+    return false;
+  } catch (err) {
+    console.log(TAG, 'BLUETOOTH_SCAN', err.message);
+    return false;
+  }
 };
 
 export const GetHookProps = (): HookProps => {
@@ -151,20 +220,24 @@ let listenerDiscover;
 
 export const onInit = async navigation => {
   try {
-    await BleManager.start({showAlert: false});
-    await BleManager.enableBluetooth();
-    let list: PropsListBondBle[] = await BleManager.getBondedPeripherals();
-    hookProps.setState(state => {
-      state.ble.listBondedDevice.length = 0;
-      list.forEach(item => {
-        state.ble.listBondedDevice.push({
-          id: item.id,
-          isConnectable: item.advertising.isConnectable,
-          name: item.name,
+    let requestScanPermission = await requestPermissionScan();
+    let requestPermissionGps = await requestGps();
+    if (requestScanPermission === true && requestPermissionGps === true) {
+      await BleManager.start({showAlert: false});
+      await BleManager.enableBluetooth();
+      let list: PropsListBondBle[] = await BleManager.getBondedPeripherals();
+      hookProps.setState(state => {
+        state.ble.listBondedDevice.length = 0;
+        list.forEach(item => {
+          state.ble.listBondedDevice.push({
+            id: item.id,
+            isConnectable: item.advertising.isConnectable,
+            name: item.name,
+          });
         });
+        return {...state};
       });
-      return {...state};
-    });
+    }
 
     listenerStopScan = bleManagerEmitter.addListener(
       'BleManagerStopScan',

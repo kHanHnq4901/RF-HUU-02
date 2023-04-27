@@ -57,7 +57,7 @@ export async function onLoginPress(props?: PropsLogin) {
         screen: 'Overview',
         params: {
           title: 'Tổng quan',
-          info: 'Hiển thị tỉ lệ thu lập dữ liệu của thiết bị HHU',
+          info: 'Hiển thị tỉ lệ thu lập dữ liệu của thiết bị HU',
         },
       });
     } else {
@@ -100,7 +100,7 @@ export async function onLoginPress(props?: PropsLogin) {
           screen: 'Overview',
           params: {
             title: 'Tổng quan',
-            info: 'Hiển thị tỉ lệ thu lập dữ liệu của thiết bị HHU',
+            info: 'Hiển thị tỉ lệ thu lập dữ liệu của thiết bị HU',
           },
         });
 
