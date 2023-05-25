@@ -259,7 +259,7 @@ export async function onSaveLogPress() {
     content += ', ';
   }
 
-  content += `Chỉ số CK: ${hookProps.state.registerMeter}, Sai lệch: ${hookProps.state.deltaRegister}, Ghi chú: ${hookProps.state.userNote}\r\n`;
+  content += `Chỉ số CK: ${hookProps.state.registerMeter}, Sai lệch: ${hookProps.state.deltaRegister}, Ghi chú: ${hookProps.userNote.value}\r\n`;
 
   try {
     const date = new Date();
@@ -283,6 +283,8 @@ export async function onSaveLogPress() {
     console.log('content:', content);
 
     await RNFS.appendFile(fullPath, content);
+
+    hookProps.userNote.ref?.current?.clear();
 
     showToast('Lưu thành công');
   } catch (err) {

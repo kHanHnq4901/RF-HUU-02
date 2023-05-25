@@ -332,16 +332,10 @@ export const ReadParameterScreen = () => {
               // value="123456 hfsjfl;s jflsfjls jfsljfls jkfskf;lskfs;  fsklfsklmfsl jfkldfn fjkfkkf klfsdfkn"
               multiline
               ref={hookProps.userNote.ref}
-              // onChangeText={text => {
-              //   hookProps.userNote.value = text;
-              // }}
-              onEndEditing={e => {
-                hookProps.setState(state => {
-                  state.userNote = e.nativeEvent.text;
-
-                  return {...state};
-                });
+              onChangeText={text => {
+                hookProps.userNote.value = text;
               }}
+              
             />
           </View>
         )}

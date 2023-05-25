@@ -49,10 +49,13 @@ let enableLocationHook = {} as {
 
 export const requestGps = async (): Promise<boolean> => {
   try {
+    if (Platform.OS === 'ios') {
+      return true;
+    }
     const value = await turnOnLocation();
     if (value === true) {
       // console.log('value:', value);
-      // console.log('enable:', enabled);
+      // console.log('enable:', enableLocationHook);
       if (enableLocationHook.enabled !== true) {
         enableLocationHook.requestResolution();
         return true;
@@ -276,60 +279,77 @@ type PropsListBondBle = {
   name: string;
   rssi: 0;
 };
+export const turnOnLocation = async (requestBle?: boolean): Promise<boolean> => {
+  let result: string = '';
 
-export const turnOnLocation = async (): Promise<boolean> => {
-  let result = await check(PERMISSIONS.ANDROID.BLUETOOTH_CONNECT);
   let ok: boolean = false;
-  switch (result) {
-    case RESULTS.UNAVAILABLE:
-      // console.log(
-      //   'This feature BLUETOOTH_CONNECT is not available (on this device / in this context)',
-      // );
-      break;
-    case RESULTS.DENIED:
-      console.log(
-        'The permission BLUETOOTH_CONNECT has not been requested / is denied but requestable',
-      );
-      break;
-    case RESULTS.LIMITED:
-      // console.log('The permission is limited: some actions are possible');
-      ok = true;
-      break;
-    case RESULTS.GRANTED:
-      // console.log('The permission is granted');
-      ok = true;
-      break;
-    case RESULTS.BLOCKED:
-      // console.log('The permission is denied and not requestable anymore');
-      ok = true;
-      break;
+
+  if(requestBle === false){
+
+
   }
-  result = await request(PERMISSIONS.ANDROID.BLUETOOTH_CONNECT);
-  ok = false;
-  switch (result) {
-    case RESULTS.UNAVAILABLE:
-      // console.log(
-      //   'This feature BLUETOOTH_CONNECT is not available (on this device / in this context)',
-      // );
-      break;
-    case RESULTS.DENIED:
-      console.log(
-        'The permission BLUETOOTH_CONNECT has not been requested / is denied but requestable',
-      );
-      break;
-    case RESULTS.LIMITED:
-      // console.log('The permission is limited: some actions are possible');
-      ok = true;
-      break;
-    case RESULTS.GRANTED:
-      // console.log('The permission is granted');
-      ok = true;
-      break;
-    case RESULTS.BLOCKED:
-      // console.log('The permission is denied and not requestable anymore');
-      ok = true;
-      break;
+
+  const OsVer = Number(Platform.constants.Version);
+
+  //console.log('OsVer:', JSON.stringify(Platform));
+  console.log('OsVer:', OsVer);
+
+  if (OsVer >= 31) {
+    //if (true) {
+    result = await check(PERMISSIONS.ANDROID.BLUETOOTH_CONNECT);
+
+    switch (result) {
+      case RESULTS.UNAVAILABLE:
+        console.log(
+          'This feature BLUETOOTH_CONNECT is not available (on this device / in this context)',
+        );
+        break;
+      case RESULTS.DENIED:
+        console.log(
+          'The permission BLUETOOTH_CONNECT has not been requested / is denied but requestable',
+        );
+        break;
+      case RESULTS.LIMITED:
+        // console.log('The permission is limited: some actions are possible');
+        ok = true;
+        break;
+      case RESULTS.GRANTED:
+        // console.log('The permission is granted');
+        ok = true;
+        break;
+      case RESULTS.BLOCKED:
+        // console.log('The permission is denied and not requestable anymore');
+        ok = true;
+        break;
+    }
+    result = await request(PERMISSIONS.ANDROID.BLUETOOTH_CONNECT);
+    ok = false;
+    switch (result) {
+      case RESULTS.UNAVAILABLE:
+        console.log(
+          'This feature BLUETOOTH_CONNECT is not available (on this device / in this context)',
+        );
+        break;
+      case RESULTS.DENIED:
+        console.log(
+          'The permission BLUETOOTH_CONNECT has not been requested / is denied but requestable',
+        );
+        break;
+      case RESULTS.LIMITED:
+        // console.log('The permission is limited: some actions are possible');
+        ok = true;
+        break;
+      case RESULTS.GRANTED:
+        // console.log('The permission is granted');
+        ok = true;
+        break;
+      case RESULTS.BLOCKED:
+        // console.log('The permission is denied and not requestable anymore');
+        ok = true;
+        break;
+    }
   }
+
   result = await check(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
   ok = false;
   switch (result) {

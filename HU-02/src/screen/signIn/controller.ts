@@ -34,7 +34,7 @@ export function UpdateHook() {
 
   navigation = useNavigation<StackNavigationProp<StackRootList>>();
 }
-
+let firstTime = true;
 export async function onInit() {
   navigation.addListener('focus', async () => {
     hook.setState(state => {
@@ -58,7 +58,13 @@ export async function onInit() {
     //console.log('e:', e);
     e.preventDefault();
   });
-  onFingerPress(false);
+
+  if(firstTime)
+  {
+    onFingerPress(false);
+    firstTime = false;
+  }
+  
 }
 
 export function onDeInit() {}

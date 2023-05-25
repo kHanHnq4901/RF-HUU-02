@@ -48,7 +48,7 @@ function checkCondition(): boolean {
   }
   text = hookProps.data.infoDeclare.seriMeter.trim();
   if (text.length !== 10 || isAllNumeric(text) === false) {
-    showAlert('Số seri cơ khí không hợp lệ');
+    showAlert('Số seri cơ khí không hợp lệ: độ dài phải bằng 10 và chỉ gồm số');
     return false;
   }
   text = hookProps.data.infoDeclare.customerName.trim();
@@ -85,11 +85,6 @@ export async function onDeclarePress() {
   // const loacaion = await getGeolocation();
   // console.log('const loacaion = :', loacaion);
   // return;
-
-  hookProps.refScroll.current?.scrollTo(0);
-  console.log('hookProps.refScroll:', hookProps.refScroll);
-
-  return;
 
   if (hookProps.state.isBusy) {
     return;
