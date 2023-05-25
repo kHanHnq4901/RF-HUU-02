@@ -92,6 +92,14 @@ function getInitialState(): HookState {
           label: 'Dữ liệu',
           value: 'Dữ liệu',
         },
+        {
+          label: 'Thời gian gửi',
+          value: 'Thời gian gửi',
+        },
+        {
+          label: 'Nbiot',
+          value: 'Nbiot',
+        },
       ],
     },
     requestStop: false,

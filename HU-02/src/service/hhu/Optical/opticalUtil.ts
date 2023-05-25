@@ -1,4 +1,5 @@
 import {uint8_t} from '../../../util/custom_typedef';
+import { Optical_TimeRtcProps } from './opticalProtocol';
 
 export function Get_State_Reset_By_User(state: uint8_t): string {
   let str = '';
@@ -120,3 +121,42 @@ export function Get_State_Reset(state: uint8_t): string {
   }
   return str;
 }
+
+export function convertRtcTime2String(time: Optical_TimeRtcProps): string
+{
+  const str = `${time.u8Date}-${time.u8Month}-${2000+ time.u8Year} ${time.u8Hour}:${time.u8Minute}:${time.u8Sec}`;
+  return str;
+}
+
+export function getStateSend(state: uint8_t): string{
+  let str = '';
+  switch(state)
+  {
+    case 0:
+      str = 'STATE_UNDEFINED';
+      break;
+    case 1:
+      str = 'STATE_TX_SUCCEED';
+      break;
+    case 2:
+      str = 'STATE_CHANEL_BUSY';
+      break;
+    case 3:
+      str = 'STATE_TX_FAILED';
+      break;
+    case 4:
+      str = 'STATE_NO_IP';
+      break;
+    case 5:
+      str = 'STATE_OPEN_CONNECT_ERROR';
+      break;
+    case 6:
+      str = 'STATE_PUB_ERROR';
+      break;
+    default:
+      str = 'UNKNOWN' + state;
+    break;
+  }
+  return str;
+}
+

@@ -51,6 +51,9 @@ export const getUnitByLabelOptical = (label: PropsLabelOptical) => {
     case 'Điện áp':
       unit = ' (V)';
       break;
+    case 'Rssi':
+      unit = ' (dbm)';
+      break;
   }
   return unit;
 };

@@ -1,6 +1,6 @@
 import struct from '../../../util/cstruct';
 import {Buffer} from 'buffer';
-import {float, uint16_t, uint32_t, uint8_t} from '../../../util/custom_typedef';
+import {float, int8_t, uint16_t, uint32_t, uint8_t} from '../../../util/custom_typedef';
 import {Rtc_SimpleTimeProps, Rtc_SimpleTimeType} from '../RF/radioProtocol';
 
 export enum OPTICAL_CMD {
@@ -205,3 +205,59 @@ export const Optical_SensorInfoType = struct`
 export type Optical_SensorInfoProps = {
   sensor: Optical_SubSensorProps[];
 };
+
+export const Optical_TimeRtcType = struct`
+    uint8_t u8Year;
+    uint8_t u8Month;
+    uint8_t u8Date;
+    uint8_t u8Hour;
+    uint8_t u8Minute;
+    uint8_t u8Sec;
+`;
+
+export type Optical_TimeRtcProps = {
+  u8Year : uint8_t;
+  u8Month : uint8_t;
+  u8Date : uint8_t;
+  u8Hour : uint8_t;
+  u8Minute : uint8_t;
+  u8Sec : uint8_t;
+};
+
+export const Optical_TimeSendType = struct`
+    ${Optical_TimeRtcType} next;
+    ${Optical_TimeRtcType} last;
+    ${Optical_TimeRtcType} lastSucceed;
+    uint8_t u8State;
+`;
+
+export type Optical_TimeSendProps = {
+  next: Optical_TimeRtcProps;
+  last: Optical_TimeRtcProps;
+  lastSucceed: Optical_TimeRtcProps;
+  u8State: uint8_t;
+};
+
+
+export const Optical_TestRFType = struct`
+    uint8_t au8Serial[4];
+    uint8_t u8Succeed;
+    int8_t s8RssiGatewayRec;
+    int8_t s8RssiSlaveRec;
+    uint8_t u8HasIP;
+    uint8_t au8Qccid[30];
+    uint8_t au8Apn[20];
+    uint8_t au8IMSI[20];
+`;
+
+export type Optical_TestRFProps = {
+  au8Serial : Uint8Array;
+  u8Succeed : uint8_t;
+  s8RssiGatewayRec : int8_t;
+  s8RssiSlaveRec: int8_t;
+  u8HasIP : uint8_t;
+  au8Qccid: Uint8Array;
+  au8Apn: Uint8Array;
+  au8IMSI: Uint8Array;
+};
+

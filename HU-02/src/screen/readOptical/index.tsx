@@ -99,8 +99,9 @@ export const ReadOpticalScreen = () => {
           />
         ))}
       </View>
-
-      <View style={styles.normalRow}>
+      {hookProps.state.typeData.items[1].checked &&
+        (<>
+        <View style={styles.normalRow}>
         <View>
           <CheckboxButton
             checked={hookProps.state.is0h}
@@ -253,7 +254,6 @@ export const ReadOpticalScreen = () => {
           </View>
         </View>
       </View>
-
       <View style={styles.rowRadioButton}>
         {readParamsController.dataReadRadioButton.map(e => {
           // console.log('state', hookProps.state.typeRead);
@@ -261,6 +261,12 @@ export const ReadOpticalScreen = () => {
           return <RenderRadioButton e={e} key={e} />;
         })}
       </View>
+        </>)
+      }
+
+      
+
+      
       <Text style={styles.status}>{hookProps.state.status}</Text>
       <Table borderStyle={{borderWidth: 2, borderColor: '#c8e1ff'}}>
         <Row

@@ -35,6 +35,11 @@ import {
   Optical_SensorInfoProps,
   Optical_SensorInfoType,
   Optical_SeriType,
+  Optical_TestRFProps,
+  Optical_TestRFType,
+  Optical_TimeRtcProps,
+  Optical_TimeSendProps,
+  Optical_TimeSendType,
   Rtc_CalendarProps,
   Rtc_CalendarType,
   Sensor_NvmErrorProps,
@@ -43,7 +48,8 @@ import {
 import {aes_128_dec, aes_128_en} from '../../../util/aes128';
 import {store} from '../../../component/drawer/drawerContent/controller';
 import {log} from 'react-native-reanimated';
-import {Get_State_Reset, Get_State_Reset_By_User} from './opticalUtil';
+import {Get_State_Reset, Get_State_Reset_By_User, convertRtcTime2String, getStateSend} from './opticalUtil';
+import { StringFromArray } from '../../../util';
 
 const TAG = 'opticalFunc:';
 
@@ -65,7 +71,17 @@ export type FieldOpticalResponseProps =
   | 'UReset State'
   | 'Sen 0'
   | 'Sen 1'
-  | 'Sen 2';
+  | 'Sen 2'
+  | 'Thời gian gửi lần tiếp'
+  | 'Lần cuối gửi'
+  | 'Lần cuối thành công'
+  | 'Trạng thái gửi'
+  | 'Test RF'
+  | 'Rssi'
+  | 'Có IP'
+  | 'QCCID'
+  | 'IMSI'
+  | 'APN';
 
 export type OpticalDailyProps = {
   'Thời điểm chốt': string;
@@ -364,6 +380,8 @@ type PropsOpticalRecAdvance = {
   //data: any;
 };
 
+
+
 export async function waitOpticalAdvance(
   props: PropsOpticalRecAdvance,
 ): Promise<PropsResponse> {
@@ -536,8 +554,6 @@ export async function waitOpticalAdvance(
           });
         }
         break;
-      case OPTICAL_CMD.OPTICAL_GET_TIME_SEND:
-        break;
       case OPTICAL_CMD.OPTICAL_GET_ERROR_SYSTEM:
         {
           const error: Sensor_NvmErrorProps = Array2Struct(
@@ -585,6 +601,45 @@ export async function waitOpticalAdvance(
           console.log('get info sensor');
         }
         break;
+        case OPTICAL_CMD.OPTICAL_GET_TIME_SEND:
+          {
+            console.log('index:', index);
+            
+            const timeSend: Optical_TimeSendProps = Array2Struct(
+              objOptical.payload,
+              index,
+              Optical_TimeSendType,
+            );
+
+            console.log('timeSend:', timeSend);
+            
+            data['Thời gian gửi lần tiếp'] = convertRtcTime2String(timeSend.next);
+            data['Lần cuối gửi'] = convertRtcTime2String(timeSend.last);
+            data['Thời gian gửi lần tiếp'] = convertRtcTime2String(timeSend.lastSucceed);
+            data['Trạng thái gửi'] = getStateSend(timeSend.u8State);
+            console.log('get time send');
+          }
+          break;
+        case OPTICAL_CMD.OPTICAL_TEST_RF:
+          const testRF: Optical_TestRFProps = Array2Struct(
+            objOptical.payload,
+            index,
+            Optical_TestRFType,
+          );
+
+          data['Test RF'] = testRF.u8Succeed ? 'Thành công' : 'Thất bại';
+          if(testRF.u8Succeed)
+          {
+            data.Rssi = testRF.s8RssiSlaveRec.toString();
+            data['Có IP'] = testRF.u8HasIP ? 'Có': 'NO_IP';
+            data.QCCID= StringFromArray(Buffer.from(testRF.au8Qccid), 0, testRF.au8Qccid.length);
+            data.IMSI= StringFromArray(Buffer.from(testRF.au8IMSI), 0, testRF.au8IMSI.length);
+            data.APN= StringFromArray(Buffer.from(testRF.au8Apn), 0, testRF.au8Apn.length);
+            
+          }
+          console.log('test rf');
+          
+          break;
     }
 
     if (objOptical.header.u8FSN === 0xff) {

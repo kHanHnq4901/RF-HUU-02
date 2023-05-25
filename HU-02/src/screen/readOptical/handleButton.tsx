@@ -24,6 +24,7 @@ import {showToast, sleep} from '../../util';
 import {Struct2Array, sizeof} from '../../util/struct-and-array';
 import {hookProps} from './controller';
 import {store} from '../../component/drawer/drawerContent/controller';
+import { log } from 'react-native-reanimated';
 
 const TAG = 'Handle Btn Read Optical';
 
@@ -94,6 +95,13 @@ export async function onBtnReadPress() {
           case 'Sensor':
             await readSensor();
             break;
+          case 'Thời gian gửi':
+            await readTimeSend();
+            break;
+          case 'Nbiot':
+            await testRF();
+            break;
+          
         }
       }
     }
@@ -113,6 +121,8 @@ export async function onBtnReadPress() {
 }
 
 function ConvertObjToHook(objResponse: any) {
+  
+  
   for (let itm in objResponse) {
     if (typeof objResponse[itm] === 'string') {
       hookProps.setState(state => {
@@ -166,10 +176,12 @@ async function commonRead(arrCommand: OPTICAL_CMD[]) {
 
   let hasFailed = false;
   let payload: Buffer | undefined;
+  let timeout: number = 0;
   for (let cmd of arrCommand) {
     console.log('get cmd:', cmd);
 
     header.u8Command = cmd;
+    timeout = 2000;
     if (cmd === OPTICAL_CMD.OPTICAL_GET_SERIAL) {
       payload = Buffer.alloc(1);
       if (typeSeri === 0xff) {
@@ -180,11 +192,17 @@ async function commonRead(arrCommand: OPTICAL_CMD[]) {
       payload[0] = typeSeri; // first meter then module
       header.u8Length = payload.byteLength;
     }
+    if (cmd === OPTICAL_CMD.OPTICAL_TEST_RF) {
+      payload = Buffer.alloc(1);
+      payload[0] = 1; // test RF online
+      header.u8Length = payload.byteLength;
+      timeout = 45000;
+    }
     bRet = await opticalSend(header, payload);
     if (bRet) {
       const response = await waitOpticalAdvance({
         desiredCmd: cmd,
-        timeout: 2000,
+        timeout: timeout,
       });
       if (response.bSucceed) {
         console.log(response.obj);
@@ -332,6 +350,68 @@ async function readData() {
         hasFailed = true;
       }
       if (response.obj) {
+        ConvertObjToHook(response.obj);
+      }
+    }
+    await sleep(200);
+  }
+  if (!hasFailed) {
+    setStatus('Đọc xong');
+  }
+}
+
+async function testRF(){
+  const arrCommand: OPTICAL_CMD[] = [];
+  arrCommand.push(OPTICAL_CMD.OPTICAL_TEST_RF); // test RF online
+
+  await commonRead(arrCommand);
+}
+
+
+async function readTimeSend() {
+
+  let bRet = await opticalShakeHand('00000000');
+  if (!bRet) {
+    setStatus('Bắt tay cổng quang lỗi');
+    return;
+  }
+
+  const arrCommand: OPTICAL_CMD[] = [];
+  arrCommand.push(OPTICAL_CMD.OPTICAL_GET_SERIAL); // meter
+  arrCommand.push(OPTICAL_CMD.OPTICAL_GET_TIME_SEND);
+
+  const header = {} as Optical_HeaderProps;
+  header.u8FSN = 0xff;
+  header.u8Length = 0;
+
+  let hasFailed = false;
+
+  for (let cmd of arrCommand) {
+    let payload: Buffer | undefined;
+    let index = 0;
+    header.u8Command = cmd;
+    if (cmd === OPTICAL_CMD.OPTICAL_GET_SERIAL) {
+      payload = Buffer.alloc(1);
+      payload[0] = Optical_SeriType.OPTICAL_TYPE_SERI_METER;
+      header.u8Length = 1;
+    } else{
+      payload = undefined;
+      header.u8Length = 0;
+    }
+    bRet = await opticalSend(header, payload);
+    if (bRet) {
+      const response = await waitOpticalAdvance({
+        desiredCmd: cmd,
+        timeout: 5000,
+      });
+      if (response.bSucceed) {
+      } else {
+        setStatus(response.message);
+        hasFailed = true;
+      }
+      if (response.obj) {
+        
+        
         ConvertObjToHook(response.obj);
       }
     }

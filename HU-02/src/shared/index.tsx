@@ -10,7 +10,7 @@ import {ReadParameterScreen} from '../screen/readParameter';
 import {SettingAndAlarmScreen} from '../screen/settingAndAlarm';
 import {WriteOpticalScreen} from '../screen/writeOptical';
 
-export const version = '1.2.0';
+export const version = '1.2.1';
 
 // export const widthScreen = Dimensions.get('screen').width;
 // export const heighScreen = Dimensions.get('screen').height;
@@ -78,7 +78,7 @@ export const screenDatas: DataScreensProps = [
     title: 'Đọc RF',
     info: `
     Đọc dữ liệu tức thời công tơ bất kỳ, dữ liệu sẽ không được lưu vào DB.
-    Chức năng Khởi tạo, Search , Reset module công tơ
+    
     `,
 
     id: 'ReadParameter',
@@ -97,8 +97,7 @@ export const screenDatas: DataScreensProps = [
   {
     title: 'Đọc cổng quang',
     info: `
-    Đọc dữ liệu tức thời công tơ bất kỳ, dữ liệu sẽ không được lưu vào DB.
-    Chức năng Khởi tạo, Search , Reset module công tơ
+    
     `,
     id: 'ReadOptical',
     icon: 'ios-book-outline',
