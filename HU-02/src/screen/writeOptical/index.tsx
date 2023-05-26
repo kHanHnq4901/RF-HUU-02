@@ -66,7 +66,7 @@ export const WriteOpticalScreen = () => {
               onChangeText={text => {
                 hookProps.data.seriModule = text;
               }}
-              defaultValue={hookProps.state.seriModule.value}
+              // defaultValue={hookProps.state.seriModule.value}
               maxLength={10}
               textAlign="right"
               containerStyle={styles.width50}
@@ -88,11 +88,33 @@ export const WriteOpticalScreen = () => {
                 //console.log('seri data:', text);
                 hookProps.data.immediateData = text;
               }}
-              defaultValue={hookProps.state.immediateData.value}
+              // defaultValue={hookProps.state.immediateData.value}
               maxLength={10}
               textAlign="right"
               containerStyle={styles.width50}
               keyboardType="numeric"
+              ref={hookProps.refImmediateData}
+            />
+          </View>
+          <View style={styles.width100}>
+            <RadioText
+              label="IP-Port:"
+              checked={hookProps.state.ipPort.checked}
+              onCheckedChange={() => {
+                hookProps.setState(state => {
+                  state.ipPort.checked = !state.ipPort.checked;
+                  return {...state};
+                });
+              }}
+              onChangeText={text => {
+                //console.log('seri data:', text);
+                hookProps.data.ipPortString = text;
+              }}
+              // defaultValue={hookProps.state.ipPort.value}
+              maxLength={30}
+              textAlign="right"
+              containerStyle={styles.width50}
+              // keyboardType='numbers-and-punctuation'
               ref={hookProps.refImmediateData}
             />
           </View>
@@ -163,6 +185,11 @@ const styles = StyleSheet.create({
   width50: {
     width: sizeScreen.width / 2 - 30,
     minWidth: 150,
+  },
+  width100: {
+    width: sizeScreen.width  - 30,
+    minWidth: 150,
+    maxWidth:250,
   },
   areaButton: {
     flexDirection: 'row',

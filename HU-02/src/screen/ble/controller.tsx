@@ -78,12 +78,12 @@ export const requestPermissionScan = async (): Promise<boolean> => {
   try {
     //let status;
 
-    const OsVer = Number(Platform.constants.Release);
+    const OsVer = Number(Platform.constants.Version);
 
     //console.log('OsVer:', JSON.stringify(Platform));
     console.log('OsVer:', OsVer);
 
-    if (OsVer < 12) {
+    if (OsVer < 31) {
       return true;
     }
 

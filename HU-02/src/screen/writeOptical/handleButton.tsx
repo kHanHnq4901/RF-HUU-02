@@ -8,12 +8,16 @@ import {
 } from '../../service/hhu/Optical/opticalFunc';
 import {
   OPTICAL_CMD,
+  OPTICAL_CMD_INFO_PROTOCOL,
   Optical_HeaderProps,
+  Optical_HostPortType,
   Optical_PasswordType,
   Optical_SeriType,
+  SIZE_HOST,
 } from '../../service/hhu/Optical/opticalProtocol';
 import {SIZE_SERIAL} from '../../service/hhu/RF/radioProtocol';
-import {isNumeric, showAlert} from '../../util';
+import {ByteArrayFromString, isNumeric, showAlert} from '../../util';
+import { sizeof } from '../../util/struct-and-array';
 import {hookProps, RadioTextProps} from './controller';
 import {Buffer} from 'buffer';
 
@@ -54,6 +58,11 @@ function clearBeforeRead() {
   }
   if (hookProps.state.immediateData.checked) {
     hookProps.refImmediateData.current?.setNativeProps({
+      text: '',
+    });
+  }
+  if (hookProps.state.ipPort.checked) {
+    hookProps.refIPPort.current?.setNativeProps({
       text: '',
     });
   }
@@ -208,6 +217,46 @@ export async function onReadOpticalPress() {
           }
         }
       }
+      if (hookProps.state.ipPort.checked) {
+        cmd = OPTICAL_CMD.OPTICAL_GET_INFO_PROTOCOL;
+        payload = Buffer.alloc(1);
+
+        payload[0] = OPTICAL_CMD_INFO_PROTOCOL.OPTION_HOST_PORT_INFO_RP;
+
+        header.u8Command = cmd;
+        header.u8Length = payload.byteLength;
+        bRet = await opticalSend(header, payload);
+        if (bRet) {
+          const response = await waitOpticalAdvance({
+            desiredCmd: cmd,
+            timeout: timeout,
+          });
+
+          if (response.bSucceed) {
+            if (response.obj) {
+              const data = response.obj as {
+                [key in FieldOpticalResponseProps]:
+                  | string
+                  | OpticalDailyProps[];
+              };
+              //console.log(data['Dữ liệu']);
+              const IpPort = data['IP-Port'];
+              hookProps.refIPPort.current?.setNativeProps({
+                text: IpPort,
+              });
+              // hookProps.setState(state => {
+              //   state.immediateData.value = strImmediateData as string;
+              //   return {...state};
+              // });
+              hookProps.data.immediateData = IpPort as string;
+            }
+          } else {
+            message += 'Lỗi: ' + response.message + '. ';
+
+            //setStatus(message);
+          }
+        }
+      }
       message += 'Đọc xong. ';
     }
   } catch (e: any) {
@@ -253,7 +302,16 @@ async function checkCondition(): Promise<boolean> {
     text = hookProps.data.immediateData.trim();
     if (isNumeric(text) === false) {
       console.log('text 3:', text);
-      await showAlert('Số không hợp lệ');
+      await showAlert('Chỉ số không hợp lệ');
+      hookProps.refImmediateData.current?.clear();
+      return false;
+    }
+  }
+  if (hookProps.state.ipPort.checked) {
+    text = hookProps.data.ipPortString.trim();
+    if (text.length <= 10 || (text.includes(':') === false)) {
+      console.log('text 3:', text);
+      await showAlert('IP Port không hợp lệ.Ex: 222.252.14.125:3033');
       hookProps.refImmediateData.current?.clear();
       return false;
     }
@@ -265,6 +323,7 @@ async function checkCondition(): Promise<boolean> {
 export async function onWriteOpticalPress() {
   let message = '';
   let bHasError = false;
+
 
   try {
     if (hookProps.state.isBusy) {
@@ -375,6 +434,44 @@ export async function onWriteOpticalPress() {
           });
           if (response.bSucceed) {
             message += 'Cài chỉ số thành công. ';
+          } else {
+            message += 'Lỗi: ' + response.message + '. ';
+            //setStatus(message);
+            bHasError = true;
+          }
+        }
+      }
+      if (hookProps.state.ipPort.checked) {
+
+        const textIpPort = hookProps.data.ipPortString.trim();
+        const arrTextIPPort = textIpPort.split(':');
+        const textIP = arrTextIPPort[0].trim();
+        const u32Port = Number(arrTextIPPort[1].trim());
+
+        cmd = OPTICAL_CMD.OPTICAL_SET_INFO_PROTOCOL;
+        payload = Buffer.alloc(1 + sizeof(Optical_HostPortType));
+        payload.fill(0);
+
+        index = 0;
+        payload[index] = OPTICAL_CMD_INFO_PROTOCOL.OPTION_HOST_PORT_INFO_RP;
+        index ++;
+
+        const byteHost = ByteArrayFromString(textIP);
+        byteHost.copy(payload, index);
+        index += SIZE_HOST;
+        payload.writeUIntLE(u32Port, index, 2);
+
+        
+        header.u8Length = payload.byteLength;
+        header.u8Command = cmd;
+        bRet = await opticalSend(header, payload);
+        if (bRet) {
+          const response = await waitOpticalAdvance({
+            desiredCmd: OPTICAL_CMD.OPTICAL_ACK,
+            timeout: timeout,
+          });
+          if (response.bSucceed) {
+            message += 'Cài IP port thành công. ';
           } else {
             message += 'Lỗi: ' + response.message + '. ';
             //setStatus(message);

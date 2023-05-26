@@ -260,4 +260,22 @@ export type Optical_TestRFProps = {
   au8Apn: Uint8Array;
   au8IMSI: Uint8Array;
 };
+export const OPTICAL_CMD_INFO_PROTOCOL = {
+  OPTION_HOST_PORT_INFO_RP : 0,
+  OPTION_USER_PASSWORD_TOPIC_RP : 1,
+}
+
+export const SIZE_HOST = 36;
+export const Optical_HostPortType = struct`
+    uint8_t au8Host[${SIZE_HOST}];
+    uint16_t u16Port;
+`;
+
+
+export type Optical_HostPortProps = {
+  au8Host : Uint8Array;
+  u16Port : uint16_t;
+};
+
+
 

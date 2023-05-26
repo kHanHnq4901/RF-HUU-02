@@ -11,12 +11,14 @@ type DataType = {
   seriMeter: string;
   seriModule: string;
   immediateData: string;
+  ipPortString: string;
 };
 
 export type HookState = {
   seriMeter: RadioTextProps;
   seriModule: RadioTextProps;
   immediateData: RadioTextProps;
+  ipPort: RadioTextProps;
   isBusy: boolean;
   status: string;
 };
@@ -27,6 +29,7 @@ export type HookProps = {
   refSeriMeter: React.RefObject<TextInput>;
   refSeriModule: React.RefObject<TextInput>;
   refImmediateData: React.RefObject<TextInput>;
+  refIPPort: React.RefObject<TextInput>;
   data: DataType;
 };
 
@@ -39,6 +42,7 @@ hookProps.data = {
   seriMeter: '',
   seriModule: '',
   immediateData: '',
+  ipPortString:'',
 };
 
 export const GetHookProps = (): HookProps => {
@@ -55,6 +59,9 @@ export const GetHookProps = (): HookProps => {
       checked: false,
       // value: '',
     },
+    ipPort: {
+      checked: false,
+    },
     isBusy: false,
     status: '',
   });
@@ -64,6 +71,7 @@ export const GetHookProps = (): HookProps => {
   hookProps.refSeriModule = React.createRef<TextInput>();
   hookProps.refSeriMeter = React.createRef<TextInput>();
   hookProps.refImmediateData = React.createRef<TextInput>();
+  hookProps.refIPPort = React.createRef<TextInput>();
 
   store = React.useContext(storeContext) as PropsStore;
   return hookProps;

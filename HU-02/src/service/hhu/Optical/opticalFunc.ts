@@ -26,9 +26,12 @@ import {
   DataManager_IlluminateRecordType,
   IdentitySensor,
   OPTICAL_CMD,
+  OPTICAL_CMD_INFO_PROTOCOL,
   OPTICAL_TYPE_GET_DATA_DAILY,
   Optical_HeaderProps,
   Optical_HeaderType,
+  Optical_HostPortProps,
+  Optical_HostPortType,
   Optical_MoreInfoProps,
   Optical_MoreInfoType,
   Optical_PasswordType,
@@ -42,6 +45,7 @@ import {
   Optical_TimeSendType,
   Rtc_CalendarProps,
   Rtc_CalendarType,
+  SIZE_HOST,
   Sensor_NvmErrorProps,
   Sensor_NvmErrorType,
 } from './opticalProtocol';
@@ -81,7 +85,8 @@ export type FieldOpticalResponseProps =
   | 'Có IP'
   | 'QCCID'
   | 'IMSI'
-  | 'APN';
+  | 'APN'
+  | 'IP-Port';
 
 export type OpticalDailyProps = {
   'Thời điểm chốt': string;
@@ -638,6 +643,33 @@ export async function waitOpticalAdvance(
             
           }
           console.log('test rf');
+          
+          break;
+        case OPTICAL_CMD.OPTICAL_GET_INFO_PROTOCOL:
+          const type = objOptical.payload[index];
+          index ++;
+          switch(type){
+            case OPTICAL_CMD_INFO_PROTOCOL.OPTION_HOST_PORT_INFO_RP:
+
+              const objProtocol: Optical_HostPortProps = Array2Struct(
+                objOptical.payload,
+                index,
+                Optical_HostPortType,
+              );
+
+              const strIP = StringFromArray(Buffer.from(objProtocol.au8Host), 0, SIZE_HOST);
+              const port = objProtocol.u16Port;
+              
+              data['IP-Port'] = strIP+':'+port;
+            break;
+          case OPTICAL_CMD_INFO_PROTOCOL.OPTION_USER_PASSWORD_TOPIC_RP:
+            console.log('now no support OPTION_USER_PASSWORD_TOPIC_RP');
+
+          break;
+
+          }
+          
+          console.log('get info protocol');
           
           break;
     }
