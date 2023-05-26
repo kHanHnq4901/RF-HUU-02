@@ -111,11 +111,12 @@ export const WriteOpticalScreen = () => {
                 hookProps.data.ipPortString = text;
               }}
               // defaultValue={hookProps.state.ipPort.value}
+              placeholder="222.252.14.147:6060"
               maxLength={30}
               textAlign="right"
               containerStyle={styles.width50}
               // keyboardType='numbers-and-punctuation'
-              ref={hookProps.refImmediateData}
+              ref={hookProps.refIPPort}
             />
           </View>
         </View>
@@ -187,9 +188,9 @@ const styles = StyleSheet.create({
     minWidth: 150,
   },
   width100: {
-    width: sizeScreen.width  - 30,
+    width: sizeScreen.width - 30,
     minWidth: 150,
-    maxWidth:250,
+    maxWidth: 250,
   },
   areaButton: {
     flexDirection: 'row',

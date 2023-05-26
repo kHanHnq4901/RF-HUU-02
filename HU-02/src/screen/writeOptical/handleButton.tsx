@@ -16,8 +16,14 @@ import {
   SIZE_HOST,
 } from '../../service/hhu/Optical/opticalProtocol';
 import {SIZE_SERIAL} from '../../service/hhu/RF/radioProtocol';
-import {ByteArrayFromString, isNumeric, showAlert} from '../../util';
-import { sizeof } from '../../util/struct-and-array';
+import {
+  ByteArrayFromHexString,
+  ByteArrayFromString,
+  ByteArrayToString,
+  isNumeric,
+  showAlert,
+} from '../../util';
+import {sizeof} from '../../util/struct-and-array';
 import {hookProps, RadioTextProps} from './controller';
 import {Buffer} from 'buffer';
 
@@ -239,8 +245,9 @@ export async function onReadOpticalPress() {
                   | string
                   | OpticalDailyProps[];
               };
-              //console.log(data['Dữ liệu']);
+
               const IpPort = data['IP-Port'];
+              console.log('IpPort:', IpPort);
               hookProps.refIPPort.current?.setNativeProps({
                 text: IpPort,
               });
@@ -248,7 +255,7 @@ export async function onReadOpticalPress() {
               //   state.immediateData.value = strImmediateData as string;
               //   return {...state};
               // });
-              hookProps.data.immediateData = IpPort as string;
+              hookProps.data.ipPortString = IpPort as string;
             }
           } else {
             message += 'Lỗi: ' + response.message + '. ';
@@ -309,7 +316,7 @@ async function checkCondition(): Promise<boolean> {
   }
   if (hookProps.state.ipPort.checked) {
     text = hookProps.data.ipPortString.trim();
-    if (text.length <= 10 || (text.includes(':') === false)) {
+    if (text.length <= 10 || text.includes(':') === false) {
       console.log('text 3:', text);
       await showAlert('IP Port không hợp lệ.Ex: 222.252.14.125:3033');
       hookProps.refImmediateData.current?.clear();
@@ -323,7 +330,6 @@ async function checkCondition(): Promise<boolean> {
 export async function onWriteOpticalPress() {
   let message = '';
   let bHasError = false;
-
 
   try {
     if (hookProps.state.isBusy) {
@@ -442,11 +448,13 @@ export async function onWriteOpticalPress() {
         }
       }
       if (hookProps.state.ipPort.checked) {
-
         const textIpPort = hookProps.data.ipPortString.trim();
         const arrTextIPPort = textIpPort.split(':');
         const textIP = arrTextIPPort[0].trim();
         const u32Port = Number(arrTextIPPort[1].trim());
+
+        console.log('textIP:', textIP);
+        console.log('u32Port:', u32Port);
 
         cmd = OPTICAL_CMD.OPTICAL_SET_INFO_PROTOCOL;
         payload = Buffer.alloc(1 + sizeof(Optical_HostPortType));
@@ -454,14 +462,18 @@ export async function onWriteOpticalPress() {
 
         index = 0;
         payload[index] = OPTICAL_CMD_INFO_PROTOCOL.OPTION_HOST_PORT_INFO_RP;
-        index ++;
+        index++;
 
         const byteHost = ByteArrayFromString(textIP);
+        console.log(
+          'textIP:',
+          ByteArrayToString(byteHost, 0, byteHost.length, 16),
+        );
         byteHost.copy(payload, index);
+        console.log('textIP:', ByteArrayToString(payload, index, 36, 16));
         index += SIZE_HOST;
         payload.writeUIntLE(u32Port, index, 2);
 
-        
         header.u8Length = payload.byteLength;
         header.u8Command = cmd;
         bRet = await opticalSend(header, payload);

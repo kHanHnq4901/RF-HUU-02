@@ -62,7 +62,7 @@ export const getCurrentTime = (): string => {
   return strDate;
 };
 
-export function ByteArrayFromString(hexString: string): Buffer {
+export function ByteArrayFromHexString(hexString: string): Buffer {
   if (hexString.length % 2 !== 0) {
     return Buffer.alloc(0);
   } /* w w w.  jav  a2 s .  c o  m*/
@@ -71,6 +71,13 @@ export function ByteArrayFromString(hexString: string): Buffer {
   for (let i = 0; i < numBytes; i++) {
     const str = hexString.substring(i * 2, i * 2 + 2);
     byteArray[i] = parseInt(str, 16);
+  }
+  return byteArray;
+}
+export function ByteArrayFromString(str: string): Buffer {
+  let byteArray = Buffer.alloc(str.length);
+  for (let i = 0; i < byteArray.byteLength; i++) {
+    byteArray[i] = str.charCodeAt(i);
   }
   return byteArray;
 }

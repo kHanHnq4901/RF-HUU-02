@@ -52,8 +52,13 @@ import {
 import {aes_128_dec, aes_128_en} from '../../../util/aes128';
 import {store} from '../../../component/drawer/drawerContent/controller';
 import {log} from 'react-native-reanimated';
-import {Get_State_Reset, Get_State_Reset_By_User, convertRtcTime2String, getStateSend} from './opticalUtil';
-import { StringFromArray } from '../../../util';
+import {
+  Get_State_Reset,
+  Get_State_Reset_By_User,
+  convertRtcTime2String,
+  getStateSend,
+} from './opticalUtil';
+import {StringFromArray} from '../../../util';
 
 const TAG = 'opticalFunc:';
 
@@ -385,8 +390,6 @@ type PropsOpticalRecAdvance = {
   //data: any;
 };
 
-
-
 export async function waitOpticalAdvance(
   props: PropsOpticalRecAdvance,
 ): Promise<PropsResponse> {
@@ -606,72 +609,88 @@ export async function waitOpticalAdvance(
           console.log('get info sensor');
         }
         break;
-        case OPTICAL_CMD.OPTICAL_GET_TIME_SEND:
-          {
-            console.log('index:', index);
-            
-            const timeSend: Optical_TimeSendProps = Array2Struct(
-              objOptical.payload,
-              index,
-              Optical_TimeSendType,
-            );
+      case OPTICAL_CMD.OPTICAL_GET_TIME_SEND:
+        {
+          console.log('index:', index);
 
-            console.log('timeSend:', timeSend);
-            
-            data['Thời gian gửi lần tiếp'] = convertRtcTime2String(timeSend.next);
-            data['Lần cuối gửi'] = convertRtcTime2String(timeSend.last);
-            data['Thời gian gửi lần tiếp'] = convertRtcTime2String(timeSend.lastSucceed);
-            data['Trạng thái gửi'] = getStateSend(timeSend.u8State);
-            console.log('get time send');
-          }
-          break;
-        case OPTICAL_CMD.OPTICAL_TEST_RF:
-          const testRF: Optical_TestRFProps = Array2Struct(
+          const timeSend: Optical_TimeSendProps = Array2Struct(
             objOptical.payload,
             index,
-            Optical_TestRFType,
+            Optical_TimeSendType,
           );
 
-          data['Test RF'] = testRF.u8Succeed ? 'Thành công' : 'Thất bại';
-          if(testRF.u8Succeed)
-          {
-            data.Rssi = testRF.s8RssiSlaveRec.toString();
-            data['Có IP'] = testRF.u8HasIP ? 'Có': 'NO_IP';
-            data.QCCID= StringFromArray(Buffer.from(testRF.au8Qccid), 0, testRF.au8Qccid.length);
-            data.IMSI= StringFromArray(Buffer.from(testRF.au8IMSI), 0, testRF.au8IMSI.length);
-            data.APN= StringFromArray(Buffer.from(testRF.au8Apn), 0, testRF.au8Apn.length);
-            
-          }
-          console.log('test rf');
-          
-          break;
-        case OPTICAL_CMD.OPTICAL_GET_INFO_PROTOCOL:
-          const type = objOptical.payload[index];
-          index ++;
-          switch(type){
-            case OPTICAL_CMD_INFO_PROTOCOL.OPTION_HOST_PORT_INFO_RP:
+          console.log('timeSend:', timeSend);
 
-              const objProtocol: Optical_HostPortProps = Array2Struct(
-                objOptical.payload,
-                index,
-                Optical_HostPortType,
-              );
+          data['Thời gian gửi lần tiếp'] = convertRtcTime2String(timeSend.next);
+          data['Lần cuối gửi'] = convertRtcTime2String(timeSend.last);
+          data['Thời gian gửi lần tiếp'] = convertRtcTime2String(
+            timeSend.lastSucceed,
+          );
+          data['Trạng thái gửi'] = getStateSend(timeSend.u8State);
+          console.log('get time send');
+        }
+        break;
+      case OPTICAL_CMD.OPTICAL_TEST_RF:
+        const testRF: Optical_TestRFProps = Array2Struct(
+          objOptical.payload,
+          index,
+          Optical_TestRFType,
+        );
 
-              const strIP = StringFromArray(Buffer.from(objProtocol.au8Host), 0, SIZE_HOST);
-              const port = objProtocol.u16Port;
-              
-              data['IP-Port'] = strIP+':'+port;
+        data['Test RF'] = testRF.u8Succeed ? 'Thành công' : 'Thất bại';
+        if (testRF.u8Succeed) {
+          data.Rssi = testRF.s8RssiSlaveRec.toString();
+          data['Có IP'] = testRF.u8HasIP ? 'Có' : 'NO_IP';
+          data.QCCID = StringFromArray(
+            Buffer.from(testRF.au8Qccid),
+            0,
+            testRF.au8Qccid.length,
+          );
+          data.IMSI = StringFromArray(
+            Buffer.from(testRF.au8IMSI),
+            0,
+            testRF.au8IMSI.length,
+          );
+          data.APN = StringFromArray(
+            Buffer.from(testRF.au8Apn),
+            0,
+            testRF.au8Apn.length,
+          );
+        }
+
+        console.log('test rf');
+
+        break;
+      case OPTICAL_CMD.OPTICAL_GET_INFO_PROTOCOL:
+        const type = objOptical.payload[index];
+        index++;
+        switch (type) {
+          case OPTICAL_CMD_INFO_PROTOCOL.OPTION_HOST_PORT_INFO_RP:
+            const objProtocol: Optical_HostPortProps = Array2Struct(
+              objOptical.payload,
+              index,
+              Optical_HostPortType,
+            );
+
+            const strIP = StringFromArray(
+              Buffer.from(objProtocol.au8Host),
+              0,
+              SIZE_HOST,
+            );
+            const port = objProtocol.u16Port;
+
+            data['IP-Port'] = strIP + ':' + port;
+            console.log('get info host port');
             break;
           case OPTICAL_CMD_INFO_PROTOCOL.OPTION_USER_PASSWORD_TOPIC_RP:
             console.log('now no support OPTION_USER_PASSWORD_TOPIC_RP');
 
-          break;
+            break;
+        }
 
-          }
-          
-          console.log('get info protocol');
-          
-          break;
+        console.log('get info protocol');
+
+        break;
     }
 
     if (objOptical.header.u8FSN === 0xff) {

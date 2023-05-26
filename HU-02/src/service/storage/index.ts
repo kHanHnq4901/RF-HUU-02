@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import {PATH_EXECUTE_CSDL, PATH_EXPORT_XML} from '../../shared/path';
 import {aes_128_dec, aes_128_en} from '../../util/aes128';
-import {ByteArrayFromString, ByteArrayToString} from '../../util/index';
+import {ByteArrayFromHexString, ByteArrayToString} from '../../util/index';
 import {PropsKeyAesStore, getDefaultKeyAesStore} from '../../store';
 import {Buffer} from 'buffer';
 
@@ -71,8 +71,8 @@ export function convertKeyStorageToKeyStore(
       1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6,
     ]);
 
-    const keyOptical = ByteArrayFromString(keyStorage.keyOptical);
-    const keyRadio = ByteArrayFromString(keyStorage.keyRadio);
+    const keyOptical = ByteArrayFromHexString(keyStorage.keyOptical);
+    const keyRadio = ByteArrayFromHexString(keyStorage.keyRadio);
 
     aes_128_dec(key, keyOptical, 0);
     aes_128_dec(key, keyRadio, 0);
