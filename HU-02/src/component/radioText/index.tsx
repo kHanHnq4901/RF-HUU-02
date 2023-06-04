@@ -7,7 +7,7 @@ import {
   ViewStyle,
   StyleProp,
 } from 'react-native';
-import {Colors, normalize} from '../../theme';
+import {Colors, normalize, scale} from '../../theme';
 import {CheckboxButton} from '../checkbox/checkbox';
 
 type Props = {
@@ -63,5 +63,6 @@ const styles = StyleSheet.create({
     elevation: 1,
     backgroundColor: 'white',
     color: Colors.text,
+    height:40 * scale,
   },
 });

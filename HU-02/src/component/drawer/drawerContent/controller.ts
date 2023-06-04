@@ -16,7 +16,7 @@ import {
 } from '../../../database/service/declareMeterService';
 import {StackRootList} from '../../../navigation/model/model';
 import {bleManagerEmitter} from '../../../screen/ble/controller';
-import {ListenEventSucceedError} from '../../../service/event';
+import {ListenEventSucceedError, emitEventSuccess} from '../../../service/event';
 import {UPDATE_FW_HHU} from '../../../service/event/constant';
 import {
   connectLatestBLE,
@@ -83,6 +83,9 @@ function checkTokenValidInterval() {
 
 export const onInit = async navigation => {
   let appSetting = await updateValueAppSettingFromNvm();
+  // console.log('appSetting:', appSetting);
+  // console.log('appSetting.keyAes:', appSetting.keyAes);
+  
   const keyAesStore = convertKeyStorageToKeyStore(appSetting.keyAes);
 
   // console.log(
@@ -212,6 +215,8 @@ export const onInit = async navigation => {
     ]);
   });
   ListenEventSucceedError();
+
+  // emitEventSuccess();
 };
 
 export const onDeInit = async () => {

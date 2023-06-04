@@ -6,7 +6,8 @@ import {ButtonList} from '../../component/buttonList';
 import FormButton from '../../component/formButton';
 import {ModalTextInput} from '../../component/modalTextInput';
 import {Colors} from '../../theme';
-import {hook, UpdateHook} from './controller';
+import {hook, store, UpdateHook} from './controller';
+import { IconFaceID } from '../../component/faceID/index';
 import {
   onbtnAllowSigninByFingerPress,
   onClearFingerPress,
@@ -28,16 +29,35 @@ export function SettingUserScreen() {
         textAlign="center"
         show={hook.state.showModalEnterPass}
       />
-      <ButtonList
-        label="Cho phép đăng nhập bằng vân tay"
-        icon="fingerprint"
-        onPress={onbtnAllowSigninByFingerPress}
-      />
-      <ButtonList
-        label="Xóa vân tay đăng nhập"
-        icon="fingerprint-off"
-        onPress={onClearFingerPress}
-      />
+      {store.state.typeTouchID === 'FaceID' ? (
+        <>
+          <ButtonList
+            label="Cho phép đăng nhập bằng Face ID"
+            icon="fingerprint"
+            leftChildren={<IconFaceID size={30} color={Colors.secondary} />}
+            onPress={onbtnAllowSigninByFingerPress}
+          />
+          <ButtonList
+            label="Xóa đăng nhập bằng Face ID"
+            icon="fingerprint-off"
+            leftChildren={<IconFaceID size={30} color={Colors.secondary} />}
+            onPress={onClearFingerPress}
+          />
+        </>
+      ) : (
+        <>
+          <ButtonList
+            label="Cho phép đăng nhập bằng vân tay"
+            icon="fingerprint"
+            onPress={onbtnAllowSigninByFingerPress}
+          />
+          <ButtonList
+            label="Xóa đăng nhập bằng vân tay"
+            icon="fingerprint-off"
+            onPress={onClearFingerPress}
+          />
+        </>
+      )}
     </View>
   );
 }

@@ -2,10 +2,12 @@ import React from 'react';
 import {useNavigation} from '@react-navigation/native';
 import type {StackNavigationProp} from '@react-navigation/stack';
 import {getUserStorage} from '../../service/storage/user';
-import {PropsStore, storeContext} from '../../store';
+import {PropsStore, TYPE_TOUCH_ID, storeContext} from '../../store';
 import {StackRootList} from '../../navigation/model/model';
 import {updateValueAppSettingFromNvm} from '../../service/storage';
 import {onFingerPress} from './handle';
+import TouchID from 'react-native-touch-id';
+import { showToast } from '../../util';
 
 type PropsState = {
   password: string;
@@ -46,24 +48,51 @@ export async function onInit() {
 
     const user = await getUserStorage();
 
+    let typeTouchID: TYPE_TOUCH_ID = 'TouchID';
+  try {
+    let isSupport = await TouchID.isSupported();
+    if (isSupport === 'FaceID') {
+      typeTouchID = 'FaceID';
+    } else if (isSupport === 'TouchID') {
+      typeTouchID = 'TouchID';
+    }
+  } catch (e) {
+    typeTouchID = 'NoSupport';
+  } finally {
+    
+  }
+
     store.setState(state => {
       state.appSetting = appSetting;
       state.userInfo.USER_ACCOUNT = user.userAccount;
       state.userInfo.USER_TEL = user.userAccount;
+      state.typeTouchID = typeTouchID;
       return {...state};
     });
+
+    if (
+      appSetting.server.host.trim().length === 0 ||
+      appSetting.server.port.trim().length === 0
+    ) {
+      showToast('Cấu hình địa chỉ IP');
+      navigation.navigate('Setting');
+      return;
+    }else{
+      if (firstTime && typeTouchID === 'TouchID') {
+        firstTime = false;
+        console.log('here');
+        onFingerPress(false);
+      }
+    }
+
   });
+
+  
 
   navigation.addListener('beforeRemove', e => {
     //console.log('e:', e);
     e.preventDefault();
   });
-
-  if(firstTime)
-  {
-    onFingerPress(false);
-    firstTime = false;
-  }
   
 }
 

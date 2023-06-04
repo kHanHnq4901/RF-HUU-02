@@ -4,6 +4,7 @@ import {PropsStore, storeContext} from '../../store';
 type PropsHookState = {
   chanelRF: string;
   chanelRFRadio: string[];
+  selectedSerVer: PropsSelectServer | null;
 };
 
 type PropsHook = {
@@ -14,6 +15,10 @@ type PropsHook = {
 type PropsTypeAlarmRegister = 'Giá trị (kWh)' | 'Phần trăm (%)';
 
 type PropsValueAlarmRegister = 'Percent' | 'Value';
+
+type PropsSelectServer = 'EMIC' | 'Sawaco';
+
+export const listSelectServer : PropsSelectServer[] = ['EMIC', 'Sawaco'];
 
 export const typeAlarmRegister: {
   title: PropsTypeAlarmRegister;
@@ -44,6 +49,7 @@ function getInitialState(): PropsHookState {
     initialState.chanelRFRadio.push(initChanel.toString() + 'kHz');
     initChanel += 150;
   }
+  initialState.selectedSerVer = null;
 
   return initialState;
 }

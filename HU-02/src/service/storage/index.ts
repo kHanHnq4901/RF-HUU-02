@@ -93,8 +93,8 @@ export const getDefaultStorageValue = (): PropsAppSetting => {
   storageVariable.CMISPath = '';
   storageVariable.numRetriesRead = '1';
   storageVariable.server = {
-    host: 'api.emic.com.vn',
-    port: '80',
+    host: '',//'api.emic.com.vn',
+    port: '',//'80',
   };
   storageVariable.userAdmin =
     '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918';
@@ -141,7 +141,9 @@ export const updateValueAppSettingFromNvm =
           port: storageVar.hhu.port,
         };
 
-        //console.log('storageVariable:', storageVar);
+        storageVariable.keyAes = storageVar.keyAes;
+
+        
         for (let i in storageVariable) {
           if (storageVariable[i] === undefined || storageVariable[i] === null) {
             storageVariable = getDefaultStorageValue();

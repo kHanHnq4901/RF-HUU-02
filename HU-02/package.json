@@ -4,11 +4,33 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android --active-arch-only",
-    "ios": "react-native run-ios",
+    "ios": "react-native run-ios --simulator=\"iPhone 13 Pro\"",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "postinstall": "react-native setup-ios-permissions && pod-install"
   },
+  "reactNativePermissionsIOS": [
+    "AppTrackingTransparency",
+    "BluetoothPeripheral",
+    "Calendars",
+    "Camera",
+    "Contacts",
+    "FaceID",
+    "LocationAccuracy",
+    "LocationAlways",
+    "LocationWhenInUse",
+    "MediaLibrary",
+    "Microphone",
+    "Motion",
+    "Notifications",
+    "PhotoLibrary",
+    "PhotoLibraryAddOnly",
+    "Reminders",
+    "Siri",
+    "SpeechRecognition",
+    "StoreKit"
+  ],
   "dependencies": {
     "@react-native-community/art": "^1.2.0",
     "@react-native-community/async-storage": "^1.12.1",
@@ -25,6 +47,8 @@
     "double-click-react-native": "^0.1.8",
     "lodash": "^4.17.21",
     "lodash.throttle": "^4.1.1",
+    "patch-package": "^6.4.7",
+    "postinstall-postinstall": "^2.1.0",
     "react": "17.0.2",
     "react-native": "0.68.1",
     "react-native-ble-manager": "^8.0.2",
@@ -37,7 +61,7 @@
     "react-native-keychain": "^8.1.1",
     "react-native-location-enabler": "^4.1.1",
     "react-native-paper": "^4.12.1",
-    "react-native-permissions": "^3.3.1",
+    "react-native-permissions": "^3.8.0",
     "react-native-progress": "^5.0.0",
     "react-native-reanimated": "^2.8.0",
     "react-native-receive-sharing-intent": "^2.0.0",
@@ -58,8 +82,7 @@
     "react-native-webview": "^11.23.1",
     "react-native-xml2js": "^1.0.3",
     "victory-native": "^36.5.0",
-    "patch-package": "^6.4.7",
-    "postinstall-postinstall": "^2.1.0"
+    "pod-install": "0.1.38"
   },
   "devDependencies": {
     "@babel/core": "^7.17.9",
@@ -68,7 +91,7 @@
     "@types/color": "^3.0.3",
     "@types/jest": "^27.4.1",
     "@types/lodash.throttle": "^4.1.7",
-    "@types/react": "17.0.43",
+    "@types/react": "^18.0.24",
     "@types/react-native": "0.67.6",
     "@types/react-native-keep-awake": "^2.0.3",
     "@types/react-native-sqlite-storage": "^5.0.2",

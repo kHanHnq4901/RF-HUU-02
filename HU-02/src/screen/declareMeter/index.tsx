@@ -43,6 +43,7 @@ export const DeclareMeterScreen = () => {
         <View style={styles.dropdown}>
           <Text style={styles.label}>Chọn trạm</Text>
           <SelectDropdown
+          ref={hookProps.refStation}
             defaultButtonText=" "
             data={lisStationName}
             onSelect={selectedItem => {
@@ -172,24 +173,6 @@ export const DeclareMeterScreen = () => {
           }}
           ref={hookProps.refCustomerCode}
           onSubmitEditing={() => {
-            hookProps.refAddress.current?.focus();
-          }}
-          blurOnSubmit={false}
-        />
-        <NormalTextInput
-          label="Địa chỉ:"
-          // onEndEditing={e => {
-          //   e.persist();
-          //   hookProps.setState(state => {
-          //     state.infoDeclare.address = e.nativeEvent?.text.trim();
-          //     return {...state};
-          //   });
-          // }}
-          onChangeText={text => {
-            hookProps.data.infoDeclare.address = text;
-          }}
-          ref={hookProps.refAddress}
-          onSubmitEditing={() => {
             hookProps.refPhoneNUmber.current?.focus();
           }}
           blurOnSubmit={false}
@@ -209,11 +192,30 @@ export const DeclareMeterScreen = () => {
             hookProps.data.infoDeclare.phoneNumber = text;
           }}
           ref={hookProps.refPhoneNUmber}
+          onSubmitEditing={() => {
+            hookProps.refAddress.current?.focus();
+          }}
+          blurOnSubmit={false}
+        />
+        <NormalTextInput
+          label="Địa chỉ:"
+          // onEndEditing={e => {
+          //   e.persist();
+          //   hookProps.setState(state => {
+          //     state.infoDeclare.address = e.nativeEvent?.text.trim();
+          //     return {...state};
+          //   });
+          // }}
+          onChangeText={text => {
+            hookProps.data.infoDeclare.address = text;
+          }}
+          ref={hookProps.refAddress}
           // onSubmitEditing={() => {
-          //   hookProps.refCustomerName.current?.focus();
+          //   hookProps.refPhoneNUmber.current?.focus();
           // }}
           blurOnSubmit={true}
         />
+        
       </ScrollView>
 
       <Button

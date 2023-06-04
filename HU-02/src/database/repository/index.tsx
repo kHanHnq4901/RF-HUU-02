@@ -45,7 +45,7 @@ export const checkTabelDBIfExist = async (): Promise<boolean> => {
     //console.log('qury:', query);
 
     const res = await db?.executeSql(query);
-    console.log('create table if exist');
+    console.log('create table if not exist:' + JSON.stringify(res));
   } catch (e) {
     console.log(TAG, 'err tabel exist: ', e.message);
   }

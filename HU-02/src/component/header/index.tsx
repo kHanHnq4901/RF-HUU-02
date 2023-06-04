@@ -94,7 +94,7 @@ export function Header(props: DrawerHeaderProps) {
             />
           )}
         </TouchableOpacity>
-        <View style={styles.borderIcon}>
+        {/* <View style={styles.borderIcon}>
           <MaterialCommunityIcons
             name="information-outline"
             onPress={() => {
@@ -106,7 +106,7 @@ export function Header(props: DrawerHeaderProps) {
             size={sizeIcon}
             color="#5fe321"
           />
-        </View>
+        </View> */}
 
         {/* <ModalListBle />
       <ModalListUsb />
@@ -114,7 +114,7 @@ export function Header(props: DrawerHeaderProps) {
       </Appbar.Header>
       {/* <Divider /> */}
 
-      <ModalInfo title="Thông tin" info={infoHeader.info} />
+      {/* <ModalInfo title="Thông tin" info={infoHeader.info} /> */}
     </>
   );
 }

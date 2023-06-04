@@ -4,9 +4,9 @@ import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
 import {NavigationContainer} from '@react-navigation/native';
 import {RootNavigator} from './navigation/RootNavigator';
 import {Provider as PaperProvider, DefaultTheme} from 'react-native-paper';
-import {StatusBar, Text} from 'react-native';
+import {Platform, StatusBar, Text} from 'react-native';
 import {LogBox} from 'react-native';
-import Theme from './theme';
+import Theme, { Colors } from './theme';
 import {StoreProvider} from './store';
 LogBox.ignoreLogs([
   'Animated: `useNativeDriver`',
@@ -32,8 +32,8 @@ export default function App() {
           <NavigationContainer>
             <SafeAreaView style={{flex: 1}}>
               <StatusBar
-                backgroundColor={Theme.Colors.primary}
-                barStyle="light-content"
+                backgroundColor={Colors.primary}
+                barStyle={Platform.OS === 'android' ?"light-content" : 'dark-content'}
               />
               <RootNavigator />
             </SafeAreaView>

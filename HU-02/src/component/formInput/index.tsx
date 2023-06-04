@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {ReactNode} from 'react';
 import {View, TextInput, StyleSheet, TextInputProps} from 'react-native';
 
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -6,6 +6,7 @@ import {normalize, sizeScreen} from '../../theme/index';
 
 type Props = {
   iconType: string;
+  rightChildren?: ReactNode;
 } & TextInputProps;
 
 export function FormInput(props: Props) {
@@ -22,6 +23,9 @@ export function FormInput(props: Props) {
         {...props}
         caretHidden={false}
       />
+      {props.rightChildren && (
+        <View style={styles.iconStyle}>{props.rightChildren}</View>
+      )}
     </View>
   );
 }

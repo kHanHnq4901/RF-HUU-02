@@ -4,8 +4,10 @@ import {PropsStore, storeContext} from '../../store';
 import BleManager from '../../util/BleManager';
 import {check, PERMISSIONS, request, RESULTS} from 'react-native-permissions';
 import {onScanPress} from './handleButton';
-import LocationEnabler from 'react-native-location-enabler';
+
 import * as permission from 'react-native-permissions';
+import { requestPermissionGPSAndroid, requestPermissionGPSIos, requestPermissionScan, requestPermissionBleConnectAndroid } from '../../service/permission';
+var LocationEnabler = (Platform.OS === 'android') ? require('react-native-location-enabler') : null;
 
 export type PropsItemBle = {
   isConnectable?: boolean;
@@ -33,6 +35,10 @@ export type HookProps = {
 
 const TAG = 'Ble Controller: ';
 
+const BleManagerModule = NativeModules.BleManager;
+// console.log(TAG, 'BleManagerModule:', BleManagerModule ? 'not null' : 'null');
+export const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
+
 export const hookProps = {} as HookProps;
 
 export let store = {} as PropsStore;
@@ -40,7 +46,10 @@ export let store = {} as PropsStore;
 const {
   PRIORITIES: {HIGH_ACCURACY},
   useLocationSettings,
-} = LocationEnabler;
+} = (Platform.OS === 'android') ? LocationEnabler.default : {
+  PRIORITIES: {HIGH_ACCURACY: null},
+  useLocationSettings: null,
+};
 
 let enableLocationHook = {} as {
   enabled: any;
@@ -49,17 +58,17 @@ let enableLocationHook = {} as {
 
 export const requestGps = async (): Promise<boolean> => {
   try {
-    if (Platform.OS === 'ios') {
-      return true;
-    }
+
     const value = await turnOnLocation();
     if (value === true) {
-      // console.log('value:', value);
-      // console.log('enable:', enableLocationHook);
-      if (enableLocationHook.enabled !== true) {
-        enableLocationHook.requestResolution();
-        return true;
-      } else {
+
+      if(Platform.OS === 'android')
+      {
+        if (enableLocationHook.enabled !== true) {
+          enableLocationHook.requestResolution();
+          return true;
+        } else {
+        }
       }
 
       return true;
@@ -74,73 +83,7 @@ export const requestGps = async (): Promise<boolean> => {
   return false;
 };
 
-export const requestPermissionScan = async (): Promise<boolean> => {
-  try {
-    //let status;
 
-    const OsVer = Number(Platform.constants.Version);
-
-    //console.log('OsVer:', JSON.stringify(Platform));
-    console.log('OsVer:', OsVer);
-
-    if (OsVer < 31) {
-      return true;
-    }
-
-    let result = await permission.check(
-      permission.PERMISSIONS.ANDROID.BLUETOOTH_SCAN,
-    );
-    switch (result) {
-      case permission.RESULTS.UNAVAILABLE:
-        console.log(
-          TAG,
-          'BLUETOOTH_SCAN',
-          'This feature is not available (on this device / in this context)',
-        );
-        break;
-      case permission.RESULTS.DENIED:
-        console.log(
-          TAG,
-          'BLUETOOTH_SCAN',
-          'The permission has not been requested / is denied but requestable',
-        );
-        let status = await permission.request(
-          permission.PERMISSIONS.ANDROID.BLUETOOTH_SCAN,
-        );
-        if (
-          status === permission.RESULTS.GRANTED ||
-          status === permission.RESULTS.BLOCKED
-        ) {
-          console.log(TAG, 'BLUETOOTH_SCAN', 'The permission is granted');
-          return true;
-        } else {
-          return false;
-        }
-
-      case permission.RESULTS.LIMITED:
-        console.log(
-          TAG,
-          'BLUETOOTH_SCAN',
-          'The permission is limited: some actions are possible',
-        );
-        break;
-      case permission.RESULTS.GRANTED:
-        console.log(TAG, 'BLUETOOTH_SCAN', 'The permission is granted');
-        return true;
-      case permission.RESULTS.BLOCKED:
-        console.log(
-          TAG,
-          'BLUETOOTH_SCAN',
-          'The permission is denied and not requestable anymore',
-        );
-        return true;
-    }
-    return false;
-  } catch (err) {
-    console.log(TAG, 'BLUETOOTH_SCAN', err.message);
-    return false;
-  }
-};
 
 export const GetHookProps = (): HookProps => {
   const [state, setState] = useState<HookState>({
@@ -156,23 +99,25 @@ export const GetHookProps = (): HookProps => {
 
   store = useContext(storeContext) as PropsStore;
 
-  const [enabled, requestResolution] = useLocationSettings(
-    {
-      priority: HIGH_ACCURACY, // default BALANCED_POWER_ACCURACY
-      alwaysShow: true, // default false
-      needBle: true, // default false
-    },
-    false /* optional: default undefined */,
-  );
+  if(Platform.OS === 'android')
+  {
+    const [enabled, requestResolution] = useLocationSettings(
+      {
+        priority: HIGH_ACCURACY, // default BALANCED_POWER_ACCURACY
+        alwaysShow: true, // default false
+        needBle: true, // default false
+      },
+      false /* optional: default undefined */,
+    );
+  
+    enableLocationHook.enabled = enabled;
+    enableLocationHook.requestResolution = requestResolution;
 
-  enableLocationHook.enabled = enabled;
-  enableLocationHook.requestResolution = requestResolution;
-
+  }
   return hookProps;
 };
 
-const BleManagerModule = NativeModules.BleManager;
-export const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
+
 
 const handleStopScan = () => {
   hookProps.setState(state => {
@@ -222,6 +167,7 @@ let listenerStopScan;
 let listenerDiscover;
 
 export const onInit = async navigation => {
+
   try {
     let requestScanPermission = await requestPermissionScan();
     let requestPermissionGps = await requestGps();
@@ -280,133 +226,24 @@ type PropsListBondBle = {
   rssi: 0;
 };
 export const turnOnLocation = async (requestBle?: boolean): Promise<boolean> => {
-  let result: string = '';
 
   let ok: boolean = false;
 
-  if(requestBle === false){
+  let result : permission.PermissionStatus = 'denied';
 
+  if(Platform.OS === 'ios')
+  {
+  
+    return await requestPermissionGPSIos();
 
-  }
+  }else{
 
-  const OsVer = Number(Platform.constants.Version);
+    if(requestBle !== false)
+    {     
+      ok = await requestPermissionBleConnectAndroid();
 
-  //console.log('OsVer:', JSON.stringify(Platform));
-  console.log('OsVer:', OsVer);
-
-  if (OsVer >= 31) {
-    //if (true) {
-    result = await check(PERMISSIONS.ANDROID.BLUETOOTH_CONNECT);
-
-    switch (result) {
-      case RESULTS.UNAVAILABLE:
-        console.log(
-          'This feature BLUETOOTH_CONNECT is not available (on this device / in this context)',
-        );
-        break;
-      case RESULTS.DENIED:
-        console.log(
-          'The permission BLUETOOTH_CONNECT has not been requested / is denied but requestable',
-        );
-        break;
-      case RESULTS.LIMITED:
-        // console.log('The permission is limited: some actions are possible');
-        ok = true;
-        break;
-      case RESULTS.GRANTED:
-        // console.log('The permission is granted');
-        ok = true;
-        break;
-      case RESULTS.BLOCKED:
-        // console.log('The permission is denied and not requestable anymore');
-        ok = true;
-        break;
     }
-    result = await request(PERMISSIONS.ANDROID.BLUETOOTH_CONNECT);
-    ok = false;
-    switch (result) {
-      case RESULTS.UNAVAILABLE:
-        console.log(
-          'This feature BLUETOOTH_CONNECT is not available (on this device / in this context)',
-        );
-        break;
-      case RESULTS.DENIED:
-        console.log(
-          'The permission BLUETOOTH_CONNECT has not been requested / is denied but requestable',
-        );
-        break;
-      case RESULTS.LIMITED:
-        // console.log('The permission is limited: some actions are possible');
-        ok = true;
-        break;
-      case RESULTS.GRANTED:
-        // console.log('The permission is granted');
-        ok = true;
-        break;
-      case RESULTS.BLOCKED:
-        // console.log('The permission is denied and not requestable anymore');
-        ok = true;
-        break;
-    }
+    ok =  await requestPermissionGPSAndroid();
+    return ok;
   }
-
-  result = await check(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
-  ok = false;
-  switch (result) {
-    case RESULTS.UNAVAILABLE:
-      console.log(
-        'This feature ACCESS_FINE_LOCATION is not available (on this device / in this context)',
-      );
-      break;
-    case RESULTS.DENIED:
-      console.log(
-        'The permission ACCESS_FINE_LOCATION has not been requested / is denied but requestable',
-      );
-      break;
-    case RESULTS.LIMITED:
-      // console.log('The permission is limited: some actions are possible');
-      ok = true;
-      break;
-    case RESULTS.GRANTED:
-      // console.log('The permission is granted');
-      ok = true;
-      break;
-    case RESULTS.BLOCKED:
-      // console.log('The permission is denied and not requestable anymore');
-      ok = true;
-      break;
-  }
-
-  if (ok === false) {
-    result = await request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
-
-    switch (result) {
-      case RESULTS.UNAVAILABLE:
-        console.log(
-          'This feature ACCESS_FINE_LOCATION is not available (on this device / in this context)',
-        );
-        break;
-      case RESULTS.DENIED:
-        console.log(
-          'The permission ACCESS_FINE_LOCATION has not been requested / is denied but requestable',
-        );
-        break;
-      case RESULTS.LIMITED:
-        console.log(
-          'The permission ACCESS_FINE_LOCATION is limited: some actions are possible',
-        );
-        ok = true;
-        break;
-      case RESULTS.GRANTED:
-        console.log('The permission ACCESS_FINE_LOCATION is granted');
-        ok = true;
-        break;
-      case RESULTS.BLOCKED:
-        console.log('The permission is denied and not requestable anymore');
-        ok = true;
-        break;
-    }
-  }
-  //console.log('ok:', ok);
-  return ok;
 };

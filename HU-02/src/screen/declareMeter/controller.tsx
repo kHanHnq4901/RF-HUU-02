@@ -1,9 +1,9 @@
 import React, {useState} from 'react';
 import {PropsStore, storeContext} from '../../store';
 import Geolocation from '@react-native-community/geolocation';
-import LocationEnabler from 'react-native-location-enabler';
+
 import {turnOnLocation} from '../ble/controller';
-import {ScrollView, TextInput} from 'react-native';
+import {Platform, ScrollView, TextInput} from 'react-native';
 import {TYPE_MODEL_METER} from '../../service/hhu/defineWM';
 import {
   GetListLine,
@@ -12,6 +12,8 @@ import {
   PropsReturnGetModelMeter,
 } from '../../service/api/index';
 import {flowRight} from 'lodash';
+import SelectDropdown from 'react-native-select-dropdown';
+var LocationEnabler = Platform.OS === 'android' ? require('react-native-location-enabler') : null;
 
 type InfoDeclareType = {
   seriMeter: string;
@@ -48,6 +50,7 @@ export type HookProps = {
   refCustomerCode: React.RefObject<TextInput>;
   refAddress: React.RefObject<TextInput>;
   refScroll: React.RefObject<ScrollView>;
+  refStation: React.RefObject<SelectDropdown>;
   state: HookState;
   setState: React.Dispatch<React.SetStateAction<HookState>>;
   data: DataType;
@@ -76,7 +79,10 @@ export let listModelMeterName: string[] = [];
 const {
   PRIORITIES: {HIGH_ACCURACY},
   useLocationSettings,
-} = LocationEnabler;
+} = Platform.OS === 'android' ? LocationEnabler.default : {
+  PRIORITIES: {HIGH_ACCURACY: null},
+  useLocationSettings: null,
+};
 
 let enableLocationHook = {} as {
   enabled: any;
@@ -92,16 +98,20 @@ export function setStatus(str: string) {
 
 export const requestGps = async (): Promise<boolean> => {
   try {
-    const value = await turnOnLocation();
+    const value = await turnOnLocation(false);
     if (value === true) {
       // console.log('value:', value);
       // console.log('enable:', enabled);
-      if (enableLocationHook.enabled !== true) {
-        enableLocationHook.requestResolution();
-        return true;
-      } else {
-      }
 
+      if(Platform.OS === 'android')
+      {
+        if (enableLocationHook.enabled !== true) {
+          enableLocationHook.requestResolution();
+          return true;
+        } else {
+        }
+      }
+      
       return true;
     }
     if (value === false) {
@@ -133,24 +143,28 @@ export const GetHookProps = (): HookProps => {
   hookProps.setState = setState;
   store = React.useContext(storeContext) as PropsStore;
 
-  const [enabled, requestResolution] = useLocationSettings(
-    {
-      priority: HIGH_ACCURACY, // default BALANCED_POWER_ACCURACY
-      alwaysShow: true, // default false
-      needBle: true, // default false
-    },
-    false /* optional: default undefined */,
-  );
+  if(Platform.OS === 'android')
+  {
+    const [enabled, requestResolution] = useLocationSettings(
+      {
+        priority: HIGH_ACCURACY, // default BALANCED_POWER_ACCURACY
+        alwaysShow: true, // default false
+        needBle: true, // default false
+      },
+      false /* optional: default undefined */,
+    );
+    enableLocationHook.enabled = enabled;
+    enableLocationHook.requestResolution = requestResolution;
 
-  enableLocationHook.enabled = enabled;
-  enableLocationHook.requestResolution = requestResolution;
-
+  }
   hookProps.refSeriMeter = React.createRef<TextInput>();
   hookProps.refPhoneNUmber = React.createRef<TextInput>();
   hookProps.refCustomerName = React.createRef<TextInput>();
   hookProps.refCustomerCode = React.createRef<TextInput>();
   hookProps.refAddress = React.createRef<TextInput>();
   hookProps.refScroll = React.createRef<ScrollView>();
+  hookProps.refStation = React.createRef<SelectDropdown>();
+  
 
   return hookProps;
 };
@@ -176,6 +190,7 @@ export const onInit = async () => {
       return {...state};
     });
     if (ListStationObj.length === 0) {
+      hookProps.refStation.current?.reset();
       let response = await GetListLine();
       if (response.bSucceeded) {
         ListStationObj = response.obj;
@@ -196,7 +211,7 @@ export const onInit = async () => {
         ListModelMeterObj = response.obj;
         listModelMeterName = [];
         for (let obj of ListModelMeterObj) {
-          listModelMeterName.push(obj.METER_MODEL_DESC);
+          listModelMeterName.push(obj.METER_MODEL_DESC.slice(4));
         }
         console.log('update list model meter succeed');
         //console.log('lisStationName:', lisStationName);

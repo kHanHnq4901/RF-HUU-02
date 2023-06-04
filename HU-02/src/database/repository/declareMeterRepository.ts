@@ -47,7 +47,7 @@ export const checkTabelDeclareMeterIfExist = async (): Promise<boolean> => {
     //console.log('qury:', query);
 
     const res = await db?.executeSql(query);
-    console.log('create table if exist');
+    console.log('create table if not exist');
   } catch (e) {
     console.log(TAG, 'err tabel exist: ', e.message);
   }

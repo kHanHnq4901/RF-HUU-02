@@ -19,6 +19,12 @@ target 'HU' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
+  # react-native-permissions permission handlers
+  # permissions_path = '../node_modules/react-native-permissions/ios'
+
+  # pod 'Permission-BluetoothPeripheral', :path => "#{permissions_path}/BluetoothPeripheral/Permission-BluetoothPeripheral.podspec"
+  # pod 'Permission-LocationWhenInUse', :path => "#{permissions_path}/LocationWhenInUse/Permission-LocationWhenInUse.podspec"
+
   target 'HUTests' do
     inherit! :complete
     # Pods for testing

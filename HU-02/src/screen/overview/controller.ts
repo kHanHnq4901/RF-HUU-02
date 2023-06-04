@@ -106,90 +106,90 @@ export const onInit = async navigation => {
     e.preventDefault();
   });
 
-  navigation.addListener('focus', async () => {
-    console.log('Get Percentage Read');
+  // navigation.addListener('focus', async () => {
+  //   console.log('Get Percentage Read');
 
-    const dataDB = await CMISKHServices.findAll();
-    console.log('length dataDB:', dataDB?.length);
+  //   const dataDB = await CMISKHServices.findAll();
+  //   console.log('length dataDB:', dataDB?.length);
 
-    //const result = await CMISKHServices.getPercentRead();
-    //console.log('resultcc:', result);
+  //   //const result = await CMISKHServices.getPercentRead();
+  //   //console.log('resultcc:', result);
 
-    const result: PropsPercentRead = {
-      readFailed: 0,
-      writeByHand: 0,
-      abnormalRead: 0,
-      readSucceed: 0,
-      haveNotRead: 0,
-    };
+  //   const result: PropsPercentRead = {
+  //     readFailed: 0,
+  //     writeByHand: 0,
+  //     abnormalRead: 0,
+  //     readSucceed: 0,
+  //     haveNotRead: 0,
+  //   };
 
-    dataDB.forEach(item => {
-      if (item.TYPE_READ === TYPE_READ_RF.READ_SUCCEED) {
-        result.readSucceed++;
-      } else if (item.TYPE_READ === TYPE_READ_RF.READ_FAILED) {
-        result.readFailed++;
-      } else if (item.TYPE_READ === TYPE_READ_RF.ABNORMAL_CAPACITY) {
-        result.abnormalRead++;
-      } else if (item.TYPE_READ === TYPE_READ_RF.WRITE_BY_HAND) {
-        result.writeByHand++;
-      } else {
-        result.haveNotRead++;
-      }
-    });
+  //   dataDB.forEach(item => {
+  //     if (item.TYPE_READ === TYPE_READ_RF.READ_SUCCEED) {
+  //       result.readSucceed++;
+  //     } else if (item.TYPE_READ === TYPE_READ_RF.READ_FAILED) {
+  //       result.readFailed++;
+  //     } else if (item.TYPE_READ === TYPE_READ_RF.ABNORMAL_CAPACITY) {
+  //       result.abnormalRead++;
+  //     } else if (item.TYPE_READ === TYPE_READ_RF.WRITE_BY_HAND) {
+  //       result.writeByHand++;
+  //     } else {
+  //       result.haveNotRead++;
+  //     }
+  //   });
 
-    hookProps.setState(state => {
-      // 'Lỗi ',0
-      // 'Ghi tay ',1
-      // 'Bất thường',2
-      // 'Thành công',3
-      // 'Chưa đọc',4
-      // 'Tổng',
+  //   hookProps.setState(state => {
+  //     // 'Lỗi ',0
+  //     // 'Ghi tay ',1
+  //     // 'Bất thường',2
+  //     // 'Thành công',3
+  //     // 'Chưa đọc',4
+  //     // 'Tổng',
 
-      let total = 0;
-      let percent: string[] = [];
+  //     let total = 0;
+  //     let percent: string[] = [];
 
-      state.percent = [];
-      for (let item in result) {
-        total += result[item];
-      }
+  //     state.percent = [];
+  //     for (let item in result) {
+  //       total += result[item];
+  //     }
 
-      for (let item in result) {
-        if (total === 0) {
-          percent.push(' %');
-          state.percent.push(0);
-        } else {
-          const per = (result[item] / total) * 100;
-          state.percent.push(per);
-          percent.push(' ' + per.toFixed(0) + ' %');
-        }
-      }
+  //     for (let item in result) {
+  //       if (total === 0) {
+  //         percent.push(' %');
+  //         state.percent.push(0);
+  //       } else {
+  //         const per = (result[item] / total) * 100;
+  //         state.percent.push(per);
+  //         percent.push(' ' + per.toFixed(0) + ' %');
+  //       }
+  //     }
 
-      const minimumPercent = 8;
+  //     const minimumPercent = 8;
 
-      state.graphicData[0].x =
-        state.percent[0] > minimumPercent ? labels[0] + percent[0] : '';
-      state.graphicData[0].y = result.readFailed;
-      state.graphicData[1].x =
-        state.percent[1] > minimumPercent ? labels[1] + percent[1] : '';
-      state.graphicData[1].y = result.writeByHand;
-      state.graphicData[2].x =
-        state.percent[2] > minimumPercent ? labels[2] + percent[2] : '';
-      state.graphicData[2].y = result.abnormalRead;
-      state.graphicData[3].x =
-        state.percent[3] > minimumPercent ? labels[3] + percent[3] : '';
-      state.graphicData[3].y = result.readSucceed;
-      state.graphicData[4].x =
-        state.percent[4] > minimumPercent ? labels[4] + percent[4] : '';
-      state.graphicData[4].y = result.haveNotRead;
+  //     state.graphicData[0].x =
+  //       state.percent[0] > minimumPercent ? labels[0] + percent[0] : '';
+  //     state.graphicData[0].y = result.readFailed;
+  //     state.graphicData[1].x =
+  //       state.percent[1] > minimumPercent ? labels[1] + percent[1] : '';
+  //     state.graphicData[1].y = result.writeByHand;
+  //     state.graphicData[2].x =
+  //       state.percent[2] > minimumPercent ? labels[2] + percent[2] : '';
+  //     state.graphicData[2].y = result.abnormalRead;
+  //     state.graphicData[3].x =
+  //       state.percent[3] > minimumPercent ? labels[3] + percent[3] : '';
+  //     state.graphicData[3].y = result.readSucceed;
+  //     state.graphicData[4].x =
+  //       state.percent[4] > minimumPercent ? labels[4] + percent[4] : '';
+  //     state.graphicData[4].y = result.haveNotRead;
 
-      //console.log(state.graphicData);
-      //console.log(state.percent);
+  //     //console.log(state.graphicData);
+  //     //console.log(state.percent);
 
-      //state.detailDB = getDbDetail(dataDB);
+  //     //state.detailDB = getDbDetail(dataDB);
 
-      return {...state};
-    });
-  });
+  //     return {...state};
+  //   });
+  // });
 };
 
 export const onDeInit = navigation => {

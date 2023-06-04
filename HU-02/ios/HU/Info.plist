@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>HHU Gelex</string>
+	<string>HU-02 Esoft</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -35,8 +35,6 @@
 			</dict>
 		</dict>
 	</dict>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -75,5 +73,16 @@
 		<string>SimpleLineIcons.ttf</string>
 		<string>Zocial.ttf</string>
 	</array>
+	 <!-- 🚨 Keep only the permissions used in your app 🚨 -->
+
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>haha t aday</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Ứng dụng cần sử dụng bluetooth để kết nối với thiết bị HU-02</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Ứng dụng cần sử dụng vị trí để khai báo đồng hồ</string>
+	
+
+  <!-- … -->
 </dict>
 </plist>

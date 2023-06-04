@@ -29,6 +29,7 @@ export function ListenEventSucceedError() {
   DeviceEventEmitter.addListener(EVENT_SUCCEEDED, () => {
     try {
       // play the file tone.mp3
+      // console.log('haha ............');
       SoundPlayer.playSoundFile('succeed1', 'mp3');
     } catch (e) {
       console.log('cannot play the sound file', e);
@@ -36,6 +37,10 @@ export function ListenEventSucceedError() {
   });
     DeviceEventEmitter.addListener(EVENT_ERROR, () => {
     Vibration.vibrate();
+  });
+  SoundPlayer.addEventListener('FinishedLoading', (data) => {
+    // console.log(TAG, 'finish loading mp3 file:' + JSON.stringify(data));
+    
   });
 }
 

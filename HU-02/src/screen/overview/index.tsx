@@ -1,9 +1,11 @@
 import {useNavigation} from '@react-navigation/native';
 import React from 'react';
-import {Dimensions, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {Dimensions, 
+  ImageBackground, NativeModules, ScrollView, StatusBar, StyleSheet, Text, 
+  View, Image, Platform} from 'react-native';
 import {VictoryPie} from 'victory-native';
 import {DetailDB} from '../../component/detailDB';
-import Theme, {normalize} from '../../theme';
+import Theme, {Colors, normalize} from '../../theme';
 import {
   colorsChart,
   dummyDataTable,
@@ -41,6 +43,7 @@ const connerRadius = (deviceWidth / 2) * 0.3 * 0.9;
 const radius = (deviceWidth / 2) * 0.9;
 const labelRadius = ((radius + innerRadius) / 2) * 0.8;
 
+
 export const OverViewScreen = () => {
   GetHook();
 
@@ -52,21 +55,33 @@ export const OverViewScreen = () => {
       onDeInit(navigation);
     };
   }, []);
-  let total = 0;
-  let is100percent = false;
+  // let total = 0;
+  // let is100percent = false;
 
-  for (let itm of hookProps.state.graphicData) {
-    total += itm.y;
-  }
-  for (let itm of hookProps.state.graphicData) {
-    if (total === itm.y) {
-      is100percent = true;
-    }
-  }
+  // for (let itm of hookProps.state.graphicData) {
+  //   total += itm.y;
+  // }
+  // for (let itm of hookProps.state.graphicData) {
+  //   if (total === itm.y) {
+  //     is100percent = true;
+  //   }
+  // }
 
-  // const ref = useRef<VictoryPie>(null);
+  return (
+    <View style={styles.container}>
+      <Image resizeMode='contain'
+      style={{width: '100%', height: '20%'}}
+      source={require('../../asset/images/logo/logo.png')} ></Image>
+      <Text style={styles.text}>HU-02</Text>
+      <ImageBackground
+      resizeMode='contain'
+      style={{flex: 1}} source={require('../../asset/images/image/ov.jpg')} ></ImageBackground>
+      <ImageBackground
+      resizeMode='contain'
+      style={{flex: 1}} source={require('../../asset/images/image/model1.jpg')} ></ImageBackground>
+    </View>
+  );
 
-  // ref.current?.render();
 
   return (
     <View style={styles.container}>
@@ -150,6 +165,13 @@ export const OverViewScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  text: {
+    fontFamily: Platform.OS === 'android' ? 'kufam-semi-bold-italic' : 'Kufam',
+    fontSize: normalize(60),
+    marginBottom: 50,
+    color: '#f3688f',
+    alignSelf:'center',
+  },
   container: {
     flex: 1,
     backgroundColor: Theme.Colors.backgroundColor,

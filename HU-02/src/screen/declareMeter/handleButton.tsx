@@ -3,6 +3,7 @@ import Geolocation, {
 } from '@react-native-community/geolocation';
 import {
   AddDeclareMeter,
+  GetUnsentDeclareMeter,
   SendUnsentDeclareMeterProcess,
 } from '../../database/service/declareMeterService';
 import {AddMeter} from '../../service/api';
@@ -114,7 +115,7 @@ export async function onDeclarePress() {
       item => item.LINE_NAME === hookProps.state.infoDeclare.selectedStation,
     );
     const modelMeterObj = ListModelMeterObj.find(
-      item => item.METER_MODEL_DESC === modelMeter,
+      item => item.METER_MODEL_DESC.includes(modelMeter),
     );
 
     if (lineStatiobObj && modelMeterObj) {

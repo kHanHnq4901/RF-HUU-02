@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   Image,
+  Platform,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -11,6 +12,7 @@ import {
 import FormButton from '../../component/formButton';
 import {FormInput} from '../../component/formInput';
 import {Colors, normalize, scale} from '../../theme';
+import { IconFaceID } from '../../component/faceID';
 import {
   hook,
   navigation,
@@ -71,12 +73,29 @@ export function SignInScreen() {
           placeholder="Mật khẩu"
           iconType="lock"
           secureTextEntry={true}
+          rightChildren={
+            store.state.typeTouchID !== 'NoSupport' && (
+              <TouchableOpacity
+                // style={styles.finger}
+                onPress={() => onFingerPress(true)}>
+                {store.state.typeTouchID === 'TouchID' ? (
+                  <Ionicons
+                    name="finger-print"
+                    color={Colors.secondary}
+                    size={25}
+                  />
+                ) : (
+                  <IconFaceID size={25} color="#2e64e5" />
+                )}
+              </TouchableOpacity>
+            )
+          }
         />
 
         <FormButton
           buttonTitle="Đăng nhập"
           isBusy={hook.state.btnSignInBusy}
-          onPress={onLoginPress}
+          onPress={()=> onLoginPress()}
         />
 
         <TouchableOpacity style={styles.forgotButton} onPress={() => {}}>
@@ -103,12 +122,12 @@ export function SignInScreen() {
         </View>
       ) : null} */}
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.finger}
           onPress={() => onFingerPress(true)}>
           <Text style={styles.navButtonText}>{'Đăng nhập bằng vân tay '}</Text>
           <Ionicons name="finger-print" color={Colors.secondary} size={25} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         {/* <TouchableOpacity style={styles.forgotButton} onPress={() => {}}>
           <Text style={styles.version}>Version: {version}</Text>
         </TouchableOpacity> */}
@@ -155,7 +174,7 @@ const styles = StyleSheet.create({
     width: 200 * scale,
   },
   text: {
-    fontFamily: 'kufam-semi-bold-italic',
+    fontFamily: Platform.OS === 'android' ? 'kufam-semi-bold-italic' : 'Kufam',
     fontSize: normalize(45),
     marginBottom: 10,
     color: '#f3688f',

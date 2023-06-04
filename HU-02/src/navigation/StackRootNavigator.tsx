@@ -6,6 +6,8 @@ import {SignUpScreen} from '../screen/signUp';
 import {DrawerNavigator} from './DrawerNavigator';
 import {StackRootList} from './model/model';
 import {SettingAndAlarmScreen} from '../screen/settingAndAlarm';
+import { StatusBar } from 'react-native';
+import { Colors } from '../theme';
 
 const Stack = createNativeStackNavigator<StackRootList>();
 export function StackRootNavigator() {
@@ -13,6 +15,7 @@ export function StackRootNavigator() {
     <Stack.Navigator
       initialRouteName="SignIn"
       screenOptions={{headerShown: false}}>
+      
       <Stack.Screen name="SignIn" component={SignInScreen} />
       <Stack.Screen name="SignUp" component={SignUpScreen} />
       <Stack.Screen name="Drawer" component={DrawerNavigator} />

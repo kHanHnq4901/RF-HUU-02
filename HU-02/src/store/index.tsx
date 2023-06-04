@@ -2,6 +2,7 @@ import React, {Dispatch, useState} from 'react';
 import {PropsAppSetting, getDefaultStorageValue} from '../service/storage';
 import {PropsInfoUser, PropsInfoWM, PropsLineServer} from '../service/user';
 import {Buffer} from 'buffer';
+import { Platform } from 'react-native';
 
 export type PropsStoreMeter = {
   listLine: PropsLineServer[];
@@ -27,6 +28,8 @@ export function getDefaultKeyAesStore(): PropsKeyAesStore {
     keyRadio: dataKeyRadio,
   };
 }
+
+export type TYPE_TOUCH_ID = 'FaceID' | 'TouchID' | 'NoSupport';
 
 type PropsState = {
   hhu: {
@@ -67,6 +70,7 @@ type PropsState = {
   userInfo: PropsInfoUser;
   meter: PropsStoreMeter;
   keyAes: PropsKeyAesStore;
+  typeTouchID: TYPE_TOUCH_ID;
 };
 
 export type PropsStore = {
@@ -119,6 +123,7 @@ export const StoreProvider = ({children}) => {
       data: [],
     },
     keyAes: getDefaultKeyAesStore(),
+    typeTouchID: Platform.OS === 'ios' ? 'FaceID' : 'TouchID',
   });
 
   const initialValue: PropsStore = {

@@ -1,4 +1,4 @@
-import {Alert, ToastAndroid} from 'react-native';
+import {Alert, Platform, ToastAndroid} from 'react-native';
 import {Buffer} from 'buffer';
 
 export function sleep(ms: number) {
@@ -33,13 +33,12 @@ export async function showAlert(message: string, onOKPress?: () => void) {
   });
 }
 
-export function showToast(message: string) {
-  // TODO:ToastAndroid.show(message, ToastAndroid.SHORT);
-  ToastAndroid.showWithGravity(
-    message,
-    ToastAndroid.SHORT,
-    ToastAndroid.CENTER,
-  );
+export function showToast(message: string, gravity?: number): void {
+  if (Platform.OS === 'android') {
+    ToastAndroid.showWithGravity(message, 2000, gravity ?? ToastAndroid.CENTER);
+  } else {
+    Alert.alert(message);
+  }
 }
 export const getCurrentDate = (): string => {
   const today = new Date();

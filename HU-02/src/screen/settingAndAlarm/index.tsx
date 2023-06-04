@@ -6,7 +6,7 @@ import {Text} from '../../component/Text';
 import {USER_ROLE_TYPE} from '../../service/user';
 import {Colors, CommonHeight, normalize, scale} from '../../theme';
 import {CommonFontSize} from '../../theme/index';
-import {GetHookProps, hookProps, store} from './controller';
+import {GetHookProps, hookProps, listSelectServer, store} from './controller';
 import {
   onNumRetriesReadSubmit,
   onSavePress,
@@ -20,91 +20,46 @@ export const SettingAndAlarmScreen = () => {
   return (
     <View style={styles.contain}>
       <ScrollView style={styles.container}>
-        {/* <Text style={styles.title}>Ngưỡng cảnh báo điện năng:</Text>
-        <View style={styles.row}>
-          {controller.typeAlarmRegister.map(item => {
-            return (
-              <RadioButton
-                key={item.value}
-                label={item.title}
-                value={item.value}
-                checked={
-                  store.state.appSetting.setting.typeAlarm === item.value
-                    ? true
-                    : false
-                }
-                onPress={() => {
-                  store.setState(state => {
-                    state.appSetting.setting.typeAlarm = item.value;
-                    return { ...state };
-                  });
-                }}
-              />
-            );
-          })}
+        <Text style={styles.title}>Chọn server:</Text>
+        <View style={styles.listSelectServer} >
+          {
+            listSelectServer.map(item => {
+              return (<RadioButton checked={hookProps.state.selectedSerVer === item} 
+                key={item} 
+                label={item} 
+                value={item}
+                 onPress={
+                  ()=>{
+                    hookProps.setState(state => {
+                      state.selectedSerVer = item;
+                      if(item === 'EMIC')
+                      {
+                        store.state.appSetting.server.host = 'api.emic.com.vn';
+                        store.state.appSetting.server.port = '80';
+
+                      }
+                      else if(item === 'Sawaco')
+                      {
+                        store.state.appSetting.server.host = '182.237.21.93';
+                        store.state.appSetting.server.port = '3090';
+                      }
+                      
+                      return {...state};
+                    });
+                  }
+                 }  ></RadioButton>);
+            })
+          }
         </View>
-        <View style={styles.row}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={styles.textThreshold}>Nhỏ hơn:</Text>
-            <TextInputInteractive
-              placeholder=""
-              keyboardType="numeric"
-              value={
-                store.state.appSetting.setting.typeAlarm === 'Value'
-                  ? store.state.appSetting.setting.lowerThresholdValue
-                  : store.state.appSetting.setting.lowerThresholdPercent
-              }
-              textInputStyle={styles.valueTextInput}
-              onChangeText={text => {
-                store.setState(state => {
-                  if (state.appSetting.setting.typeAlarm === 'Value') {
-                    state.appSetting.setting.lowerThresholdValue = text;
-                  } else {
-                    state.appSetting.setting.lowerThresholdPercent = text;
-                  }
-                  return { ...state };
-                });
-              }}
-              onSubmitEditing={e => {
-                onLowerThresholdDoneSubmit(e.nativeEvent.text);
-              }}
-            />
-          </View>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={styles.textThreshold}>Lớn hơn:</Text>
-            <TextInputInteractive
-              placeholder=""
-              keyboardType="numeric"
-              value={
-                store.state.appSetting.setting.typeAlarm === 'Value'
-                  ? store.state.appSetting.setting.upperThresholdValue
-                  : store.state.appSetting.setting.upperThresholdPercent
-              }
-              onChangeText={text => {
-                store.setState(state => {
-                  if (state.appSetting.setting.typeAlarm === 'Value') {
-                    state.appSetting.setting.upperThresholdValue = text;
-                  } else {
-                    state.appSetting.setting.upperThresholdPercent = text;
-                  }
-                  return { ...state };
-                });
-              }}
-              onSubmitEditing={e => {
-                onUpperThresholdDoneSubmit(e.nativeEvent.text);
-              }}
-              textInputStyle={styles.valueTextInput}
-            />
-          </View>
-        </View> */}
         <View style={styles.containerIPPort}>
           <View style={styles.containerItemIPPort}>
             <Text style={styles.title}>IP dữ liệu:</Text>
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
               {/* <Text style={styles.textThreshold}>Nhỏ hơn:</Text> */}
               <TextInputInteractive
-                placeholder=""
+                placeholder="182.237.21.93|api.emic.com.vn"
                 //keyboardType="numeric"
+                placeholderTextColor={Colors.caption}
                 value={store.state.appSetting.server.host}
                 textInputStyle={styles.textIP}
                 onChangeText={text => {
@@ -124,8 +79,9 @@ export const SettingAndAlarmScreen = () => {
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
               {/* <Text style={styles.textThreshold}>Nhỏ hơn:</Text> */}
               <TextInputInteractive
-                placeholder=""
+                placeholder="3090"
                 keyboardType="numeric"
+                placeholderTextColor={Colors.caption}
                 value={store.state.appSetting.server.port}
                 textInputStyle={styles.valueTextInput}
                 onChangeText={text => {
@@ -153,7 +109,7 @@ export const SettingAndAlarmScreen = () => {
                 textInputStyle={styles.textIP}
                 onChangeText={text => {
                   store.setState(state => {
-                    store.state.appSetting.hhu.host = text;
+                    store.state.appSetting.hhu.host = text.trim();
                     return {...state};
                   });
                 }}
@@ -174,7 +130,7 @@ export const SettingAndAlarmScreen = () => {
                 textInputStyle={styles.valueTextInput}
                 onChangeText={text => {
                   store.setState(state => {
-                    store.state.appSetting.hhu.port = text;
+                    store.state.appSetting.hhu.port = text.trim();
                     return {...state};
                   });
                 }}
@@ -196,7 +152,7 @@ export const SettingAndAlarmScreen = () => {
             textInputStyle={styles.valueTextInput}
             onChangeText={text => {
               store.setState(state => {
-                store.state.appSetting.numRetriesRead = text;
+                store.state.appSetting.numRetriesRead = text.trim();
                 return {...state};
               });
             }}
@@ -262,6 +218,11 @@ export const SettingAndAlarmScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  listSelectServer: {
+    flexDirection: 'row',
+    justifyContent:'space-around',
+    marginBottom: 10,
+  },
   contain: {
     backgroundColor: Colors.backgroundColor,
     flex: 1,

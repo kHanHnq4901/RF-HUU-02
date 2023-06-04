@@ -3,7 +3,6 @@ import {sleep} from '../../util';
 import {
   hookProps,
   requestGps,
-  requestPermissionScan,
   setStatus,
   store,
 } from './controller';
@@ -11,6 +10,7 @@ import * as Ble from '../../util/ble';
 import {BleFunc_SaveStorage} from '../../service/hhu/Ble/bleHhuFunc';
 import {ObjSend, readVersion, ShakeHand} from '../../service/hhu/Ble/hhuFunc';
 import {checkUpdateHHU} from '../../service/api';
+import { requestPermissionScan } from '../../service/permission';
 
 const TAG = 'handleBtn Ble:';
 

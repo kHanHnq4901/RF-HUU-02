@@ -7,6 +7,7 @@ import {
   Image,
   ImageBackground,
   Linking,
+  Platform,
   StatusBar,
   StyleSheet,
   View,
@@ -63,16 +64,14 @@ export const DrawerContent = props => {
     <>
       <StatusBar
         backgroundColor={Theme.Colors.primary}
-        barStyle="light-content"
+        barStyle={Platform.OS === 'android' ?"light-content" : 'dark-content'}
       />
       <DrawerContentScrollView {...props}>
         <View style={styles.containerInfo}>
-          <ImageBackground
+          {(Platform.OS === 'android') && <ImageBackground
             source={require('../../../asset/images/drawer/HeaderDrawer.jpg')}
             style={{height: 120, marginTop: -5}}
-
-            //resizeMode="cover"
-          />
+          />}
           <View style={styles.infoUser}>
             {/* <Avatar.Image
               size={60}
@@ -82,7 +81,7 @@ export const DrawerContent = props => {
 
             <Image
               source={require('../../../asset/images/logo/logo.png')}
-              style={{height: 50, width: 150}}
+              style={Platform.OS === 'android' ? styles.logoAndroid : styles.logoIOS}
               resizeMode="contain"
             />
             <Text style={styles.logoText}>HU-02</Text>
@@ -136,8 +135,8 @@ export const DrawerContent = props => {
               onPress={async () => {
                 //navigation.navigate('GuideBook');
 
-                const url = `http://${store.state.appSetting.server.host}:${
-                  store.state.appSetting.server.port
+                const url = `http://${store.state.appSetting.hhu.host}:${
+                  store.state.appSetting.hhu.port
                 }/HU_01/HDSD_HU_02.pdf?timestamp=${new Date().getTime()}`;
                 const supported = await Linking.canOpenURL(url);
 
@@ -256,7 +255,7 @@ const styles = StyleSheet.create({
   infoUser: {
     flexDirection: 'column',
     alignItems: 'center',
-    marginTop: -90,
+    marginTop: Platform.OS === 'android' ?  -90 : -30,
   },
   version: {
     alignItems: 'flex-end',
@@ -267,7 +266,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
   logoText: {
-    fontFamily: 'kufam-semi-bold-italic',
+    fontFamily: Platform.OS === 'android' ? 'kufam-semi-bold-italic' : 'Kufam',
     fontSize: normalize(25),
     marginBottom: 10,
     color: '#f3688f',
@@ -288,4 +287,6 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     marginRight: 10,
   },
+  logoAndroid: {height: 50, width: 150},
+  logoIOS: {height: 100, width: 200},
 });
