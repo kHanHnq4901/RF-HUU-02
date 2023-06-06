@@ -167,10 +167,10 @@ export async function hhuFunc_Send(
     console.log(BufferToString(buffSend, 0, lengthSend, 16, true));
     if (header.u8Cmd === TYPE_HHU_CMD.DATA) {
       if (ObjSend.isNeedUpdate === true) {
-        showAlert(
-          'Cần cập nhật phiên bản mới cho thiết bị cầm tay',
-          onOKAlertNeedUpdatePress,
-        );
+        showAlert('Cần cập nhật phiên bản mới cho thiết bị cầm tay', {
+          label: 'OK',
+          func: onOKAlertNeedUpdatePress,
+        });
         return false;
       }
     }

@@ -48,6 +48,7 @@
     "lodash": "^4.17.21",
     "lodash.throttle": "^4.1.1",
     "patch-package": "^6.4.7",
+    "pod-install": "0.1.38",
     "postinstall-postinstall": "^2.1.0",
     "react": "17.0.2",
     "react-native": "0.68.1",
@@ -60,6 +61,7 @@
     "react-native-keep-awake": "^4.0.0",
     "react-native-keychain": "^8.1.1",
     "react-native-location-enabler": "^4.1.1",
+    "react-native-open-maps": "^0.4.2",
     "react-native-paper": "^4.12.1",
     "react-native-permissions": "^3.8.0",
     "react-native-progress": "^5.0.0",
@@ -81,8 +83,7 @@
     "react-native-vector-icons": "^9.2.0",
     "react-native-webview": "^11.23.1",
     "react-native-xml2js": "^1.0.3",
-    "victory-native": "^36.5.0",
-    "pod-install": "0.1.38"
+    "victory-native": "^36.5.0"
   },
   "devDependencies": {
     "@babel/core": "^7.17.9",

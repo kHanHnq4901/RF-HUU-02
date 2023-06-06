@@ -82,6 +82,7 @@ export type DrawerParamsList = {
   WriteDataByPosition: ParamsDrawerProps;
   ReadParameter: ParamsDrawerProps;
   DeclareMeter: ParamsDrawerProps;
+  PositionMeter: ParamsDrawerProps;
   ReadOptical: ParamsDrawerProps;
   WriteOptical: ParamsDrawerProps;
   AbnormalRegister: ParamsDrawerProps;

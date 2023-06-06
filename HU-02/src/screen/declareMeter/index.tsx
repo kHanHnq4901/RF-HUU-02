@@ -43,7 +43,7 @@ export const DeclareMeterScreen = () => {
         <View style={styles.dropdown}>
           <Text style={styles.label}>Chọn trạm</Text>
           <SelectDropdown
-          ref={hookProps.refStation}
+            ref={hookProps.refStation}
             defaultButtonText=" "
             data={lisStationName}
             onSelect={selectedItem => {
@@ -215,7 +215,6 @@ export const DeclareMeterScreen = () => {
           // }}
           blurOnSubmit={true}
         />
-        
       </ScrollView>
 
       <Button

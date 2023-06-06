@@ -140,7 +140,7 @@ export async function checkUpdateHHU(props?: PropsReturnGetVerion) {
           if (restVersion.priority === 'Cao') {
             status += '(Quan trọng)';
             ObjSend.isNeedUpdate = true;
-            showAlert(status, onOKAlertNeedUpdatePress);
+            showAlert(status, {label: 'OK', func: onOKAlertNeedUpdatePress});
           } else {
             ObjSend.isNeedUpdate = false;
             showAlert(status);
@@ -216,13 +216,15 @@ export async function PushDataToServer(
   return res;
 }
 
-export type PropsDeclareMeter = {
+export type PropsSaveCoordinateMeter = {
   seri: string;
   lat: string;
   long: string;
 };
 
-export async function DeclareMeter(props: PropsDeclareMeter): Promise<boolean> {
+export async function SaveCoordinateMeter(
+  props: PropsSaveCoordinateMeter,
+): Promise<boolean> {
   //SaveActiveTotal(string ModuleNo, string DataTime, string ActiveTotal, string NegactiveTotal, string Token)
 
   try {
@@ -247,6 +249,68 @@ export async function DeclareMeter(props: PropsDeclareMeter): Promise<boolean> {
     console.log(TAG, 'err: ', err.message);
 
     return false;
+  }
+}
+type PropsGetMeter = {
+  Seri: string;
+};
+
+export type PropsGetMeterServer = {
+  ADDRESS: string;
+  COORDINATE: string;
+  CREATED: string;
+  CUSTOMER_CODE: string;
+  CUSTOMER_NAME: string;
+  EMAIL: string;
+  LINE_NAME: string;
+  METER_MODEL_DESC: string;
+  METER_NAME: string;
+  METER_NO: string;
+  PHONE: string;
+};
+
+export async function GetMeter(
+  props: PropsGetMeter,
+): Promise<PropsCommonResponse> {
+  //SaveActiveTotal(string ModuleNo, string DataTime, string ActiveTotal, string NegactiveTotal, string Token)
+
+  const response: PropsCommonResponse = {
+    bSucceeded: false,
+    obj: null,
+    strMessage: '',
+  };
+
+  try {
+    const url = `http://${store.state.appSetting.server.host}:${store.state.appSetting.server.port}/api/GetMeter`;
+
+    const rest = await axios.get(url, {
+      params: {
+        No: props.Seri,
+        Token: store.state.userInfo.TOKEN,
+      },
+    });
+    const ret = rest.data as {CODE: string; MESSAGE: string};
+
+    // console.log('ret: ', ret);
+
+    if (ret.CODE === '0') {
+      console.log(TAG, 'err:', ret);
+      response.strMessage = ret.MESSAGE;
+      response.bSucceeded = false;
+      return response;
+    } else {
+      response.bSucceeded = true;
+
+      const data = rest.data as PropsGetMeterServer;
+      response.obj = data;
+
+      return response;
+    }
+  } catch (err) {
+    console.log(TAG, 'err: ', err.message);
+    response.strMessage = err.message;
+    response.bSucceeded = false;
+    return response;
   }
 }
 

@@ -1,5 +1,6 @@
-import {Alert, Platform, ToastAndroid} from 'react-native';
+import {Alert, AlertButton, Platform, ToastAndroid} from 'react-native';
 import {Buffer} from 'buffer';
+import {first} from 'lodash';
 
 export function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -16,20 +17,46 @@ export function isNumeric(str: any) {
   ); // ...and ensure strings of whitespace fail
 }
 
-export async function showAlert(message: string, onOKPress?: () => void) {
+export async function showAlert(
+  message: string,
+  one?: {
+    label: string;
+    func: () => void;
+  },
+  two?: {
+    label: string;
+    func: () => void;
+  },
+) {
   return new Promise<void>((resolve, reject) => {
-    Alert.alert('', message, [
-      {
-        text: 'OK',
+    const alertButton: AlertButton[] = [];
+    if (one) {
+      alertButton.push({
+        text: one.label,
         onPress: () => {
-          if (onOKPress) {
-            onOKPress();
-          }
-
+          one.func();
           resolve();
         },
-      },
-    ]);
+      });
+    }
+    if (two) {
+      alertButton.push({
+        text: two.label,
+        onPress: () => {
+          two.func();
+          resolve();
+        },
+      });
+    }
+    if (alertButton.length === 0) {
+      alertButton.push({
+        text: 'OK',
+        onPress: () => {
+          resolve();
+        },
+      });
+    }
+    Alert.alert('', message, alertButton);
   });
 }
 

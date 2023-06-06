@@ -16,7 +16,7 @@ import {ListModelMeterObj, ListStationObj, hookProps} from './controller';
 
 const TAG = 'Declare Meter Handle Button';
 
-async function getGeolocation(): Promise<GeolocationResponse | null> {
+export async function getGeolocation(): Promise<GeolocationResponse | null> {
   const rest = await new Promise<GeolocationResponse | null>(resolve => {
     Geolocation.getCurrentPosition(
       value => {
@@ -29,7 +29,7 @@ async function getGeolocation(): Promise<GeolocationResponse | null> {
       },
       {
         enableHighAccuracy: true,
-        timeout: 1000,
+        timeout: 3000,
         maximumAge: 3600000,
       },
     );
@@ -99,7 +99,7 @@ export async function onDeclarePress() {
   const customerCode = hookProps.data.infoDeclare.customerCode;
   const address = hookProps.data.infoDeclare.address;
   const phoneNumber = hookProps.data.infoDeclare.phoneNumber;
-  const modelMeter = hookProps.state.infoDeclare.selectedModelMeter;
+  const modelMeter = hookProps.state.infoDeclare.selectedModelMeter ?? '';
 
   try {
     hookProps.setState(state => {
@@ -109,69 +109,74 @@ export async function onDeclarePress() {
     });
     const loacaion = await getGeolocation();
 
-    //const location =
-
-    const lineStatiobObj = ListStationObj.find(
-      item => item.LINE_NAME === hookProps.state.infoDeclare.selectedStation,
-    );
-    const modelMeterObj = ListModelMeterObj.find(
-      item => item.METER_MODEL_DESC.includes(modelMeter),
-    );
-
-    if (lineStatiobObj && modelMeterObj) {
-      const props: PropsAddMeter = {
-        Coordinate: loacaion
-          ? loacaion?.coords.latitude.toString() +
-            ',' +
-            loacaion?.coords.longitude.toString()
-          : ' ',
-        CustomerAddress: address,
-        CustomerCode: customerCode,
-        CustomerName: customerName,
-        CustomerPhone: phoneNumber,
-        LineID: lineStatiobObj.LINE_ID,
-        MeterModelID: modelMeterObj.METER_MODEL_ID,
-        MeterName: '',
-        MeterNo: strSeri,
-        SIM: '',
-      };
-      console.log('props:', props);
-
-      const response = await AddMeter(props);
-      if (response.bSucceeded === true) {
-        message = 'Khai báo thành công ' + strSeri;
-
-        // hookProps.setState(state => {
-        //   state.infoDeclare.seriMeter = '';
-        //   state.infoDeclare.customerName = '';
-        //   state.infoDeclare.customerCode = '';
-        //   state.infoDeclare.phoneNumber = '';
-        //   return {...state};
-        // });
-
-        hookProps.data.infoDeclare.seriMeter = '';
-        hookProps.data.infoDeclare.customerName = '';
-        hookProps.data.infoDeclare.customerCode = '';
-        hookProps.data.infoDeclare.phoneNumber = '';
-
-        hookProps.refPhoneNUmber.current?.clear();
-        hookProps.refSeriMeter.current?.clear();
-        hookProps.refCustomerName.current?.clear();
-        hookProps.refCustomerCode.current?.clear();
-
-        hookProps.refScroll.current?.scrollTo(0);
-      } else {
-        message = response.strMessage;
-        succeeded = false;
-        if (response.strMessage.trim() === 'Network Error') {
-          saveDatabase = true;
-          AddDeclareMeter(props);
-          succeeded = true;
-        }
-      }
-    } else {
-      message = 'Không tìm thấy ID trạm ';
+    if (!loacaion) {
+      message = 'Lỗi GPS. Vui lòng thử lại';
       succeeded = false;
+    } else {
+      //const location =
+
+      const lineStatiobObj = ListStationObj.find(
+        item => item.LINE_NAME === hookProps.state.infoDeclare.selectedStation,
+      );
+      const modelMeterObj = ListModelMeterObj.find(item =>
+        item.METER_MODEL_DESC.includes(modelMeter),
+      );
+
+      if (lineStatiobObj && modelMeterObj) {
+        const props: PropsAddMeter = {
+          Coordinate: loacaion
+            ? loacaion?.coords.latitude.toString() +
+              ',' +
+              loacaion?.coords.longitude.toString()
+            : ' ',
+          CustomerAddress: address,
+          CustomerCode: customerCode,
+          CustomerName: customerName,
+          CustomerPhone: phoneNumber,
+          LineID: lineStatiobObj.LINE_ID,
+          MeterModelID: modelMeterObj.METER_MODEL_ID,
+          MeterName: '',
+          MeterNo: strSeri,
+          SIM: '',
+        };
+        console.log('props:', props);
+
+        const response = await AddMeter(props);
+        if (response.bSucceeded === true) {
+          message = 'Khai báo thành công ' + strSeri;
+
+          // hookProps.setState(state => {
+          //   state.infoDeclare.seriMeter = '';
+          //   state.infoDeclare.customerName = '';
+          //   state.infoDeclare.customerCode = '';
+          //   state.infoDeclare.phoneNumber = '';
+          //   return {...state};
+          // });
+
+          hookProps.data.infoDeclare.seriMeter = '';
+          hookProps.data.infoDeclare.customerName = '';
+          hookProps.data.infoDeclare.customerCode = '';
+          hookProps.data.infoDeclare.phoneNumber = '';
+
+          hookProps.refPhoneNUmber.current?.clear();
+          hookProps.refSeriMeter.current?.clear();
+          hookProps.refCustomerName.current?.clear();
+          hookProps.refCustomerCode.current?.clear();
+
+          hookProps.refScroll.current?.scrollTo(0);
+        } else {
+          message = response.strMessage;
+          succeeded = false;
+          if (response.strMessage.trim() === 'Network Error') {
+            saveDatabase = true;
+            AddDeclareMeter(props);
+            succeeded = true;
+          }
+        }
+      } else {
+        message = 'Không tìm thấy ID trạm ';
+        succeeded = false;
+      }
     }
   } catch (err) {
     // setStatus(err.message);

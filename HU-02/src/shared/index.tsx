@@ -5,12 +5,13 @@ import {BoardBLEScreen} from '../screen/boardBLE';
 import {DeclareMeterScreen} from '../screen/declareMeter';
 import {ExportLogScreen} from '../screen/exportLog';
 import {OverViewScreen} from '../screen/overview';
+import {PositionMeterScreen} from '../screen/positionMeter';
 import {ReadOpticalScreen} from '../screen/readOptical';
 import {ReadParameterScreen} from '../screen/readParameter';
 import {SettingAndAlarmScreen} from '../screen/settingAndAlarm';
 import {WriteOpticalScreen} from '../screen/writeOptical';
 
-export const version = '1.2.3';
+export const version = '1.2.4';
 
 // export const widthScreen = Dimensions.get('screen').width;
 // export const heighScreen = Dimensions.get('screen').height;
@@ -45,10 +46,17 @@ export const screenDatas: DataScreensProps = [
   },
   {
     title: 'Khai báo đồng hồ',
-    info: 'Khai báo đồng hồ kèm vị trí GPS của đồng hồ',
+    info: 'Khai báo đồng hồ',
     id: 'DeclareMeter',
-    icon: 'ios-create-outline',
+    icon: 'bookmark',
     component: DeclareMeterScreen,
+  },
+  {
+    title: 'Vị trí đồng hồ',
+    info: 'Tìm vị trí đồng hồ',
+    id: 'PositionMeter',
+    icon: 'navigate',
+    component: PositionMeterScreen,
   },
   // {
   //   title: 'Xem điện áp',
