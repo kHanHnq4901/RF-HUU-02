@@ -11,6 +11,7 @@ import {
   PropsReturnGetModelMeter,
 } from '../../service/api/index';
 import {turnOnLocation} from '../ble/controller';
+import {getGeolocation} from './handleButton';
 var LocationEnabler =
   Platform.OS === 'android' ? require('react-native-location-enabler') : null;
 
@@ -167,6 +168,8 @@ export const GetHookProps = (): HookProps => {
   return hookProps;
 };
 
+let intervalGPS;
+
 export const onInit = async () => {
   Geolocation.setRNConfiguration({
     skipPermissionRequests: false,
@@ -176,6 +179,11 @@ export const onInit = async () => {
   Geolocation.requestAuthorization(
     () => {
       console.log('requestAuthorization succeed');
+      if (!intervalGPS) {
+        intervalGPS = setInterval(() => {
+          getGeolocation();
+        }, 7000);
+      }
     },
     error => {
       console.log(error);
@@ -197,6 +205,7 @@ export const onInit = async () => {
           lisStationName.push(obj.LINE_NAME);
         }
         console.log('update list line succeed');
+
         //console.log('lisStationName:', lisStationName);
       } else {
         console.log('update list line failed: ', response);
@@ -224,4 +233,8 @@ export const onInit = async () => {
   }
 };
 
-export const onDeInit = () => {};
+export const onDeInit = () => {
+  if (intervalGPS) {
+    clearInterval(intervalGPS);
+  }
+};

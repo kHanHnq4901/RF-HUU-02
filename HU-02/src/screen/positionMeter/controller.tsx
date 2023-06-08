@@ -4,6 +4,7 @@ import {turnOnLocation} from '../ble/controller';
 import {Platform} from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 import {PropsGetMeterServer} from '../../service/api';
+import {getGeolocation} from '../declareMeter/handleButton';
 var LocationEnabler =
   Platform.OS === 'android' ? require('react-native-location-enabler') : null;
 
@@ -102,7 +103,7 @@ export const GetHookProps = (): HookProps => {
 
   return hook;
 };
-
+let intervalGPS;
 export const onInit = async () => {
   Geolocation.setRNConfiguration({
     skipPermissionRequests: false,
@@ -112,6 +113,11 @@ export const onInit = async () => {
   Geolocation.requestAuthorization(
     () => {
       console.log('requestAuthorization succeed');
+      if (!intervalGPS) {
+        intervalGPS = setInterval(() => {
+          getGeolocation();
+        }, 7000);
+      }
     },
     error => {
       console.log(error);
@@ -120,4 +126,8 @@ export const onInit = async () => {
   requestGps();
 };
 
-export const onDeInit = () => {};
+export const onDeInit = () => {
+  if (intervalGPS) {
+    clearInterval(intervalGPS);
+  }
+};

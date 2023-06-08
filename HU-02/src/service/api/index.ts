@@ -267,6 +267,8 @@ export type PropsGetMeterServer = {
   METER_NAME: string;
   METER_NO: string;
   PHONE: string;
+  METER_MODEL_ID: string;
+  LINE_ID: string;
 };
 
 export async function GetMeter(
@@ -354,6 +356,7 @@ export async function AddMeter(
       Token: store.state.userInfo.TOKEN,
     };
 
+    console.log('url:', url);
     console.log('params:', params);
 
     // response.bSucceeded = true;

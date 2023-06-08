@@ -11,7 +11,7 @@ import {ReadParameterScreen} from '../screen/readParameter';
 import {SettingAndAlarmScreen} from '../screen/settingAndAlarm';
 import {WriteOpticalScreen} from '../screen/writeOptical';
 
-export const version = '1.2.4';
+export const version = '1.2.6';
 
 // export const widthScreen = Dimensions.get('screen').width;
 // export const heighScreen = Dimensions.get('screen').height;

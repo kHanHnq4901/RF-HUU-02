@@ -29,11 +29,13 @@ export async function getGeolocation(): Promise<GeolocationResponse | null> {
       },
       {
         enableHighAccuracy: true,
-        timeout: 3000,
+        timeout: 5000,
         maximumAge: 3600000,
       },
     );
   });
+  console.log('accuracy:', rest?.coords.accuracy);
+
   return rest;
 }
 
@@ -107,9 +109,17 @@ export async function onDeclarePress() {
       state.status = 'Đang khai báo ...';
       return {...state};
     });
-    const loacaion = await getGeolocation();
+    let location: GeolocationResponse | null = null;
+    for (let i = 0; i < 5; i++) {
+      location = await getGeolocation();
+      if (location === null || location.coords.accuracy > 20) {
+        continue;
+      } else {
+        break;
+      }
+    }
 
-    if (!loacaion) {
+    if (!location) {
       message = 'Lỗi GPS. Vui lòng thử lại';
       succeeded = false;
     } else {
@@ -124,10 +134,10 @@ export async function onDeclarePress() {
 
       if (lineStatiobObj && modelMeterObj) {
         const props: PropsAddMeter = {
-          Coordinate: loacaion
-            ? loacaion?.coords.latitude.toString() +
+          Coordinate: location
+            ? location?.coords.latitude.toString() +
               ',' +
-              loacaion?.coords.longitude.toString()
+              location?.coords.longitude.toString()
             : ' ',
           CustomerAddress: address,
           CustomerCode: customerCode,

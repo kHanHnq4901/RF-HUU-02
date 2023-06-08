@@ -166,20 +166,28 @@ export async function onUpdateCoordinatePress() {
       return {...state};
     });
 
-    const loacaion = await getGeolocation();
+    let location: GeolocationResponse | null = null;
+    for (let i = 0; i < 5; i++) {
+      location = await getGeolocation();
+      if (location === null || location.coords.accuracy > 22) {
+        continue;
+      } else {
+        break;
+      }
+    }
 
-    if (!loacaion) {
+    if (!location) {
       message = 'Lỗi GPS. Vui lòng thử lại';
       bSuccess = false;
     } else {
       newCoordinate =
-        loacaion.coords.latitude.toString() +
+        location.coords.latitude.toString() +
         ',' +
-        loacaion.coords.longitude.toString();
+        location.coords.longitude.toString();
       const rest1 = await SaveCoordinateMeter({
         seri: seri,
-        lat: loacaion.coords.latitude.toString(),
-        long: loacaion.coords.longitude.toString(),
+        lat: location.coords.latitude.toString(),
+        long: location.coords.longitude.toString(),
       });
       if (rest1) {
         message =
@@ -346,8 +354,8 @@ export async function onReDecareMeter() {
           CustomerCode: data.CUSTOMER_CODE,
           CustomerName: data.CUSTOMER_NAME,
           CustomerPhone: data.PHONE,
-          LineID: data.LINE_NAME,
-          MeterModelID: data.METER_MODEL_DESC,
+          LineID: data.LINE_ID,
+          MeterModelID: data.METER_MODEL_ID,
           MeterName: '',
           MeterNo: strSeri,
           SIM: '',
