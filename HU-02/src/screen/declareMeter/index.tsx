@@ -1,5 +1,11 @@
 import React, {useEffect} from 'react';
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Button} from '../../component/button/button';
@@ -16,9 +22,14 @@ import {
 } from './controller';
 import {
   onDeclarePress,
+  onGetPositionPress,
+  onGoogleMapPress,
   onLineSelected,
   onModelMeterSelected,
+  onSearchInfo,
 } from './handleButton';
+import Feather from 'react-native-vector-icons/Feather';
+import MapView, {Marker} from 'react-native-maps';
 
 export const DeclareMeterScreen = () => {
   GetHookProps();
@@ -26,6 +37,7 @@ export const DeclareMeterScreen = () => {
     onInit();
     return onDeInit;
   }, []);
+
   return (
     <View style={styles.container}>
       {hookProps.state.isBusy && (
@@ -77,6 +89,7 @@ export const DeclareMeterScreen = () => {
         <View style={styles.dropdown}>
           <Text style={styles.label}>Chọn loại đồng hồ</Text>
           <SelectDropdown
+            ref={hookProps.refModelMeter}
             defaultButtonText=" "
             data={listModelMeterName}
             onSelect={selectedItem => {
@@ -107,71 +120,75 @@ export const DeclareMeterScreen = () => {
       <ScrollView
         showsVerticalScrollIndicator={false}
         ref={hookProps.refScroll}>
-        {/* <View style={styles.containerSeri}>
-          <TextInput
-            style={styles.seri}
-            value={hookProps.state.infoDeclare.seriMeter}
-            onChangeText={text => {
-              hookProps.setState(state => {
-                state.infoDeclare.seriMeter = text;
-                return {...state};
-              });
-            }}
-            keyboardType="number-pad"
-            placeholder="Số NO cơ khí"
-          />
-        </View> */}
-        <NormalTextInput
+        {/* <NormalTextInput
           label="Seri cơ khí:(*)"
           keyboardType="number-pad"
           maxLength={10}
-          // onEndEditing={e => {
-          //   e.persist();
-          //   hookProps.setState(state => {
-          //     state.infoDeclare.seriMeter = e.nativeEvent?.text.trim();
-          //     return {...state};
-          //   });
-          // }}
+
           onChangeText={text => {
             hookProps.data.infoDeclare.seriMeter = text;
           }}
           ref={hookProps.refSeriMeter}
           onSubmitEditing={() => {
+            hookProps.refCustomerCode.current?.focus();
+          }}
+          blurOnSubmit={false}
+        /> */}
+        <View style={styles.containerSeri}>
+          <View style={{flex: 1}}>
+            <NormalTextInput
+              label="Seri đồng hồ:(*)"
+              ref={hookProps.refSeriMeter}
+              // style={styles.textInput}
+
+              keyboardType="decimal-pad"
+              value={hookProps.state.data.METER_NO}
+              onChangeText={text => {
+                hookProps.setState(state => {
+                  state.data.METER_NO = text;
+                  return {...state};
+                });
+              }}
+              // onSubmitEditing={() => {
+              //   hookProps.refCustomerCode.current?.focus();
+              // }}
+            />
+          </View>
+
+          <Button
+            style={styles.btnSearch}
+            label="Tìm kiếm"
+            onPress={onSearchInfo}
+          />
+        </View>
+
+        <NormalTextInput
+          label="Mã khách hàng:(*)"
+          value={hookProps.state.data.CUSTOMER_CODE}
+          onChangeText={text => {
+            hookProps.setState(state => {
+              state.data.CUSTOMER_CODE = text;
+              return {...state};
+            });
+          }}
+          ref={hookProps.refCustomerCode}
+          onSubmitEditing={() => {
+            //
+            // hookProps.refCustomerCode.current?.focus();
             hookProps.refCustomerName.current?.focus();
           }}
           blurOnSubmit={false}
         />
         <NormalTextInput
-          label="Tên khách hàng:(*)"
-          // onEndEditing={e => {
-          //   e.persist();
-          //   hookProps.setState(state => {
-          //     state.infoDeclare.customerName = e.nativeEvent?.text.trim();
-          //     return {...state};
-          //   });
-          // }}
+          label="Tên khách hàng:"
+          value={hookProps.state.data.CUSTOMER_NAME}
           onChangeText={text => {
-            hookProps.data.infoDeclare.customerName = text;
+            hookProps.setState(state => {
+              state.data.CUSTOMER_NAME = text;
+              return {...state};
+            });
           }}
           ref={hookProps.refCustomerName}
-          onSubmitEditing={() => {
-            hookProps.refCustomerCode.current?.focus();
-          }}
-          blurOnSubmit={false}
-        />
-        <NormalTextInput
-          label="Mã khách hàng:(*)"
-          // onEndEditing={e => {
-          //   e.persist();
-          //   hookProps.setState(state => {
-          //     state.infoDeclare.customerCode = e.nativeEvent?.text.trim();
-          //     return {...state};
-          //   });
-          // }}
-          onChangeText={text => {
-            hookProps.data.infoDeclare.customerCode = text;
-          }}
-          ref={hookProps.refCustomerCode}
           onSubmitEditing={() => {
             hookProps.refPhoneNUmber.current?.focus();
           }}
@@ -181,15 +198,12 @@ export const DeclareMeterScreen = () => {
           label="Số điện thoại:"
           maxLength={12}
           keyboardType="number-pad"
-          // onEndEditing={e => {
-          //   e.persist();
-          //   hookProps.setState(state => {
-          //     state.infoDeclare.phoneNumber = e.nativeEvent?.text.trim();
-          //     return {...state};
-          //   });
-          // }}
+          value={hookProps.state.data.PHONE}
           onChangeText={text => {
-            hookProps.data.infoDeclare.phoneNumber = text;
+            hookProps.setState(state => {
+              state.data.PHONE = text;
+              return {...state};
+            });
           }}
           ref={hookProps.refPhoneNUmber}
           onSubmitEditing={() => {
@@ -199,21 +213,102 @@ export const DeclareMeterScreen = () => {
         />
         <NormalTextInput
           label="Địa chỉ:"
-          // onEndEditing={e => {
-          //   e.persist();
-          //   hookProps.setState(state => {
-          //     state.infoDeclare.address = e.nativeEvent?.text.trim();
-          //     return {...state};
-          //   });
-          // }}
+          value={hookProps.state.data.ADDRESS}
           onChangeText={text => {
-            hookProps.data.infoDeclare.address = text;
+            hookProps.setState(state => {
+              state.data.ADDRESS = text;
+              return {...state};
+            });
           }}
           ref={hookProps.refAddress}
           // onSubmitEditing={() => {
           //   hookProps.refPhoneNUmber.current?.focus();
           // }}
           blurOnSubmit={true}
+        />
+        <View style={styles.containerSeri}>
+          <View style={{flex: 1}}>
+            <NormalTextInput
+              label="Toạ độ:"
+              // style={styles.textInput}
+              editable={false}
+              value={hookProps.state.data.COORDINATE}
+              onChangeText={text => {
+                hookProps.setState(state => {
+                  state.data.COORDINATE = text;
+                  return {...state};
+                });
+              }}
+            />
+          </View>
+          <TouchableOpacity
+            style={styles.btnUpdate}
+            onPress={onGetPositionPress}>
+            <Feather name="map-pin" size={normalize(30)} color="#f3d20e" />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.containMapView}>
+          <MapView
+            // provider="google"
+            style={styles.map}
+            mapType="standard"
+            showsIndoorLevelPicker
+            // style={StyleSheet.absoluteFillObject}
+            region={hookProps.state.region}
+            onPoiClick={e => {
+              console.log('onPoiClick:', e.nativeEvent.coordinate);
+            }}
+            // showsUserLocation
+            onRegionChangeComplete={region => {
+              console.log('region:', region);
+              hookProps.setState(state => {
+                state.region = {...region};
+                return {...state};
+              });
+            }}>
+            <Marker
+              draggable
+              coordinate={hookProps.state.position}
+              title={hookProps.state.data.METER_NO}
+              description={
+                hookProps.state.region.latitude +
+                ',' +
+                hookProps.state.region.longitude
+              }
+              onDragEnd={e => {
+                console.log('onDrag end:');
+                if (e.nativeEvent?.coordinate) {
+                  const latLog = e.nativeEvent.coordinate;
+                  const region = {...hookProps.state.region};
+                  region.latitude = latLog.latitude;
+                  region.longitude = latLog.longitude;
+
+                  hookProps.setState(state => {
+                    state.position = latLog;
+                    state.region = region;
+                    return {...state};
+                  });
+                }
+              }}
+              onPress={() => {
+                console.log('onPress');
+                onGoogleMapPress();
+              }}
+            />
+          </MapView>
+        </View>
+
+        <NormalTextInput
+          value={hookProps.state.data.CREATED}
+          label="Ngày khai báo:"
+          editable={false}
+
+          // onChangeText={text => {
+          //   hook.setState(state => {
+          //     state.data.CUSTOMER_NAME = text;
+          //     return {...state};
+          //   });
+          // }}
         />
       </ScrollView>
 
@@ -236,8 +331,28 @@ export const DeclareMeterScreen = () => {
     </View>
   );
 };
-
+const heightMap = 400;
 const styles = StyleSheet.create({
+  containMapView: {
+    width: '100%',
+    height: heightMap * scale,
+  },
+  map: {
+    width: '100%',
+    height: heightMap * scale,
+    backgroundColor: 'white',
+  },
+  btnUpdate: {
+    // backgroundColor: '#f3d20e',
+    // width: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 20,
+  },
+  btnSearch: {
+    backgroundColor: '#14f30e',
+    width: 100,
+  },
   container: {
     flex: 1,
     backgroundColor: Theme.Colors.backgroundColor,
@@ -257,9 +372,10 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   containerSeri: {
-    width: '50%',
-    marginVertical: 10,
-    marginHorizontal: 5,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 15,
+    alignItems: 'center',
   },
   seri: {
     fontSize: normalize(20),

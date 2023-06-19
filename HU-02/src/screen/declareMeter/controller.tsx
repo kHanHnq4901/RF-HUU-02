@@ -7,40 +7,27 @@ import SelectDropdown from 'react-native-select-dropdown';
 import {
   GetListLine,
   GetMeterModel,
+  PropsGetMeterServer,
   PropsReturnGetListLine,
   PropsReturnGetModelMeter,
 } from '../../service/api/index';
 import {turnOnLocation} from '../ble/controller';
-import {getGeolocation} from './handleButton';
+import {getGeolocation, onGetPositionPress} from './handleButton';
+import {LatLng, Region} from 'react-native-maps';
 var LocationEnabler =
   Platform.OS === 'android' ? require('react-native-location-enabler') : null;
 
-type InfoDeclareType = {
-  seriMeter: string;
-  phoneNumber: string;
-  customerName: string;
-  customerCode: string;
-  address: string;
-};
-
-type DataType = {
-  infoDeclare: InfoDeclareType;
-};
-
 type PropsDeclareMeter = {
-  // seriMeter: string;
-  // phoneNumber: string;
-  // customerName: string;
-  // customerCode: string;
-  // address: string;
   selectedModelMeter: string | null;
   selectedStation: string | null;
 };
-
 export type HookState = {
   infoDeclare: PropsDeclareMeter;
   status: string;
   isBusy: boolean;
+  data: PropsGetMeterServer;
+  region: Region;
+  position: LatLng;
 };
 
 export type HookProps = {
@@ -51,9 +38,10 @@ export type HookProps = {
   refAddress: React.RefObject<TextInput>;
   refScroll: React.RefObject<ScrollView>;
   refStation: React.RefObject<SelectDropdown>;
+  refModelMeter: React.RefObject<SelectDropdown>;
   state: HookState;
   setState: React.Dispatch<React.SetStateAction<HookState>>;
-  data: DataType;
+  // data: DataType;
 };
 
 const TAG = 'Header Controller: ';
@@ -61,15 +49,15 @@ const TAG = 'Header Controller: ';
 export const hookProps = {} as HookProps;
 export let store = {} as PropsStore;
 
-hookProps.data = {
-  infoDeclare: {
-    address: '',
-    customerCode: '',
-    customerName: '',
-    phoneNumber: '',
-    seriMeter: '',
-  },
-};
+// hookProps.data = {
+//   infoDeclare: {
+//     address: '',
+//     customerCode: '',
+//     customerName: '',
+//     phoneNumber: '',
+//     seriMeter: '',
+//   },
+// };
 
 export let ListStationObj: PropsReturnGetListLine = [];
 export let lisStationName: string[] = [];
@@ -140,6 +128,17 @@ export const GetHookProps = (): HookProps => {
     },
     status: '',
     isBusy: false,
+    data: {} as PropsGetMeterServer,
+    region: {
+      latitude: 21.108353280242344,
+      latitudeDelta: 0.05554526982951913,
+      longitude: 105.99402224645019,
+      longitudeDelta: 0.05683634430170059,
+    },
+    position: {
+      latitude: 21.108353280242344,
+      longitude: 105.99402224645019,
+    },
   });
   hookProps.state = state;
   hookProps.setState = setState;
@@ -164,6 +163,7 @@ export const GetHookProps = (): HookProps => {
   hookProps.refAddress = React.createRef<TextInput>();
   hookProps.refScroll = React.createRef<ScrollView>();
   hookProps.refStation = React.createRef<SelectDropdown>();
+  hookProps.refModelMeter = React.createRef<SelectDropdown>();
 
   return hookProps;
 };
@@ -179,11 +179,12 @@ export const onInit = async () => {
   Geolocation.requestAuthorization(
     () => {
       console.log('requestAuthorization succeed');
-      if (!intervalGPS) {
-        intervalGPS = setInterval(() => {
-          getGeolocation();
-        }, 7000);
-      }
+      // if (!intervalGPS) {
+      //   intervalGPS = setInterval(() => {
+      //     getGeolocation();
+      //   }, 7000);
+      // }
+      onGetPositionPress();
     },
     error => {
       console.log(error);

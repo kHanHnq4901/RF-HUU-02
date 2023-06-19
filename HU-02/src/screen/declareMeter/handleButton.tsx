@@ -6,15 +6,28 @@ import {
   GetUnsentDeclareMeter,
   SendUnsentDeclareMeterProcess,
 } from '../../database/service/declareMeterService';
-import {AddMeter} from '../../service/api';
+import {AddMeter, GetMeter, PropsGetMeterServer} from '../../service/api';
 import {PropsAddMeter} from '../../service/api/index';
 import {emitEventSuccess} from '../../service/event';
 import {emitEventFailure} from '../../service/event/index';
 import {showAlert} from '../../util';
 import {isAllNumeric} from '../../util/index';
-import {ListModelMeterObj, ListStationObj, hookProps} from './controller';
+import {
+  ListModelMeterObj,
+  ListStationObj,
+  hookProps,
+  lisStationName,
+  listModelMeterName,
+} from './controller';
+import {createOpenLink} from 'react-native-open-maps';
 
 const TAG = 'Declare Meter Handle Button';
+
+type PropsReturnSearchInfo = {
+  bSucceed: boolean;
+  latitude: number | undefined;
+  longtitude: number | undefined;
+};
 
 export async function getGeolocation(): Promise<GeolocationResponse | null> {
   const rest = await new Promise<GeolocationResponse | null>(resolve => {
@@ -49,22 +62,22 @@ function checkCondition(): boolean {
     showAlert('Chưa chọn loại đồng hồ');
     return false;
   }
-  text = hookProps.data.infoDeclare.seriMeter.trim();
+  text = hookProps.state.data.METER_NO.trim();
   if (text.length !== 10 || isAllNumeric(text) === false) {
     showAlert('Số seri cơ khí không hợp lệ: độ dài phải bằng 10 và chỉ gồm số');
     return false;
   }
-  text = hookProps.data.infoDeclare.customerName.trim();
-  if (text.length === 0) {
-    showAlert('Bổ sung thông tin Tên khách hàng');
-    return false;
-  }
-  text = hookProps.data.infoDeclare.customerCode.trim();
+  // text = hookProps.data.infoDeclare.customerName.trim();
+  // if (text.length === 0) {
+  //   showAlert('Bổ sung thông tin Tên khách hàng');
+  //   return false;
+  // }
+  text = hookProps.state.data.CUSTOMER_CODE.trim();
   if (text.length === 0) {
     showAlert('Bổ sung thông tin Mã khách hàng');
     return false;
   }
-  text = hookProps.data.infoDeclare.phoneNumber.trim();
+  text = hookProps.state.data.PHONE.trim();
   if (text.length > 0) {
     if (isAllNumeric(text) === false) {
       showAlert('Số điện thoại không hợp lệ');
@@ -96,34 +109,70 @@ export async function onDeclarePress() {
     return;
   }
 
-  const strSeri = hookProps.data.infoDeclare.seriMeter;
-  const customerName = hookProps.data.infoDeclare.customerName;
-  const customerCode = hookProps.data.infoDeclare.customerCode;
-  const address = hookProps.data.infoDeclare.address;
-  const phoneNumber = hookProps.data.infoDeclare.phoneNumber;
+  const strSeri = hookProps.state.data.METER_NO;
+  const customerName = hookProps.state.data.CUSTOMER_NAME;
+  const customerCode = hookProps.state.data.CUSTOMER_CODE;
+  const address = hookProps.state.data.ADDRESS;
+  const phoneNumber = hookProps.state.data.PHONE;
   const modelMeter = hookProps.state.infoDeclare.selectedModelMeter ?? '';
 
   try {
+    let ok = false;
+    await showAlert(
+      'Thay đổi toạ độ GPS mới ?',
+      {
+        label: 'Giữ toạ độ cũ',
+        func: () => {
+          ok = false;
+        },
+      },
+
+      {
+        label: 'Lấy vị trí hiện tại',
+        func: () => {
+          ok = true;
+        },
+      },
+    );
+
+    const iSNewGPS: boolean = ok;
+
     hookProps.setState(state => {
       state.isBusy = true;
       state.status = 'Đang khai báo ...';
       return {...state};
     });
-    let location: GeolocationResponse | null = null;
-    for (let i = 0; i < 5; i++) {
-      location = await getGeolocation();
-      if (location === null || location.coords.accuracy > 20) {
-        continue;
-      } else {
-        break;
-      }
+    // let location: GeolocationResponse | null = null;
+
+    if (iSNewGPS) {
+      // for (let i = 0; i < 5; i++) {
+      //   location = await getGeolocation();
+      //   if (location === null || location.coords.accuracy > 20) {
+      //     ok = false;
+      //     message = 'Lỗi GPS. Vui lòng thử lại';
+      //     succeeded = false;
+      //     continue;
+      //   } else {
+      //     ok = true;
+      //     break;
+      //   }
+      // }
+      ok = true;
+    } else {
+      ok = true;
     }
 
-    if (!location) {
-      message = 'Lỗi GPS. Vui lòng thử lại';
+    if (!ok) {
+      // message = 'Lỗi GPS. Vui lòng thử lại';
       succeeded = false;
     } else {
       //const location =
+
+      const coordinate = iSNewGPS
+        ? hookProps.state.position.latitude +
+          ',' +
+          hookProps.state.position.longitude
+        : hookProps.state.data.COORDINATE;
 
       const lineStatiobObj = ListStationObj.find(
         item => item.LINE_NAME === hookProps.state.infoDeclare.selectedStation,
@@ -134,11 +183,7 @@ export async function onDeclarePress() {
 
       if (lineStatiobObj && modelMeterObj) {
         const props: PropsAddMeter = {
-          Coordinate: location
-            ? location?.coords.latitude.toString() +
-              ',' +
-              location?.coords.longitude.toString()
-            : ' ',
+          Coordinate: coordinate,
           CustomerAddress: address,
           CustomerCode: customerCode,
           CustomerName: customerName,
@@ -163,15 +208,16 @@ export async function onDeclarePress() {
           //   return {...state};
           // });
 
-          hookProps.data.infoDeclare.seriMeter = '';
-          hookProps.data.infoDeclare.customerName = '';
-          hookProps.data.infoDeclare.customerCode = '';
-          hookProps.data.infoDeclare.phoneNumber = '';
+          hookProps.state.data.METER_NO = '';
+          hookProps.state.data.CUSTOMER_NAME = '';
+          hookProps.state.data.CUSTOMER_CODE = '';
+          hookProps.state.data.ADDRESS = '';
+          hookProps.state.data.PHONE = '';
 
-          hookProps.refPhoneNUmber.current?.clear();
-          hookProps.refSeriMeter.current?.clear();
-          hookProps.refCustomerName.current?.clear();
-          hookProps.refCustomerCode.current?.clear();
+          // hookProps.refPhoneNUmber.current?.clear();
+          // hookProps.refSeriMeter.current?.clear();
+          // hookProps.refCustomerName.current?.clear();
+          // hookProps.refCustomerCode.current?.clear();
 
           hookProps.refScroll.current?.scrollTo(0);
         } else {
@@ -230,4 +276,184 @@ export function onModelMeterSelected(itemSelected: string) {
     state.infoDeclare.selectedModelMeter = itemSelected;
     return {...state};
   });
+}
+
+export async function onSearchInfo(): Promise<PropsReturnSearchInfo> {
+  const rest: PropsReturnSearchInfo = {
+    bSucceed: false,
+    latitude: undefined,
+    longtitude: undefined,
+  };
+  let message = '';
+  let bSuccess = true;
+  const seri = hookProps.state.data.METER_NO.trim();
+  if (hookProps.state.isBusy) {
+    return rest;
+  }
+  if (seri.length === 0) {
+    showAlert('Chưa nhập số seri');
+    return rest;
+  }
+
+  try {
+    hookProps.setState(state => {
+      state.isBusy = true;
+      state.data = {} as PropsGetMeterServer;
+      state.data.METER_NO = seri;
+
+      return {...state};
+    });
+
+    const rest1 = await GetMeter({
+      Seri: seri,
+    });
+
+    if (rest1.bSucceeded) {
+      const data = rest1.obj as PropsGetMeterServer;
+      // hookProps.setState(
+      //     state => {
+      //         state.address = data.ADDRESS;
+      //         state.gpsFromServer = data.COORDINATE;
+      //         return {...state};
+      //     }
+      // );
+
+      //   hookProps.state.data.ADDRESS = data.ADDRESS;
+      //   hookProps.state.data.COORDINATE = data.COORDINATE;
+
+      // console.log(TAG, 'data:', data);
+      console.log(TAG, 'COORDINATE:', data.COORDINATE);
+
+      if (data.METER_NO) {
+        if (data.COORDINATE?.length > 5) {
+          const indexStation = lisStationName.findIndex(
+            item => item === data.LINE_NAME,
+          );
+          console.log('indexStation:', indexStation);
+          if (indexStation !== -1) {
+            hookProps.refStation?.current?.selectIndex(indexStation);
+          } else {
+            throw new Error('Đồng hồ không thuộc danh sách quản lý');
+          }
+          hookProps.state.data = data;
+          hookProps.state.infoDeclare.selectedModelMeter =
+            data.METER_MODEL_DESC.slice(4);
+          hookProps.state.infoDeclare.selectedStation = data.LINE_NAME;
+
+          const indexMeterModel = ListModelMeterObj.findIndex(
+            item => item.METER_MODEL_DESC === data.METER_MODEL_DESC,
+          );
+          // console.log('listModelMeterName:', listModelMeterName);
+          // console.log('data.METER_MODEL_DESC:', data.METER_MODEL_DESC);
+          console.log('indexMeterModel:', indexMeterModel);
+
+          if (indexMeterModel !== -1) {
+            // console.log(
+            //   'indexMeterModel:',
+            //   hookProps.refModelMeter?.current?.selectIndex,
+            // );
+            hookProps.refModelMeter?.current?.selectIndex(indexMeterModel);
+          }
+
+          const arrLatitude = data.COORDINATE.split(',');
+          rest.latitude = Number(arrLatitude[0]);
+          rest.longtitude = Number(arrLatitude[1]);
+
+          const region = {...hookProps.state.region};
+          const position = {...hookProps.state.position};
+
+          region.latitude = rest.latitude;
+          region.longitude = rest.longtitude;
+
+          position.latitude = rest.latitude;
+          position.longitude = rest.longtitude;
+
+          hookProps.state.region = region;
+
+          hookProps.state.position = position;
+
+          console.log(TAG, 'COORDINATE:', hookProps.state.region);
+
+          rest.bSucceed = true;
+        }
+      } else {
+        bSuccess = false;
+        message = 'Không có dữ liệu';
+      }
+    } else {
+    }
+  } catch (e) {
+    console.log(TAG, 'error', e.message);
+    message = e.message;
+    bSuccess = false;
+  } finally {
+    hookProps.setState(state => {
+      state.isBusy = false;
+      if (bSuccess === false) {
+        state.status = message;
+      } else {
+        state.status = '';
+      }
+      return {...state};
+    });
+  }
+
+  return rest;
+}
+
+export async function onGoogleMapPress() {
+  // const rest = await onSearchInfo();
+
+  // console.log('rest:', rest);
+
+  if (hookProps.state.data.COORDINATE) {
+    const link = createOpenLink({
+      provider: 'google',
+      // latitude: rest.latitude,
+      // longitude: rest.longtitude,
+      query:
+        hookProps.state.position.latitude +
+        ',' +
+        hookProps.state.position.longitude,
+      zoom: 0,
+      waypoints: [],
+    });
+    link();
+  } else {
+    showAlert('Không có dữ liệu');
+  }
+}
+
+export async function onGetPositionPress() {
+  // const rest = await onSearchInfo();
+
+  // console.log('rest:', rest);
+  let location: GeolocationResponse | null = null;
+  for (let i = 0; i < 5; i++) {
+    location = await getGeolocation();
+    if (location === null || location.coords.accuracy > 20) {
+      continue;
+    } else {
+      if (location?.coords.longitude && location?.coords.latitude) {
+        hookProps.setState(state => {
+          const position = {...state.position};
+          const region = {...state.region};
+
+          position.latitude = location.coords.latitude;
+          position.longitude = location.coords.longitude;
+
+          region.latitude = position.latitude;
+          region.longitude = position.longitude;
+
+          console.log('region:', region);
+
+          state.position = position;
+          state.region = region;
+          return {...state};
+        });
+      }
+
+      break;
+    }
+  }
 }

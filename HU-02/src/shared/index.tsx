@@ -11,7 +11,7 @@ import {ReadParameterScreen} from '../screen/readParameter';
 import {SettingAndAlarmScreen} from '../screen/settingAndAlarm';
 import {WriteOpticalScreen} from '../screen/writeOptical';
 
-export const version = '1.2.6';
+export const version = '1.3.0';
 
 // export const widthScreen = Dimensions.get('screen').width;
 // export const heighScreen = Dimensions.get('screen').height;
@@ -56,7 +56,7 @@ export const screenDatas: DataScreensProps = [
     info: 'Tìm vị trí đồng hồ',
     id: 'PositionMeter',
     icon: 'navigate',
-    component: PositionMeterScreen,
+    component: null,
   },
   // {
   //   title: 'Xem điện áp',
