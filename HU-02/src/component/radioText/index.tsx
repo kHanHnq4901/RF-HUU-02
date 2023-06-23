@@ -63,6 +63,13 @@ const styles = StyleSheet.create({
     elevation: 1,
     backgroundColor: 'white',
     color: Colors.text,
-    height:40 * scale,
+    height: 40 * scale,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.18,
+    shadowRadius: 1.0,
   },
 });

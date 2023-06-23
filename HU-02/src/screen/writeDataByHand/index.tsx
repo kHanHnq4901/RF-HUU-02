@@ -252,6 +252,13 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     backgroundColor: 'white',
     elevation: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.18,
+    shadowRadius: 1.0,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1000,

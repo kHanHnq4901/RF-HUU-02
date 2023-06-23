@@ -253,7 +253,11 @@ export async function onDeclarePress() {
         `);
       emitEventFailure();
     }
+    console.log('abc:', succeeded === true && saveDatabase === false);
+
     if (succeeded === true && saveDatabase === false) {
+      console.log('emit event success');
+
       emitEventSuccess();
     }
     const date = new Date();

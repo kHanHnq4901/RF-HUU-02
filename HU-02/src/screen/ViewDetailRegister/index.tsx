@@ -1,4 +1,4 @@
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import React from 'react';
 import {
   ScrollView,
@@ -8,9 +8,9 @@ import {
   View,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { StackViewDataList } from '../../navigation/model/model';
-import Theme, { Colors, normalize } from '../../theme';
-import { GetHook, getTableContent, onBeforeInit } from './controller';
+import {StackViewDataList} from '../../navigation/model/model';
+import Theme, {Colors, normalize} from '../../theme';
+import {GetHook, getTableContent, onBeforeInit} from './controller';
 
 type Props = {
   label: string;
@@ -73,7 +73,7 @@ export const ViewDetailRegisterScreen = () => {
               content={item.content}
             />
           ))}
-          <View style={{ marginTop: 15 }} />
+          <View style={{marginTop: 15}} />
         </View>
       </ScrollView>
     </View>
@@ -137,6 +137,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1000,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.18,
+    shadowRadius: 1.0,
   },
   NO: {
     color: 'black',

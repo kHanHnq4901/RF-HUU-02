@@ -335,7 +335,6 @@ export const ReadParameterScreen = () => {
               onChangeText={text => {
                 hookProps.userNote.value = text;
               }}
-              
             />
           </View>
         )}
@@ -407,6 +406,13 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingHorizontal: 10,
     elevation: 1,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.18,
+    shadowRadius: 1.0,
   },
   btnBottom: {
     flexDirection: 'row',

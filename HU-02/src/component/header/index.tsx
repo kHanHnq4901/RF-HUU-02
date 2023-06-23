@@ -38,7 +38,17 @@ export function Header(props: DrawerHeaderProps) {
   return (
     <>
       <Appbar.Header
-        style={{backgroundColor: 'white', elevation: 5}}
+        style={{
+          backgroundColor: 'white',
+          elevation: 1,
+          shadowColor: '#000',
+          shadowOffset: {
+            width: 0,
+            height: 1,
+          },
+          shadowOpacity: 0.18,
+          shadowRadius: 1.0,
+        }}
         //dark={false}
         //theme={{ colors: { primary: 'transparent' } }}
       >
@@ -52,7 +62,18 @@ export function Header(props: DrawerHeaderProps) {
             <Avatar.Image
               size={40 * scale}
               source={require('../../asset/images/icon/rf.jpg')}
-              style={{elevation: 5, marginLeft: 5, zIndex: 100}}
+              style={{
+                elevation: 5,
+                marginLeft: 5,
+                zIndex: 100,
+                shadowColor: '#000',
+                shadowOffset: {
+                  width: 0,
+                  height: 1,
+                },
+                shadowOpacity: 0.22,
+                shadowRadius: 2.22,
+              }}
             />
             {/* <Icon name="user-circle" size={40} color={theme.colors.primary} /> */}
           </TouchableOpacity>

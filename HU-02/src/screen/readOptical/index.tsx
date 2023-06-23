@@ -99,174 +99,171 @@ export const ReadOpticalScreen = () => {
           />
         ))}
       </View>
-      {hookProps.state.typeData.items[1].checked &&
-        (<>
-        <View style={styles.normalRow}>
-        <View>
-          <CheckboxButton
-            checked={hookProps.state.is0h}
-            label="0h"
-            onPress={() => {
-              hookProps.setState(state => {
-                state.is0h = !state.is0h;
-                return {...state};
-              });
-            }}
-          />
-        </View>
-        <View style={styles.rowSelectDate}>
-          <View style={styles.conatinerSelectDate}>
-            <Text style={styles.labelSelectDate}>Bắt đầu</Text>
-            <TouchableOpacity
-              onPress={() => {
-                if (hookProps.state.typeRead === 'Dữ liệu gần nhất') {
-                  return;
-                }
-                DateTimePickerAndroid.open({
-                  value: hookProps.state.dateStart,
-                  mode: 'time',
-                  display: 'clock',
-                  onChange: date => {
-                    //console.log(JSON.stringify(date));
-
-                    if (date.type === 'set') {
-                      hookProps.setState(state => {
-                        state.dateStart = new Date(
-                          date.nativeEvent.timestamp as string | number,
-                        );
-                        console.log(state.dateStart.toLocaleString());
-                        return {...state};
-                      });
-                    }
-                  },
-                });
-              }}>
-              <TextInput
-                // label="Chọn ngày"
-                value={hookProps.state.dateStart.toLocaleTimeString()}
-                onChangeText={() => {}}
-                //style={styles.searchText}
-                editable={false}
-                style={styleSelectDate}
+      {hookProps.state.typeData.items[1].checked && (
+        <>
+          <View style={styles.normalRow}>
+            <View>
+              <CheckboxButton
+                checked={hookProps.state.is0h}
+                label="0h"
+                onPress={() => {
+                  hookProps.setState(state => {
+                    state.is0h = !state.is0h;
+                    return {...state};
+                  });
+                }}
               />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                if (hookProps.state.typeRead === 'Dữ liệu gần nhất') {
-                  return;
-                }
-                DateTimePickerAndroid.open({
-                  value: hookProps.state.dateStart,
-                  mode: 'date',
-                  display: 'calendar',
-                  onChange: date => {
-                    //console.log(JSON.stringify(date));
-
-                    if (date.type === 'set') {
-                      hookProps.setState(state => {
-                        state.dateStart = new Date(
-                          date.nativeEvent.timestamp as string | number,
-                        );
-                        console.log(state.dateStart.toLocaleString());
-                        return {...state};
-                      });
+            </View>
+            <View style={styles.rowSelectDate}>
+              <View style={styles.conatinerSelectDate}>
+                <Text style={styles.labelSelectDate}>Bắt đầu</Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    if (hookProps.state.typeRead === 'Dữ liệu gần nhất') {
+                      return;
                     }
-                  },
-                });
-              }}>
-              <TextInput
-                // label="Chọn ngày"
-                value={hookProps.state.dateStart.toLocaleDateString()}
-                onChangeText={() => {}}
-                //style={styles.searchText}
-                editable={false}
-                style={styleSelectDate}
-              />
-            </TouchableOpacity>
+                    DateTimePickerAndroid.open({
+                      value: hookProps.state.dateStart,
+                      mode: 'time',
+                      display: 'clock',
+                      onChange: date => {
+                        //console.log(JSON.stringify(date));
+
+                        if (date.type === 'set') {
+                          hookProps.setState(state => {
+                            state.dateStart = new Date(
+                              date.nativeEvent.timestamp as string | number,
+                            );
+                            console.log(state.dateStart.toLocaleString());
+                            return {...state};
+                          });
+                        }
+                      },
+                    });
+                  }}>
+                  <TextInput
+                    // label="Chọn ngày"
+                    value={hookProps.state.dateStart.toLocaleTimeString()}
+                    onChangeText={() => {}}
+                    //style={styles.searchText}
+                    editable={false}
+                    style={styleSelectDate}
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    if (hookProps.state.typeRead === 'Dữ liệu gần nhất') {
+                      return;
+                    }
+                    DateTimePickerAndroid.open({
+                      value: hookProps.state.dateStart,
+                      mode: 'date',
+                      display: 'calendar',
+                      onChange: date => {
+                        //console.log(JSON.stringify(date));
+
+                        if (date.type === 'set') {
+                          hookProps.setState(state => {
+                            state.dateStart = new Date(
+                              date.nativeEvent.timestamp as string | number,
+                            );
+                            console.log(state.dateStart.toLocaleString());
+                            return {...state};
+                          });
+                        }
+                      },
+                    });
+                  }}>
+                  <TextInput
+                    // label="Chọn ngày"
+                    value={hookProps.state.dateStart.toLocaleDateString()}
+                    onChangeText={() => {}}
+                    //style={styles.searchText}
+                    editable={false}
+                    style={styleSelectDate}
+                  />
+                </TouchableOpacity>
+              </View>
+              <View style={styles.conatinerSelectDate}>
+                <Text style={styles.labelSelectDate}>Kết thúc</Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    if (hookProps.state.typeRead === 'Dữ liệu gần nhất') {
+                      return;
+                    }
+                    DateTimePickerAndroid.open({
+                      value: hookProps.state.dateEnd,
+                      mode: 'time',
+                      display: 'clock',
+                      onChange: date => {
+                        //console.log(JSON.stringify(date));
+
+                        if (date.type === 'set') {
+                          hookProps.setState(state => {
+                            state.dateEnd = new Date(
+                              date.nativeEvent.timestamp as string | number,
+                            );
+                            console.log(state.dateEnd.toLocaleString());
+                            return {...state};
+                          });
+                        }
+                      },
+                    });
+                  }}>
+                  <TextInput
+                    // label="Chọn ngày"
+                    value={hookProps.state.dateEnd.toLocaleTimeString()}
+                    onChangeText={() => {}}
+                    //style={styles.searchText}
+                    editable={false}
+                    style={styleSelectDate}
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    if (hookProps.state.typeRead === 'Dữ liệu gần nhất') {
+                      return;
+                    }
+                    DateTimePickerAndroid.open({
+                      value: hookProps.state.dateEnd,
+                      mode: 'date',
+                      display: 'calendar',
+                      onChange: date => {
+                        console.log(JSON.stringify(date));
+
+                        if (date.type === 'set') {
+                          hookProps.setState(state => {
+                            state.dateEnd = new Date(
+                              date.nativeEvent.timestamp as string | number,
+                            );
+                            return {...state};
+                          });
+                        }
+                      },
+                    });
+                  }}>
+                  <TextInput
+                    // label="Chọn ngày"
+                    value={hookProps.state.dateEnd.toLocaleDateString()}
+                    onChangeText={() => {}}
+                    //style={styles.searchText}
+                    editable={false}
+                    style={styleSelectDate}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
           </View>
-          <View style={styles.conatinerSelectDate}>
-            <Text style={styles.labelSelectDate}>Kết thúc</Text>
-            <TouchableOpacity
-              onPress={() => {
-                if (hookProps.state.typeRead === 'Dữ liệu gần nhất') {
-                  return;
-                }
-                DateTimePickerAndroid.open({
-                  value: hookProps.state.dateEnd,
-                  mode: 'time',
-                  display: 'clock',
-                  onChange: date => {
-                    //console.log(JSON.stringify(date));
-
-                    if (date.type === 'set') {
-                      hookProps.setState(state => {
-                        state.dateEnd = new Date(
-                          date.nativeEvent.timestamp as string | number,
-                        );
-                        console.log(state.dateEnd.toLocaleString());
-                        return {...state};
-                      });
-                    }
-                  },
-                });
-              }}>
-              <TextInput
-                // label="Chọn ngày"
-                value={hookProps.state.dateEnd.toLocaleTimeString()}
-                onChangeText={() => {}}
-                //style={styles.searchText}
-                editable={false}
-                style={styleSelectDate}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                if (hookProps.state.typeRead === 'Dữ liệu gần nhất') {
-                  return;
-                }
-                DateTimePickerAndroid.open({
-                  value: hookProps.state.dateEnd,
-                  mode: 'date',
-                  display: 'calendar',
-                  onChange: date => {
-                    console.log(JSON.stringify(date));
-
-                    if (date.type === 'set') {
-                      hookProps.setState(state => {
-                        state.dateEnd = new Date(
-                          date.nativeEvent.timestamp as string | number,
-                        );
-                        return {...state};
-                      });
-                    }
-                  },
-                });
-              }}>
-              <TextInput
-                // label="Chọn ngày"
-                value={hookProps.state.dateEnd.toLocaleDateString()}
-                onChangeText={() => {}}
-                //style={styles.searchText}
-                editable={false}
-                style={styleSelectDate}
-              />
-            </TouchableOpacity>
+          <View style={styles.rowRadioButton}>
+            {readParamsController.dataReadRadioButton.map(e => {
+              // console.log('state', hookProps.state.typeRead);
+              // console.log('e', e);
+              return <RenderRadioButton e={e} key={e} />;
+            })}
           </View>
-        </View>
-      </View>
-      <View style={styles.rowRadioButton}>
-        {readParamsController.dataReadRadioButton.map(e => {
-          // console.log('state', hookProps.state.typeRead);
-          // console.log('e', e);
-          return <RenderRadioButton e={e} key={e} />;
-        })}
-      </View>
-        </>)
-      }
+        </>
+      )}
 
-      
-
-      
       <Text style={styles.status}>{hookProps.state.status}</Text>
       <Table borderStyle={{borderWidth: 2, borderColor: '#c8e1ff'}}>
         <Row
@@ -339,6 +336,13 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingHorizontal: 10,
     elevation: 1,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.18,
+    shadowRadius: 1.0,
   },
   btnBottom: {
     flexDirection: 'row',

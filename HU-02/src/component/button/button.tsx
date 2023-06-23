@@ -51,6 +51,13 @@ const styles = StyleSheet.create({
     height: 40 * scale,
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
   },
   label: {
     textAlign: 'center',

@@ -36,6 +36,13 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: 'center',
     backgroundColor: 'white',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
   },
   label: {
     fontSize: normalize(18),

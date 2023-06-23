@@ -1,8 +1,17 @@
 import {useNavigation} from '@react-navigation/native';
 import React from 'react';
-import {Dimensions, 
-  ImageBackground, NativeModules, ScrollView, StatusBar, StyleSheet, Text, 
-  View, Image, Platform} from 'react-native';
+import {
+  Dimensions,
+  ImageBackground,
+  NativeModules,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  Platform,
+} from 'react-native';
 import {VictoryPie} from 'victory-native';
 import {DetailDB} from '../../component/detailDB';
 import Theme, {Colors, normalize} from '../../theme';
@@ -43,7 +52,6 @@ const connerRadius = (deviceWidth / 2) * 0.3 * 0.9;
 const radius = (deviceWidth / 2) * 0.9;
 const labelRadius = ((radius + innerRadius) / 2) * 0.8;
 
-
 export const OverViewScreen = () => {
   GetHook();
 
@@ -69,19 +77,24 @@ export const OverViewScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Image resizeMode='contain'
-      style={{width: '100%', height: '20%'}}
-      source={require('../../asset/images/logo/logo.png')} ></Image>
+      <Image
+        resizeMode="contain"
+        style={{width: '100%', height: '20%'}}
+        source={require('../../asset/images/logo/logo.png')}
+      />
       <Text style={styles.text}>HU-02</Text>
       <ImageBackground
-      resizeMode='contain'
-      style={{flex: 1}} source={require('../../asset/images/image/ov.jpg')} ></ImageBackground>
+        resizeMode="contain"
+        style={{flex: 1}}
+        source={require('../../asset/images/image/ov.jpg')}
+      />
       <ImageBackground
-      resizeMode='contain'
-      style={{flex: 1}} source={require('../../asset/images/image/model1.jpg')} ></ImageBackground>
+        resizeMode="contain"
+        style={{flex: 1}}
+        source={require('../../asset/images/image/model1.jpg')}
+      />
     </View>
   );
-
 
   return (
     <View style={styles.container}>
@@ -170,7 +183,7 @@ const styles = StyleSheet.create({
     fontSize: normalize(60),
     marginBottom: 50,
     color: '#f3688f',
-    alignSelf:'center',
+    alignSelf: 'center',
   },
   container: {
     flex: 1,
@@ -186,6 +199,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 1,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.18,
+    shadowRadius: 1.0,
   },
   detailTitleChart: {
     justifyContent: 'center',

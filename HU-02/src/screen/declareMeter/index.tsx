@@ -1,5 +1,6 @@
 import React, {useEffect} from 'react';
 import {
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -417,11 +418,19 @@ const styles = StyleSheet.create({
     marginBottom: 5 * scale,
   },
   buttonDropdown: {
+    borderWidth: Platform.OS === 'android' ? 0 : 1,
+    borderColor: Platform.OS === 'android' ? 'white' : Colors.border,
     backgroundColor: 'white',
     borderRadius: 10,
     width: '93%',
     elevation: 1,
-    //height: 35 * scale,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.18,
+    shadowRadius: 1.0,
   },
   textDropdown: {
     fontSize: normalize(16),

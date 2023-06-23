@@ -67,6 +67,13 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     backgroundColor: 'white',
     alignSelf: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.18,
+    shadowRadius: 1.0,
   },
   deivider: {
     width: 1,

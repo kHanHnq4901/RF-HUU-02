@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, {useContext} from 'react';
 import {
   View,
   StyleSheet,
@@ -6,8 +6,8 @@ import {
   Text,
   TextInput,
 } from 'react-native';
-import { Modal, Portal, Divider } from 'react-native-paper';
-import { Colors, normalize } from '../../theme/index';
+import {Modal, Portal, Divider} from 'react-native-paper';
+import {Colors, normalize} from '../../theme/index';
 
 type Props = {
   visible: boolean;
@@ -78,6 +78,13 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     backgroundColor: 'white',
     alignSelf: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.18,
+    shadowRadius: 1.0,
   },
   titleHeader: {
     fontSize: normalize(25),
