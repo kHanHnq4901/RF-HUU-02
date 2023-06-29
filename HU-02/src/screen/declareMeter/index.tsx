@@ -244,6 +244,7 @@ export const DeclareMeterScreen = () => {
           </View>
           <TouchableOpacity
             style={styles.btnUpdate}
+            onLongPress={onGoogleMapPress}
             onPress={onGetPositionPress}>
             <Feather name="map-pin" size={normalize(30)} color="#f3d20e" />
           </TouchableOpacity>
@@ -332,7 +333,7 @@ export const DeclareMeterScreen = () => {
     </View>
   );
 };
-const heightMap = 400;
+const heightMap = 350;
 const styles = StyleSheet.create({
   containMapView: {
     width: '100%',

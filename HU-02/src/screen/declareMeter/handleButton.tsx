@@ -10,7 +10,7 @@ import {AddMeter, GetMeter, PropsGetMeterServer} from '../../service/api';
 import {PropsAddMeter} from '../../service/api/index';
 import {emitEventSuccess} from '../../service/event';
 import {emitEventFailure} from '../../service/event/index';
-import {showAlert} from '../../util';
+import {showAlert, showToast} from '../../util';
 import {isAllNumeric} from '../../util/index';
 import {
   ListModelMeterObj,
@@ -455,6 +455,7 @@ export async function onGetPositionPress() {
           state.region = region;
           return {...state};
         });
+        showToast('Đã cập nhật toạ độ hiện tại');
       }
 
       break;
