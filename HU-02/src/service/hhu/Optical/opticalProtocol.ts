@@ -1,6 +1,12 @@
 import struct from '../../../util/cstruct';
 import {Buffer} from 'buffer';
-import {float, int8_t, uint16_t, uint32_t, uint8_t} from '../../../util/custom_typedef';
+import {
+  float,
+  int8_t,
+  uint16_t,
+  uint32_t,
+  uint8_t,
+} from '../../../util/custom_typedef';
 import {Rtc_SimpleTimeProps, Rtc_SimpleTimeType} from '../RF/radioProtocol';
 
 export enum OPTICAL_CMD {
@@ -56,6 +62,18 @@ export enum OPTICAL_CMD {
   OPTICAL_GET_TIME_LATCH_DATA = 49 /** @brief command optical */,
   OPTICAL_SET_TIME_LATCH_DATA = 50 /** @brief command optical */,
   OPTICAL_SET_DATA_NO_FACTOR_PULSE = 51 /** @brief command optical */,
+  OPTICAL_RESET_PASSWORD_P1_P2 = 52 /** @brief command optical */,
+  OPTICAL_CLEAR_CALIB_SENSOR = 53 /** @brief command optical */,
+  OPTICAL_GET_DATA_NO_FACTOR_PULSE = 54 /** @brief command optical */,
+  OPTICAL_GET_REGISTER_CW_UCW = 55 /** @brief command optical */,
+  OPTICAL_SET_KEY_AES_RADIO = 56 /** @brief command optical */,
+  OPTICAL_GET_KEY_AES_RADIO = 57 /** @brief command optical */,
+  OPTICAL_SET_KEY_AES_OPTICAL = 58 /** @brief command optical */,
+  OPTICAL_GET_KEY_AES_OPTICAL = 59 /** @brief command optical */,
+  OPTICAL_SET_DEBUG = 60 /** @brief command optical */,
+  OPTICAL_DEBUG_MESSAGE_FROM_NODE = 61 /** @brief command optical */,
+  OPTICAL_SET_ACTIVE_RADIO = 62 /** @brief command optical */,
+  OPTICAL_GET_ACTIVE_RADIO = 63 /** @brief command optical */,
 }
 
 export enum Optical_SeriType {
@@ -216,12 +234,12 @@ export const Optical_TimeRtcType = struct`
 `;
 
 export type Optical_TimeRtcProps = {
-  u8Year : uint8_t;
-  u8Month : uint8_t;
-  u8Date : uint8_t;
-  u8Hour : uint8_t;
-  u8Minute : uint8_t;
-  u8Sec : uint8_t;
+  u8Year: uint8_t;
+  u8Month: uint8_t;
+  u8Date: uint8_t;
+  u8Hour: uint8_t;
+  u8Minute: uint8_t;
+  u8Sec: uint8_t;
 };
 
 export const Optical_TimeSendType = struct`
@@ -238,7 +256,6 @@ export type Optical_TimeSendProps = {
   u8State: uint8_t;
 };
 
-
 export const Optical_TestRFType = struct`
     uint8_t au8Serial[4];
     uint8_t u8Succeed;
@@ -251,19 +268,19 @@ export const Optical_TestRFType = struct`
 `;
 
 export type Optical_TestRFProps = {
-  au8Serial : Uint8Array;
-  u8Succeed : uint8_t;
-  s8RssiGatewayRec : int8_t;
+  au8Serial: Uint8Array;
+  u8Succeed: uint8_t;
+  s8RssiGatewayRec: int8_t;
   s8RssiSlaveRec: int8_t;
-  u8HasIP : uint8_t;
+  u8HasIP: uint8_t;
   au8Qccid: Uint8Array;
   au8Apn: Uint8Array;
   au8IMSI: Uint8Array;
 };
 export const OPTICAL_CMD_INFO_PROTOCOL = {
-  OPTION_HOST_PORT_INFO_RP : 0,
-  OPTION_USER_PASSWORD_TOPIC_RP : 1,
-}
+  OPTION_HOST_PORT_INFO_RP: 0,
+  OPTION_USER_PASSWORD_TOPIC_RP: 1,
+};
 
 export const SIZE_HOST = 36;
 export const Optical_HostPortType = struct`
@@ -271,11 +288,7 @@ export const Optical_HostPortType = struct`
     uint16_t u16Port;
 `;
 
-
 export type Optical_HostPortProps = {
-  au8Host : Uint8Array;
-  u16Port : uint16_t;
+  au8Host: Uint8Array;
+  u16Port: uint16_t;
 };
-
-
-

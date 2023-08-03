@@ -2,6 +2,13 @@ import React, {useState} from 'react';
 import {PropsStore, storeContext} from '../../store';
 import {USER_ROLE_TYPE} from '../../service/user';
 import {store} from '../../component/drawer/drawerContent/controller';
+import Geolocation, {
+  GeolocationResponse,
+} from '@react-native-community/geolocation';
+import {Platform} from 'react-native';
+import {turnOnLocation} from '../ble/controller';
+var LocationEnabler =
+  Platform.OS === 'android' ? require('react-native-location-enabler') : null;
 
 type RadioButton_Value = 'Dữ liệu gần nhất' | 'Theo thời gian' | 'Tức thời';
 
@@ -53,6 +60,7 @@ export type HookState = {
   };
   requestStop: boolean;
   is0h: boolean;
+  isSaving: boolean;
 };
 
 export type HookProps = {
@@ -104,6 +112,7 @@ function getInitialState(): HookState {
     },
     requestStop: false,
     is0h: false,
+    isSaving: false,
   };
   if (
     store.state.userInfo.USER_TYPE === USER_ROLE_TYPE.ADMIN ||
@@ -131,13 +140,96 @@ function getInitialState(): HookState {
   return value;
 }
 
+export function setStatus(status: string) {
+  hookProps.setState(state => {
+    state.status = status;
+    return {...state};
+  });
+}
+
+const {
+  PRIORITIES: {HIGH_ACCURACY},
+  useLocationSettings,
+} =
+  Platform.OS === 'android'
+    ? LocationEnabler.default
+    : {
+        PRIORITIES: {HIGH_ACCURACY: null},
+        useLocationSettings: null,
+      };
+
+let enableLocationHook = {} as {
+  enabled: any;
+  requestResolution: () => void;
+};
+
+export const requestGps = async (): Promise<boolean> => {
+  try {
+    const value = await turnOnLocation(false);
+    if (value === true) {
+      // console.log('value:', value);
+      // console.log('enable:', enabled);
+
+      if (Platform.OS === 'android') {
+        if (enableLocationHook.enabled !== true) {
+          enableLocationHook.requestResolution();
+          return true;
+        } else {
+        }
+      }
+
+      return true;
+    }
+    if (value === false) {
+      setStatus('Bật GPS cho chức năng tìm kiếm thiết bị Bluetooth');
+    }
+  } catch (err) {
+    setStatus('Lỗi: ' + err.message);
+  }
+
+  return false;
+};
+
 export const GetHookProps = (): HookProps => {
   const [state, setState] = useState<HookState>(getInitialState());
+  if (Platform.OS === 'android') {
+    const [enabled, requestResolution] = useLocationSettings(
+      {
+        priority: HIGH_ACCURACY, // default BALANCED_POWER_ACCURACY
+        alwaysShow: true, // default false
+        needBle: true, // default false
+      },
+      false /* optional: default undefined */,
+    );
+    enableLocationHook.enabled = enabled;
+    enableLocationHook.requestResolution = requestResolution;
+  }
   hookProps.state = state;
   hookProps.setState = setState;
   return hookProps;
 };
 
-export const onInit = async () => {};
+export const onInit = async () => {
+  Geolocation.setRNConfiguration({
+    skipPermissionRequests: false,
+    authorizationLevel: 'whenInUse',
+    locationProvider: 'playServices',
+  });
+  Geolocation.requestAuthorization(
+    () => {
+      console.log('requestAuthorization succeed');
+      // if (!intervalGPS) {
+      //   intervalGPS = setInterval(() => {
+      //     getGeolocation();
+      //   }, 7000);
+      // }
+      // onGetPositionPress();
+    },
+    error => {
+      console.log(error);
+    },
+  );
+  requestGps();
+};
 
 export const onDeInit = () => {};

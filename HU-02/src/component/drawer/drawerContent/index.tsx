@@ -106,7 +106,7 @@ export const DrawerContent = props => {
                 if (element.id === 'ExportLog') {
                   if (store.state.userInfo.ROLE_NAME === 'DVKH') {
                   } else {
-                    return null;
+                    // return null;
                   }
                 }
                 return (
@@ -121,6 +121,7 @@ export const DrawerContent = props => {
                       infoHeader.info = element.info;
                       //navigation.closeDrawer();
                       //console.log('func close:', navigation);
+
                       navigation.navigate(element.id, {
                         info: element.info,
                         title: element.title,

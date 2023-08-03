@@ -13,7 +13,7 @@ import {
 } from '../../service/api/index';
 import {turnOnLocation} from '../ble/controller';
 import {getGeolocation, onGetPositionPress} from './handleButton';
-import {LatLng, Region} from 'react-native-maps';
+import {LatLng, MapMarker, Marker, Region} from 'react-native-maps';
 var LocationEnabler =
   Platform.OS === 'android' ? require('react-native-location-enabler') : null;
 
@@ -27,7 +27,7 @@ export type HookState = {
   isBusy: boolean;
   data: PropsGetMeterServer;
   region: Region;
-  position: LatLng;
+  position: LatLng | null;
 };
 
 export type HookProps = {
@@ -39,6 +39,9 @@ export type HookProps = {
   refScroll: React.RefObject<ScrollView>;
   refStation: React.RefObject<SelectDropdown>;
   refModelMeter: React.RefObject<SelectDropdown>;
+
+  refMarker: React.RefObject<MapMarker>;
+
   state: HookState;
   setState: React.Dispatch<React.SetStateAction<HookState>>;
   // data: DataType;
@@ -164,6 +167,7 @@ export const GetHookProps = (): HookProps => {
   hookProps.refScroll = React.createRef<ScrollView>();
   hookProps.refStation = React.createRef<SelectDropdown>();
   hookProps.refModelMeter = React.createRef<SelectDropdown>();
+  hookProps.refMarker = React.createRef<MapMarker>();
 
   return hookProps;
 };

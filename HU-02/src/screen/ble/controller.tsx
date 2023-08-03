@@ -6,8 +6,14 @@ import {check, PERMISSIONS, request, RESULTS} from 'react-native-permissions';
 import {onScanPress} from './handleButton';
 
 import * as permission from 'react-native-permissions';
-import { requestPermissionGPSAndroid, requestPermissionGPSIos, requestPermissionScan, requestPermissionBleConnectAndroid } from '../../service/permission';
-var LocationEnabler = (Platform.OS === 'android') ? require('react-native-location-enabler') : null;
+import {
+  requestPermissionGPSAndroid,
+  requestPermissionGPSIos,
+  requestPermissionScan,
+  requestPermissionBleConnectAndroid,
+} from '../../service/permission';
+var LocationEnabler =
+  Platform.OS === 'android' ? require('react-native-location-enabler') : null;
 
 export type PropsItemBle = {
   isConnectable?: boolean;
@@ -46,10 +52,13 @@ export let store = {} as PropsStore;
 const {
   PRIORITIES: {HIGH_ACCURACY},
   useLocationSettings,
-} = (Platform.OS === 'android') ? LocationEnabler.default : {
-  PRIORITIES: {HIGH_ACCURACY: null},
-  useLocationSettings: null,
-};
+} =
+  Platform.OS === 'android'
+    ? LocationEnabler.default
+    : {
+        PRIORITIES: {HIGH_ACCURACY: null},
+        useLocationSettings: null,
+      };
 
 let enableLocationHook = {} as {
   enabled: any;
@@ -58,12 +67,9 @@ let enableLocationHook = {} as {
 
 export const requestGps = async (): Promise<boolean> => {
   try {
-
     const value = await turnOnLocation();
     if (value === true) {
-
-      if(Platform.OS === 'android')
-      {
+      if (Platform.OS === 'android') {
         if (enableLocationHook.enabled !== true) {
           enableLocationHook.requestResolution();
           return true;
@@ -83,8 +89,6 @@ export const requestGps = async (): Promise<boolean> => {
   return false;
 };
 
-
-
 export const GetHookProps = (): HookProps => {
   const [state, setState] = useState<HookState>({
     status: '',
@@ -99,8 +103,7 @@ export const GetHookProps = (): HookProps => {
 
   store = useContext(storeContext) as PropsStore;
 
-  if(Platform.OS === 'android')
-  {
+  if (Platform.OS === 'android') {
     const [enabled, requestResolution] = useLocationSettings(
       {
         priority: HIGH_ACCURACY, // default BALANCED_POWER_ACCURACY
@@ -109,15 +112,12 @@ export const GetHookProps = (): HookProps => {
       },
       false /* optional: default undefined */,
     );
-  
+
     enableLocationHook.enabled = enabled;
     enableLocationHook.requestResolution = requestResolution;
-
   }
   return hookProps;
 };
-
-
 
 const handleStopScan = () => {
   hookProps.setState(state => {
@@ -167,7 +167,6 @@ let listenerStopScan;
 let listenerDiscover;
 
 export const onInit = async navigation => {
-
   try {
     let requestScanPermission = await requestPermissionScan();
     let requestPermissionGps = await requestGps();
@@ -225,25 +224,20 @@ type PropsListBondBle = {
   name: string;
   rssi: 0;
 };
-export const turnOnLocation = async (requestBle?: boolean): Promise<boolean> => {
-
+export const turnOnLocation = async (
+  requestBle?: boolean,
+): Promise<boolean> => {
   let ok: boolean = false;
 
-  let result : permission.PermissionStatus = 'denied';
+  let result: permission.PermissionStatus = 'denied';
 
-  if(Platform.OS === 'ios')
-  {
-  
+  if (Platform.OS === 'ios') {
     return await requestPermissionGPSIos();
-
-  }else{
-
-    if(requestBle !== false)
-    {     
+  } else {
+    if (requestBle !== false) {
       ok = await requestPermissionBleConnectAndroid();
-
     }
-    ok =  await requestPermissionGPSAndroid();
+    ok = await requestPermissionGPSAndroid();
     return ok;
   }
 };

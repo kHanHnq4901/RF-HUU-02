@@ -44,7 +44,6 @@ export const WriteOpticalScreen = () => {
 
                 hookProps.data.seriMeter = text;
               }}
-              
               maxLength={10}
               textAlign="right"
               containerStyle={styles.width50}

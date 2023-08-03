@@ -24,7 +24,7 @@ import Theme, {
 } from '../../theme';
 import * as readParamsController from './controller';
 import {onDeInit, onInit} from './controller';
-import {onBtnReadPress} from './handleButton';
+import {onBtnReadPress, onSaveLogPress} from './handleButton';
 
 export const ReadOpticalScreen = () => {
   const hookProps = readParamsController.GetHookProps();
@@ -77,6 +77,12 @@ export const ReadOpticalScreen = () => {
     hookProps.state.typeRead === 'Dữ liệu gần nhất'
       ? Colors.caption
       : Colors.primary;
+
+  // const itemCheckBoxNbiot = hookProps.state.typeData.items.find(
+  //   item => item.label === 'Nbiot',
+  // );
+
+  // const isNbiotChecked = itemCheckBoxNbiot?.checked === true ? true : false;
 
   return (
     <View style={styles.conatiner}>
@@ -296,6 +302,11 @@ export const ReadOpticalScreen = () => {
             }}
           />
         )}
+        <Button
+          style={styles.button1}
+          label={hookProps.state.isSaving ? 'Đang lưu...' : 'Lưu log'}
+          onPress={onSaveLogPress}
+        />
       </View>
     </View>
   );
@@ -325,10 +336,17 @@ const styles = StyleSheet.create({
     paddingRight: 10,
   },
   button: {
-    width: '50%',
+    width: '40%',
     height: 40 * scaleHeight,
     alignSelf: 'center',
     maxWidth: 350,
+  },
+  button1: {
+    width: '40%',
+    height: 40 * scaleHeight,
+    alignSelf: 'center',
+    maxWidth: 350,
+    backgroundColor: Colors.secondary,
   },
   checkBoxTypeData: {
     marginRight: 5,
@@ -347,7 +365,7 @@ const styles = StyleSheet.create({
   btnBottom: {
     flexDirection: 'row',
     marginBottom: 20,
-    justifyContent: 'center',
+    justifyContent: 'space-around',
   },
   row: {
     flexDirection: 'row',

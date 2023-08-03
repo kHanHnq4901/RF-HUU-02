@@ -229,6 +229,7 @@ export const onBtnReadPress = async () => {
   return;
 };
 
+let oldContent = '';
 export async function onSaveLogPress() {
   let content = '';
 
@@ -282,11 +283,17 @@ export async function onSaveLogPress() {
 
     console.log('content:', content);
 
-    await RNFS.appendFile(fullPath, content);
+    if (oldContent !== content) {
+      await RNFS.appendFile(fullPath, content);
 
-    hookProps.userNote.ref?.current?.clear();
+      hookProps.userNote.ref?.current?.clear();
 
-    showToast('Lưu thành công');
+      oldContent = content;
+
+      showToast('Lưu thành công');
+    } else {
+      showToast('Đã lưu trước đó');
+    }
   } catch (err) {
     showToast('Lưu thất bại:' + err.message);
   }

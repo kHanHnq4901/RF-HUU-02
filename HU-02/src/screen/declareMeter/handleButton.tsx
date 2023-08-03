@@ -1,9 +1,9 @@
 import Geolocation, {
   GeolocationResponse,
 } from '@react-native-community/geolocation';
+import {createOpenLink} from 'react-native-open-maps';
 import {
   AddDeclareMeter,
-  GetUnsentDeclareMeter,
   SendUnsentDeclareMeterProcess,
 } from '../../database/service/declareMeterService';
 import {AddMeter, GetMeter, PropsGetMeterServer} from '../../service/api';
@@ -17,9 +17,7 @@ import {
   ListStationObj,
   hookProps,
   lisStationName,
-  listModelMeterName,
 } from './controller';
-import {createOpenLink} from 'react-native-open-maps';
 
 const TAG = 'Declare Meter Handle Button';
 
@@ -168,10 +166,21 @@ export async function onDeclarePress() {
     } else {
       //const location =
 
+      let rest: GeolocationResponse | null = null;
+      if (iSNewGPS) {
+        rest = await getCurrentPosition();
+        if (rest === null) {
+          throw new Error('Không thể lấy toạ độ hiện tại');
+        }
+      }
+
+      const position = {...hookProps.state.position};
+      position.latitude = rest?.coords.latitude;
+      position.longitude = rest?.coords.longitude;
+      hookProps.state.position = position;
+
       const coordinate = iSNewGPS
-        ? hookProps.state.position.latitude +
-          ',' +
-          hookProps.state.position.longitude
+        ? rest?.coords.latitude + ',' + rest?.coords.longitude
         : hookProps.state.data.COORDINATE;
 
       const lineStatiobObj = ListStationObj.find(
@@ -329,36 +338,35 @@ export async function onSearchInfo(): Promise<PropsReturnSearchInfo> {
       console.log(TAG, 'COORDINATE:', data.COORDINATE);
 
       if (data.METER_NO) {
+        const indexStation = lisStationName.findIndex(
+          item => item === data.LINE_NAME,
+        );
+        console.log('indexStation:', indexStation);
+        if (indexStation !== -1) {
+          hookProps.refStation?.current?.selectIndex(indexStation);
+        } else {
+          throw new Error('Đồng hồ không thuộc danh sách quản lý');
+        }
+        hookProps.state.data = data;
+        hookProps.state.infoDeclare.selectedModelMeter =
+          data.METER_MODEL_DESC.slice(4);
+        hookProps.state.infoDeclare.selectedStation = data.LINE_NAME;
+
+        const indexMeterModel = ListModelMeterObj.findIndex(
+          item => item.METER_MODEL_DESC === data.METER_MODEL_DESC,
+        );
+        // console.log('listModelMeterName:', listModelMeterName);
+        // console.log('data.METER_MODEL_DESC:', data.METER_MODEL_DESC);
+        console.log('indexMeterModel:', indexMeterModel);
+
+        if (indexMeterModel !== -1) {
+          // console.log(
+          //   'indexMeterModel:',
+          //   hookProps.refModelMeter?.current?.selectIndex,
+          // );
+          hookProps.refModelMeter?.current?.selectIndex(indexMeterModel);
+        }
         if (data.COORDINATE?.length > 5) {
-          const indexStation = lisStationName.findIndex(
-            item => item === data.LINE_NAME,
-          );
-          console.log('indexStation:', indexStation);
-          if (indexStation !== -1) {
-            hookProps.refStation?.current?.selectIndex(indexStation);
-          } else {
-            throw new Error('Đồng hồ không thuộc danh sách quản lý');
-          }
-          hookProps.state.data = data;
-          hookProps.state.infoDeclare.selectedModelMeter =
-            data.METER_MODEL_DESC.slice(4);
-          hookProps.state.infoDeclare.selectedStation = data.LINE_NAME;
-
-          const indexMeterModel = ListModelMeterObj.findIndex(
-            item => item.METER_MODEL_DESC === data.METER_MODEL_DESC,
-          );
-          // console.log('listModelMeterName:', listModelMeterName);
-          // console.log('data.METER_MODEL_DESC:', data.METER_MODEL_DESC);
-          console.log('indexMeterModel:', indexMeterModel);
-
-          if (indexMeterModel !== -1) {
-            // console.log(
-            //   'indexMeterModel:',
-            //   hookProps.refModelMeter?.current?.selectIndex,
-            // );
-            hookProps.refModelMeter?.current?.selectIndex(indexMeterModel);
-          }
-
           const arrLatitude = data.COORDINATE.split(',');
           rest.latitude = Number(arrLatitude[0]);
           rest.longtitude = Number(arrLatitude[1]);
@@ -379,6 +387,8 @@ export async function onSearchInfo(): Promise<PropsReturnSearchInfo> {
           console.log(TAG, 'COORDINATE:', hookProps.state.region);
 
           rest.bSucceed = true;
+        } else {
+          hookProps.state.position = null;
         }
       } else {
         bSuccess = false;
@@ -426,6 +436,23 @@ export async function onGoogleMapPress() {
   } else {
     showAlert('Không có dữ liệu');
   }
+}
+
+async function getCurrentPosition(): Promise<GeolocationResponse | null> {
+  let location: GeolocationResponse | null = null;
+  for (let i = 0; i < 5; i++) {
+    location = await getGeolocation();
+    if (location === null || location.coords.accuracy > 20) {
+      continue;
+    } else {
+      if (location?.coords.longitude && location?.coords.latitude) {
+        return location;
+      }
+
+      break;
+    }
+  }
+  return location;
 }
 
 export async function onGetPositionPress() {

@@ -91,7 +91,8 @@ export type FieldOpticalResponseProps =
   | 'QCCID'
   | 'IMSI'
   | 'APN'
-  | 'IP-Port';
+  | 'IP-Port'
+  | 'Active';
 
 export type OpticalDailyProps = {
   'Thời điểm chốt': string;
@@ -689,6 +690,19 @@ export async function waitOpticalAdvance(
         }
 
         console.log('get info protocol');
+
+        break;
+      case OPTICAL_CMD.OPTICAL_GET_ACTIVE_RADIO:
+        const activeStatus = objOptical.payload[index];
+        index++;
+        data.Active =
+          activeStatus === 1
+            ? 'Yes'
+            : activeStatus === 0
+            ? 'No'
+            : 'unknown: ' + activeStatus.toString();
+
+        console.log('get active status');
 
         break;
     }

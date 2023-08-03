@@ -2,7 +2,7 @@ import React, {Dispatch, useState} from 'react';
 import {PropsAppSetting, getDefaultStorageValue} from '../service/storage';
 import {PropsInfoUser, PropsInfoWM, PropsLineServer} from '../service/user';
 import {Buffer} from 'buffer';
-import { Platform } from 'react-native';
+import {Platform} from 'react-native';
 
 export type PropsStoreMeter = {
   listLine: PropsLineServer[];
@@ -71,6 +71,8 @@ type PropsState = {
   meter: PropsStoreMeter;
   keyAes: PropsKeyAesStore;
   typeTouchID: TYPE_TOUCH_ID;
+  isBusy: boolean;
+  canShowModalBusy: boolean;
 };
 
 export type PropsStore = {
@@ -124,6 +126,8 @@ export const StoreProvider = ({children}) => {
     },
     keyAes: getDefaultKeyAesStore(),
     typeTouchID: Platform.OS === 'ios' ? 'FaceID' : 'TouchID',
+    isBusy: true,
+    canShowModalBusy: false,
   });
 
   const initialValue: PropsStore = {

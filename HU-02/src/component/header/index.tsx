@@ -15,6 +15,7 @@ import {ModalInfo} from '../modal/modalShowInfo';
 import {onBleLongPress, onBlePress} from './handleButton';
 import {GetHookProps, store} from './controller';
 import {screenDatas} from '../../shared';
+import LoadingModal from '../loadingModal/index';
 
 const TAG = 'HEADER:';
 
@@ -136,6 +137,13 @@ export function Header(props: DrawerHeaderProps) {
       {/* <Divider /> */}
 
       {/* <ModalInfo title="Thông tin" info={infoHeader.info} /> */}
+      <LoadingModal
+        task={'Đang tải dữ liệu ...'}
+        modalVisible={
+          store.state.isBusy === true && store.state.canShowModalBusy === true
+        }
+        // modalVisible={true}
+      />
     </>
   );
 }

@@ -12,7 +12,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Button} from '../../component/button/button';
 import Loader3 from '../../component/loader3';
 import {NormalTextInput} from '../../component/normalTextInput';
-import Theme, {Colors, normalize, scale, scaleWidth} from '../../theme';
+import Theme, {Colors, Fonts, normalize, scale, scaleWidth} from '../../theme';
 import {
   GetHookProps,
   hookProps,
@@ -31,6 +31,7 @@ import {
 } from './handleButton';
 import Feather from 'react-native-vector-icons/Feather';
 import MapView, {Marker} from 'react-native-maps';
+import {Image} from 'react-native';
 
 export const DeclareMeterScreen = () => {
   GetHookProps();
@@ -268,35 +269,48 @@ export const DeclareMeterScreen = () => {
                 return {...state};
               });
             }}>
-            <Marker
-              draggable
-              coordinate={hookProps.state.position}
-              title={hookProps.state.data.METER_NO}
-              description={
-                hookProps.state.region.latitude +
-                ',' +
-                hookProps.state.region.longitude
-              }
-              onDragEnd={e => {
-                console.log('onDrag end:');
-                if (e.nativeEvent?.coordinate) {
-                  const latLog = e.nativeEvent.coordinate;
-                  const region = {...hookProps.state.region};
-                  region.latitude = latLog.latitude;
-                  region.longitude = latLog.longitude;
+            {hookProps.state.position !== null && (
+              <Marker
+                ref={hookProps.refMarker}
+                draggable
+                coordinate={hookProps.state.position}
+                pinColor="red"
+                // icon={require('../../asset/images/image/placeholder.png')}
+                // image={require('../../asset/images/image/placeholder.png')}
+                // title={hookProps.state.data.METER_NO}
+                // description={
+                //   hookProps.state.region.latitude +
+                //   ',' +
+                //   hookProps.state.region.longitude
+                // }
+                onDragEnd={e => {
+                  console.log('onDrag end:');
+                  if (e.nativeEvent?.coordinate) {
+                    const latLog = e.nativeEvent.coordinate;
+                    const region = {...hookProps.state.region};
+                    region.latitude = latLog.latitude;
+                    region.longitude = latLog.longitude;
 
-                  hookProps.setState(state => {
-                    state.position = latLog;
-                    state.region = region;
-                    return {...state};
-                  });
-                }
-              }}
-              onPress={() => {
-                console.log('onPress');
-                onGoogleMapPress();
-              }}
-            />
+                    hookProps.setState(state => {
+                      state.position = latLog;
+                      state.region = region;
+                      return {...state};
+                    });
+                  }
+                }}
+                onPress={() => {
+                  console.log('onPress');
+                  onGoogleMapPress();
+                  // hookProps.refMarker.current?.forceUpdate();
+                }}>
+                {/* <Text style={styles.labelInMap}>
+                  {hookProps.state.data.METER_NO}
+                </Text> */}
+                {/* <Image
+                  source={require('../../asset/images/image/placeholder.png')}
+                /> */}
+              </Marker>
+            )}
           </MapView>
         </View>
 
@@ -338,6 +352,11 @@ const styles = StyleSheet.create({
   containMapView: {
     width: '100%',
     height: heightMap * scale,
+  },
+  labelInMap: {
+    fontFamily: Fonts,
+    color: Colors.text,
+    fontWeight: 'bold',
   },
   map: {
     width: '100%',

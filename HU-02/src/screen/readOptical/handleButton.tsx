@@ -20,11 +20,15 @@ import {
   getUnitByLabelOptical,
 } from '../../service/hhu/util/utilFunc';
 import {USER_ROLE_TYPE} from '../../service/user';
-import {showToast, sleep} from '../../util';
+import {showAlert, showToast, sleep} from '../../util';
 import {Struct2Array, sizeof} from '../../util/struct-and-array';
 import {hookProps} from './controller';
 import {store} from '../../component/drawer/drawerContent/controller';
-import { log } from 'react-native-reanimated';
+import RNFS from 'react-native-fs';
+import {log} from 'react-native-reanimated';
+import {PATH_EXPORT_LOG} from '../../shared/path';
+import {GeolocationResponse} from '@react-native-community/geolocation';
+import {getGeolocation} from '../declareMeter/handleButton';
 
 const TAG = 'Handle Btn Read Optical';
 
@@ -101,7 +105,6 @@ export async function onBtnReadPress() {
           case 'Nbiot':
             await testRF();
             break;
-          
         }
       }
     }
@@ -121,8 +124,6 @@ export async function onBtnReadPress() {
 }
 
 function ConvertObjToHook(objResponse: any) {
-  
-  
   for (let itm in objResponse) {
     if (typeof objResponse[itm] === 'string') {
       hookProps.setState(state => {
@@ -153,12 +154,14 @@ function ConvertObjToHook(objResponse: any) {
           }
         }
       }
+
       hookProps.setState(state => {
         state.dataTable = state.dataTable.concat(dataTable);
         return {...state};
       });
     }
   }
+  console.log('dataTable:', hookProps.state.dataTable);
 }
 
 async function commonRead(arrCommand: OPTICAL_CMD[]) {
@@ -360,16 +363,17 @@ async function readData() {
   }
 }
 
-async function testRF(){
+async function testRF() {
   const arrCommand: OPTICAL_CMD[] = [];
+  arrCommand.push(OPTICAL_CMD.OPTICAL_GET_SERIAL); // test RF online
+  arrCommand.push(OPTICAL_CMD.OPTICAL_GET_SERIAL); // test RF online
+  arrCommand.push(OPTICAL_CMD.OPTICAL_GET_ACTIVE_RADIO); // test RF online
   arrCommand.push(OPTICAL_CMD.OPTICAL_TEST_RF); // test RF online
 
   await commonRead(arrCommand);
 }
 
-
 async function readTimeSend() {
-
   let bRet = await opticalShakeHand('00000000');
   if (!bRet) {
     setStatus('Bắt tay cổng quang lỗi');
@@ -394,7 +398,7 @@ async function readTimeSend() {
       payload = Buffer.alloc(1);
       payload[0] = Optical_SeriType.OPTICAL_TYPE_SERI_METER;
       header.u8Length = 1;
-    } else{
+    } else {
       payload = undefined;
       header.u8Length = 0;
     }
@@ -410,8 +414,6 @@ async function readTimeSend() {
         hasFailed = true;
       }
       if (response.obj) {
-        
-        
         ConvertObjToHook(response.obj);
       }
     }
@@ -419,5 +421,131 @@ async function readTimeSend() {
   }
   if (!hasFailed) {
     setStatus('Đọc xong');
+  }
+}
+
+export async function onGetPosition(): Promise<GeolocationResponse | null> {
+  // const rest = await onSearchInfo();
+
+  // console.log('rest:', rest);
+  let location: GeolocationResponse | null = null;
+  for (let i = 0; i < 5; i++) {
+    console.log('i:', i);
+
+    location = await getGeolocation();
+    if (location === null || location.coords.accuracy > 20) {
+      continue;
+    } else {
+      if (location?.coords.longitude && location?.coords.latitude) {
+        return location;
+      }
+
+      break;
+    }
+  }
+  return null;
+}
+
+let oldContent = '';
+
+export async function onSaveLogPress() {
+  let content = '';
+
+  if (hookProps.state.isSaving) {
+    showToast('Đang lưu');
+    return;
+  }
+
+  if (!hookProps.state.dataTable.length) {
+    showAlert('Chưa có dữ liệu');
+    // console.log(
+    //   'hookProps.state.dataTable.length:',
+    //   hookProps.state.dataTable.length,
+    // );
+
+    return;
+  }
+
+  for (let data of hookProps.state.dataTable) {
+    let first = true;
+    for (let item of data) {
+      content += item.toString();
+      if (first) {
+        content += ': ';
+        first = false;
+      }
+    }
+    content += ', ';
+  }
+  let getPositionSucceed = true;
+  try {
+    hookProps.setState(state => {
+      state.isSaving = true;
+      return {...state};
+    });
+    const pos = await onGetPosition();
+    if (!pos) {
+      throw new Error('Không thể lấy vị trí hiện tại, hãy thử lại ...');
+    }
+    content += 'LatLog: ' + pos?.coords.latitude + ',' + pos?.coords.longitude;
+    console.log('here1');
+  } catch (err: any) {
+    console.log('err:', err.message);
+    getPositionSucceed = false;
+    showAlert('Lấy vị trí thất baị:', err.message);
+    hookProps.setState(state => {
+      state.isSaving = false;
+      return {...state};
+    });
+  } finally {
+    console.log('here2');
+
+    // isBusy =
+  }
+  if (getPositionSucceed === false) {
+    return;
+  }
+  console.log('here3');
+
+  content += '\r\n';
+
+  // content += `Chỉ số CK: ${hookProps.state.registerMeter}, Sai lệch: ${hookProps.state.deltaRegister}, Ghi chú: ${hookProps.userNote.value}\r\n`;
+
+  try {
+    const date = new Date();
+
+    let nameFile =
+      'Log_Read_Optical_' +
+      date.getDate() +
+      '_' +
+      date.getMonth() +
+      '_' +
+      date.getFullYear() +
+      '.txt';
+    const fullPath = PATH_EXPORT_LOG + '/' + nameFile;
+
+    // const fileExist = await RNFS.exists(PATH_EXPORT_CSDL + '/' + nameFile);
+
+    // if (fileExist) {
+    //   await RNFS.appendFile(fullPath);
+    // }
+
+    if (oldContent !== content) {
+      oldContent = content;
+      await RNFS.appendFile(fullPath, content);
+
+      showToast('Lưu thành công');
+    } else {
+      showToast('Đã lưu trước đó');
+    }
+
+    console.log('content:', content);
+  } catch (err) {
+    showToast('Lưu thất bại:' + err.message);
+  } finally {
+    hookProps.setState(state => {
+      state.isSaving = false;
+      return {...state};
+    });
   }
 }

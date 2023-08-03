@@ -21,35 +21,31 @@ export const SettingAndAlarmScreen = () => {
     <View style={styles.contain}>
       <ScrollView style={styles.container}>
         <Text style={styles.title}>Chọn server:</Text>
-        <View style={styles.listSelectServer} >
-          {
-            listSelectServer.map(item => {
-              return (<RadioButton checked={hookProps.state.selectedSerVer === item} 
-                key={item} 
-                label={item} 
+        <View style={styles.listSelectServer}>
+          {listSelectServer.map(item => {
+            return (
+              <RadioButton
+                checked={hookProps.state.selectedSerVer === item}
+                key={item}
+                label={item}
                 value={item}
-                 onPress={
-                  ()=>{
-                    hookProps.setState(state => {
-                      state.selectedSerVer = item;
-                      if(item === 'EMIC')
-                      {
-                        store.state.appSetting.server.host = 'api.emic.com.vn';
-                        store.state.appSetting.server.port = '80';
+                onPress={() => {
+                  hookProps.setState(state => {
+                    state.selectedSerVer = item;
+                    if (item === 'EMIC') {
+                      store.state.appSetting.server.host = 'api.emic.com.vn';
+                      store.state.appSetting.server.port = '80';
+                    } else if (item === 'Sawaco') {
+                      store.state.appSetting.server.host = '182.237.21.93';
+                      store.state.appSetting.server.port = '3090';
+                    }
 
-                      }
-                      else if(item === 'Sawaco')
-                      {
-                        store.state.appSetting.server.host = '182.237.21.93';
-                        store.state.appSetting.server.port = '3090';
-                      }
-                      
-                      return {...state};
-                    });
-                  }
-                 }  ></RadioButton>);
-            })
-          }
+                    return {...state};
+                  });
+                }}
+              />
+            );
+          })}
         </View>
         <View style={styles.containerIPPort}>
           <View style={styles.containerItemIPPort}>
@@ -220,7 +216,7 @@ export const SettingAndAlarmScreen = () => {
 const styles = StyleSheet.create({
   listSelectServer: {
     flexDirection: 'row',
-    justifyContent:'space-around',
+    justifyContent: 'space-around',
     marginBottom: 10,
   },
   contain: {
