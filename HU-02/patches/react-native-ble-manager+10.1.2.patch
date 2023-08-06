@@ -1,0 +1,94 @@
+diff --git a/node_modules/react-native-ble-manager/dist/esm/index.d.ts b/node_modules/react-native-ble-manager/dist/esm/index.d.ts
+index b0c53ee..de271c5 100644
+--- a/node_modules/react-native-ble-manager/dist/esm/index.d.ts
++++ b/node_modules/react-native-ble-manager/dist/esm/index.d.ts
+@@ -107,7 +107,7 @@ declare class BleManager {
+      * [Android only] triggers an ENABLE_REQUEST intent to the end-user to enable bluetooth.
+      * @returns
+      */
+-    enableBluetooth(): Promise<void>;
++    enableBluetooth(): Promise<boolean>;
+     /**
+      *
+      * @param serviceUUIDs [optional] not used on android, optional on ios.
+diff --git a/node_modules/react-native-ble-manager/src/index.ts b/node_modules/react-native-ble-manager/src/index.ts
+index 1b7acc1..2429fd8 100644
+--- a/node_modules/react-native-ble-manager/src/index.ts
++++ b/node_modules/react-native-ble-manager/src/index.ts
+@@ -1,4 +1,4 @@
+-import { NativeModules } from 'react-native';
++import { NativeModules, Platform } from 'react-native';
+ import {
+   BleScanCallbackType,
+   BleScanMatchCount,
+@@ -14,6 +14,7 @@ import {
+ } from './types';
+ 
+ export * from './types';
++import { BluetoothStatus } from 'react-native-bluetooth-status';
+ 
+ var bleManager = NativeModules.BleManager;
+ 
+@@ -445,16 +446,54 @@ class BleManager {
+    * @returns 
+    */
+   enableBluetooth() {
+-    return new Promise<void>((fulfill, reject) => {
+-      bleManager.enableBluetooth((error: string | null) => {
+-        if (error) {
+-          reject(error);
+-        } else {
+-          fulfill();
+-        }
++
++    if (Platform.OS === 'ios') {
++      return new Promise<boolean>((fulfill, reject) => {
++        BluetoothStatus.state().then(isEnable => {
++          if (isEnable) {
++            fulfill(true);
++          } else {
++            fulfill(false);
++          }
++        });
+       });
+-    });
++    } else {
++      return new Promise<boolean>((fulfill, reject) => {
++
++        bleManager.enableBluetooth((error: string | null) => {
++          if (error) {
++            fulfill(false);
++          } else {
++            fulfill(true);
++          }
++        });
++      });
++    }
++    
+   }
++//   enableBluetooth() {
++//     if (React.Platform.OS === 'ios') {
++//       return new Promise((fulfill, reject) => {
++//         BluetoothStatus.state().then(isEnable => {
++//           if (isEnable) {
++//             fulfill(true);
++//           } else {
++//             fulfill('false');
++//           }
++//         });
++//       });
++//     } else {
++//       return new Promise((fulfill, reject) => {
++//         bleManager.enableBluetooth(error => {
++//           if (error != null) {
++//             fulfill(false);
++//           } else {
++//             fulfill(true);
++//           }
++//         });
++//       });
++//     }
++//   }
+ 
+   /**
+    * 
