@@ -1,8 +1,11 @@
-import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
-import {useNavigation} from '@react-navigation/native';
+import DateTimePicker, {
+  DateTimePickerAndroid,
+} from '@react-native-community/datetimepicker';
+import { useNavigation } from '@react-navigation/native';
 import throttle from 'lodash.throttle';
-import React, {useMemo} from 'react';
+import React, { useMemo } from 'react';
 import {
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -10,15 +13,15 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {Checkbox} from 'react-native-paper';
+import { Checkbox } from 'react-native-paper';
 import SelectDropdown from 'react-native-select-dropdown';
-import {Button} from '../../component/button/button';
-import {CheckboxButton} from '../../component/checkbox/checkbox';
+import { Button } from '../../component/button/button';
+import { CheckboxButton } from '../../component/checkbox/checkbox';
 import Loader3 from '../../component/loader3';
-import {RadioButton} from '../../component/radioButton/radioButton';
-import {StackWriteStationCodeNavigationProp} from '../../navigation/model/model';
-import {TypeReadRF} from '../../service/hhu/RF/RfFunc';
-import {Colors, normalize, scaleHeight, sizeScreen} from '../../theme';
+import { RadioButton } from '../../component/radioButton/radioButton';
+import { StackWriteStationCodeNavigationProp } from '../../navigation/model/model';
+import { TypeReadRF } from '../../service/hhu/RF/RfFunc';
+import { Colors, normalize, scaleHeight, sizeScreen } from '../../theme';
 import {
   dataReadRadioButton,
   GetHookProps,
@@ -29,6 +32,7 @@ import {
 } from './controller';
 import {
   onChangeTextSearch,
+  onDateEndPress,
   onOKPress,
   onTestPress,
   upDateMissData,
@@ -48,10 +52,10 @@ const RowHeader = (props: PropsRowHeader) => {
             let checked = state.dataTabel[0].checked;
             state.dataTabel = state.dataTabel.map(item => {
               item.checked = !checked;
-              return {...item};
+              return { ...item };
             });
 
-            return {...state};
+            return { ...state };
           });
         }}
         style={styles.checkTabel}>
@@ -79,9 +83,9 @@ const Row = (item: PropsTabel) => {
             if (itm.id === item.id) {
               itm.checked = !itm.checked;
             }
-            return {...itm};
+            return { ...itm };
           });
-          return {...state};
+          return { ...state };
         });
       }}
       style={styles.containerRowTable}>
@@ -93,7 +97,7 @@ const Row = (item: PropsTabel) => {
       </View>
       <View style={styles.contentTable}>
         <Text style={styles.title}>{item.meterLine.line.LINE_NAME}</Text>
-        <View style={{height: 10}} />
+        <View style={{ height: 10 }} />
         <Text style={styles.subTitle}>
           Dữ liệu thiếu: {item.meterLine.listMeter.length}
         </Text>
@@ -115,7 +119,7 @@ export const SelectStationCodeScreen = () => {
     };
   }, []);
 
-  const RenderRadioButton = ({e}: {e: TypeReadRF}) => {
+  const RenderRadioButton = ({ e }: { e: TypeReadRF }) => {
     return useMemo(() => {
       return (
         <RadioButton
@@ -125,7 +129,7 @@ export const SelectStationCodeScreen = () => {
           checked={hookProps.state.typeRead === e ? true : false}
           onPress={() => {
             if (hookProps.state.typeRead !== e) {
-              hookProps.setState(state => ({...state, typeRead: e}));
+              hookProps.setState(state => ({ ...state, typeRead: e }));
               if (e === 'Dữ liệu gần nhất') {
                 upDateMissData(new Date());
               } else {
@@ -138,7 +142,7 @@ export const SelectStationCodeScreen = () => {
     }, [hookProps.state.typeRead]);
   };
 
-  const styleSelectDate = {...styles.selectDate};
+  const styleSelectDate = { ...styles.selectDate };
   //console.log('hookProps.state.typeRead:', hookProps.state.typeRead);
   styleSelectDate.color =
     hookProps.state.typeRead === 'Dữ liệu gần nhất'
@@ -156,7 +160,7 @@ export const SelectStationCodeScreen = () => {
             onPress={() => {
               hookProps.setState(state => {
                 state.is0h = !state.is0h;
-                return {...state};
+                return { ...state };
               });
             }}
           />
@@ -164,78 +168,65 @@ export const SelectStationCodeScreen = () => {
         <View style={styles.rowSelectDate}>
           <View style={styles.conatinerSelectDate}>
             <Text style={styles.labelSelectDate}>Chọn ngày</Text>
-
-            <TouchableOpacity
-              onPress={() => {
-                if (hookProps.state.typeRead === 'Dữ liệu gần nhất') {
-                  return;
-                }
-                DateTimePickerAndroid.open({
-                  value: hookProps.state.dateEnd,
-                  mode: 'time',
-                  display: 'spinner',
-                  onChange: date => {
-                    console.log(JSON.stringify(date));
-
-                    if (date.type === 'set') {
-                      const selectDate = new Date(
-                        date.nativeEvent.timestamp as string | number,
-                      );
-                      selectDate.setSeconds(0);
-                      hookProps.setState(state => {
-                        state.dateEnd = selectDate;
-                        //state.dateStart = new Date(state.dateEnd);
-                        return {...state};
-                      });
-                      upDateMissData(selectDate);
+            {Platform.OS === 'android' && (
+              <>
+                <TouchableOpacity
+                  onPress={() => {
+                    if (hookProps.state.typeRead === 'Dữ liệu gần nhất') {
+                      return;
                     }
-                  },
-                });
-              }}>
-              <TextInput
-                // label="Chọn ngày"
-                value={hookProps.state.dateEnd.toLocaleTimeString('vi')}
-                //onChangeText={() => {}}
-                //style={styles.searchText}
-                editable={false}
-                style={styleSelectDate}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                if (hookProps.state.typeRead === 'Dữ liệu gần nhất') {
-                  return;
-                }
-                DateTimePickerAndroid.open({
-                  value: hookProps.state.dateEnd,
-                  mode: 'date',
-                  display: 'calendar',
-                  onChange: date => {
-                    console.log(JSON.stringify(date));
-
-                    if (date.type === 'set') {
-                      const selectDate = new Date(
-                        date.nativeEvent.timestamp as string | number,
-                      );
-                      hookProps.setState(state => {
-                        state.dateEnd = selectDate;
-                        //state.dateStart = new Date(state.dateEnd);
-                        return {...state};
-                      });
-                      upDateMissData(selectDate);
+                    DateTimePickerAndroid.open({
+                      value: hookProps.state.dateEnd,
+                      mode: 'time',
+                      display: 'spinner',
+                      onChange: onDateEndPress,
+                    });
+                  }}>
+                  <TextInput
+                    // label="Chọn ngày"
+                    value={hookProps.state.dateEnd.toLocaleTimeString('vi', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                    //onChangeText={() => {}}
+                    //style={styles.searchText}
+                    editable={false}
+                    style={styleSelectDate}
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    if (hookProps.state.typeRead === 'Dữ liệu gần nhất') {
+                      return;
                     }
-                  },
-                });
-              }}>
-              <TextInput
-                // label="Chọn ngày"
-                value={hookProps.state.dateEnd.toLocaleDateString('vi')}
-                //onChangeText={() => {}}
-                //style={styles.searchText}
-                editable={false}
-                style={styleSelectDate}
+                    DateTimePickerAndroid.open({
+                      value: hookProps.state.dateEnd,
+                      mode: 'date',
+                      display: 'calendar',
+                      onChange: onDateEndPress,
+                    });
+                  }}>
+                  <TextInput
+                    // label="Chọn ngày"
+                    value={hookProps.state.dateEnd.toLocaleDateString('vi')}
+                    //onChangeText={() => {}}
+                    //style={styles.searchText}
+                    editable={false}
+                    style={styleSelectDate}
+                  />
+                </TouchableOpacity>
+              </>
+            )}
+            {Platform.OS === 'ios' && (
+              <DateTimePicker
+                value={hookProps.state.dateStart}
+                mode="datetime"
+                onChange={onDateEndPress}
+                locale="vi"
+                textColor={Colors.primary}
+                accentColor={Colors.primary}
               />
-            </TouchableOpacity>
+            )}
           </View>
         </View>
       </View>
@@ -262,7 +253,7 @@ export const SelectStationCodeScreen = () => {
           onChangeText={throttle(text => onChangeTextSearch(text), 250)}
         />
       </View>
-      <View style={{flex: 1}}>
+      <View style={{ flex: 1 }}>
         {hookProps.state.isLoading && (
           <View style={styles.containerLoader}>
             <Loader3 />
@@ -316,7 +307,7 @@ const styles = StyleSheet.create({
     //width: '80%',
     maxWidth: normalize(120),
     marginLeft: 10,
-    minWidth: 100,
+    // minWidth: 100,
     //height: 38,
     color: Colors.primary,
     fontSize: normalize(18),

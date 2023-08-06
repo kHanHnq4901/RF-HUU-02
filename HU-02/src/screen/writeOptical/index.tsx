@@ -1,13 +1,24 @@
 import throttle from 'lodash.throttle';
-import React, {useEffect} from 'react';
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
-import {Button} from '../../component/button/button';
+import React, { useEffect } from 'react';
+import {
+  InputAccessoryView,
+  Keyboard,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  Button as RNButton,
+  Platform,
+} from 'react-native';
+import { Button } from '../../component/button/button';
 import Loader3 from '../../component/loader3';
-import {RadioText} from '../../component/radioText';
-import {USER_ROLE_TYPE} from '../../service/user';
-import Theme, {Colors, CommonFontSize, sizeScreen} from '../../theme';
-import {GetHookProps, hookProps, onDeInit, onInit, store} from './controller';
-import {onReadOpticalPress, onWriteOpticalPress} from './handleButton';
+import { RadioText } from '../../component/radioText';
+import { USER_ROLE_TYPE } from '../../service/user';
+import Theme, { Colors, CommonFontSize, sizeScreen } from '../../theme';
+import { GetHookProps, hookProps, onDeInit, onInit, store } from './controller';
+import { onReadOpticalPress, onWriteOpticalPress } from './handleButton';
+
+const inputAccessoryViewID = 'uniqueID';
 
 export const WriteOpticalScreen = () => {
   GetHookProps();
@@ -23,6 +34,11 @@ export const WriteOpticalScreen = () => {
           <Loader3 />
         </View>
       )}
+      {Platform.OS === 'ios' && (
+        <InputAccessoryView nativeID={inputAccessoryViewID}>
+          <RNButton onPress={() => Keyboard.dismiss()} title="OK" />
+        </InputAccessoryView>
+      )}
       <Text style={styles.status}>{hookProps.state.status}</Text>
       <ScrollView
         contentContainerStyle={styles.contentContainerScroll}
@@ -36,7 +52,7 @@ export const WriteOpticalScreen = () => {
               onCheckedChange={() => {
                 hookProps.setState(state => {
                   state.seriMeter.checked = !state.seriMeter.checked;
-                  return {...state};
+                  return { ...state };
                 });
               }}
               onChangeText={text => {
@@ -49,6 +65,7 @@ export const WriteOpticalScreen = () => {
               containerStyle={styles.width50}
               keyboardType="numeric"
               ref={hookProps.refSeriMeter}
+              inputAccessoryViewID={inputAccessoryViewID}
             />
           </View>
 
@@ -59,7 +76,7 @@ export const WriteOpticalScreen = () => {
               onCheckedChange={() => {
                 hookProps.setState(state => {
                   state.seriModule.checked = !state.seriModule.checked;
-                  return {...state};
+                  return { ...state };
                 });
               }}
               onChangeText={text => {
@@ -71,6 +88,7 @@ export const WriteOpticalScreen = () => {
               containerStyle={styles.width50}
               keyboardType="numeric"
               ref={hookProps.refSeriModule}
+              inputAccessoryViewID={inputAccessoryViewID}
             />
           </View>
           <View style={styles.width50}>
@@ -80,7 +98,7 @@ export const WriteOpticalScreen = () => {
               onCheckedChange={() => {
                 hookProps.setState(state => {
                   state.immediateData.checked = !state.immediateData.checked;
-                  return {...state};
+                  return { ...state };
                 });
               }}
               onChangeText={text => {
@@ -93,6 +111,7 @@ export const WriteOpticalScreen = () => {
               containerStyle={styles.width50}
               keyboardType="numeric"
               ref={hookProps.refImmediateData}
+              inputAccessoryViewID={inputAccessoryViewID}
             />
           </View>
           <View style={styles.width100}>
@@ -102,7 +121,7 @@ export const WriteOpticalScreen = () => {
               onCheckedChange={() => {
                 hookProps.setState(state => {
                   state.ipPort.checked = !state.ipPort.checked;
-                  return {...state};
+                  return { ...state };
                 });
               }}
               onChangeText={text => {
@@ -124,7 +143,7 @@ export const WriteOpticalScreen = () => {
         <Button
           label="Đọc"
           onPress={throttle(onReadOpticalPress, 1000)}
-          style={{flex: 1, height: 50, maxWidth: 150}}
+          style={{ flex: 1, height: 50, maxWidth: 150 }}
         />
         {(store.state.userInfo.USER_TYPE === USER_ROLE_TYPE.ADMIN ||
           store.state.userInfo.USER_TYPE === USER_ROLE_TYPE.STAFF) && (

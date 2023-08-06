@@ -1,12 +1,12 @@
-import {showAlert} from '../../util';
-import {hook, navigation, store} from './controller';
+import { showAlert } from '../../util';
+import { hook, navigation, store } from './controller';
 import axios from 'axios';
-import {PropsInfoUser, USER_ROLE_TYPE} from '../../service/user';
-import {Keyboard} from 'react-native';
-import {saveUserStorage} from '../../service/storage/user';
+import { PropsInfoUser, USER_ROLE_TYPE } from '../../service/user';
+import { Keyboard } from 'react-native';
+import { saveUserStorage } from '../../service/storage/user';
 import TouchID from 'react-native-touch-id';
 import * as Keychain from 'react-native-keychain';
-import {sha256} from 'react-native-sha256';
+import { sha256 } from 'react-native-sha256';
 
 const TAG = 'Handle Sigin:';
 
@@ -34,7 +34,7 @@ export async function onLoginPress(props?: PropsLogin) {
 
   hook.setState(state => {
     state.btnSignInBusy = true;
-    return {...state};
+    return { ...state };
   });
 
   try {
@@ -49,7 +49,7 @@ export async function onLoginPress(props?: PropsLogin) {
       store.setState(state => {
         state.userInfo = {} as PropsInfoUser;
         state.userInfo.USER_TYPE = USER_ROLE_TYPE.ADMIN;
-        return {...state};
+        return { ...state };
       });
       console.log('Đăng nhập thành công');
 
@@ -86,7 +86,7 @@ export async function onLoginPress(props?: PropsLogin) {
       if (userInfo.CODE === '1') {
         store.setState(state => {
           state.userInfo = userInfo;
-          return {...state};
+          return { ...state };
         });
         console.log('Đăng nhập thành công');
 
@@ -114,7 +114,7 @@ export async function onLoginPress(props?: PropsLogin) {
   } finally {
     hook.setState(state => {
       state.btnSignInBusy = false;
-      return {...state};
+      return { ...state };
     });
   }
 }
@@ -141,6 +141,8 @@ export async function onFingerPress(isShowAlert: boolean) {
         return;
       }
 
+      store.state.isCredential = true;
+
       const result = await TouchID.authenticate('', {
         cancelText: 'Hủy',
         title: 'Đăng nhập bằng vân tay',
@@ -157,28 +159,6 @@ export async function onFingerPress(isShowAlert: boolean) {
   } catch (err: any) {
     console.log(TAG, 'Lỗi:', err.message);
   }
-  // const username = 'haha';
-  // const password = '123456';
-
-  // // Store the credentials
-  // const ret = await Keychain.setGenericPassword(username, password);
-
-  // console.log('ret:', ret);
-
-  // try {
-  //   // Retrieve the credentials
-  //   const credentials = await Keychain.getGenericPassword();
-  //   if (credentials) {
-  //     console.log(
-  //       'Credentials successfully loaded for user ' +
-  //         JSON.stringify(credentials),
-  //     );
-  //   } else {
-  //     console.log('No credentials stored');
-  //   }
-  // } catch (error) {
-  //   console.log("Keychain couldn't be accessed!", error);
-  // }
 }
 
 export function onBtnSettingPress() {

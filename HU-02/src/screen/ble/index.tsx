@@ -48,7 +48,17 @@ const BleItem = (props: PropsItemBle) => {
           }
         />
       </View>
-      <Caption style={styles.caption}>{props.id}</Caption>
+      <View style={styles.row}>
+        <Caption style={styles.caption}>{props.id}</Caption>
+        {props.rssi && (
+          <View style={styles.containerRssi}>
+            <Text style={styles.rssi}>
+              {props.rssi}
+              {' dbm'}
+            </Text>
+          </View>
+        )}
+      </View>
     </TouchableOpacity>
   );
 };
@@ -112,7 +122,14 @@ export const SetUpBleScreen = () => {
           Thiết bị khả dụng:
         </Text>
         {hookProps.state.ble.listNewDevice.map((item, index) => {
-          return <BleItem key={item.id} id={item.id} name={item.name} />;
+          return (
+            <BleItem
+              key={item.id}
+              id={item.id}
+              name={item.name}
+              rssi={item.rssi}
+            />
+          );
         })}
         <Text style={{...styles.title, marginBottom: 10, marginTop: 25}}>
           Thiết bị đã kết nối:
@@ -164,5 +181,17 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     textAlignVertical: 'center',
     marginVertical: 5,
+  },
+  containerRssi: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 10,
+    borderRadius: 20,
+    // backgroundColor: Colors.secondary,
+  },
+  rssi: {
+    padding: 5,
+    fontSize: normalize(14),
+    color: Colors.text,
   },
 });

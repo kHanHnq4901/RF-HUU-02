@@ -1,8 +1,8 @@
-import React, {Dispatch, useState} from 'react';
-import {PropsAppSetting, getDefaultStorageValue} from '../service/storage';
-import {PropsInfoUser, PropsInfoWM, PropsLineServer} from '../service/user';
-import {Buffer} from 'buffer';
-import {Platform} from 'react-native';
+import React, { Dispatch, useState } from 'react';
+import { PropsAppSetting, getDefaultStorageValue } from '../service/storage';
+import { PropsInfoUser, PropsInfoWM, PropsLineServer } from '../service/user';
+import { Buffer } from 'buffer';
+import { Platform } from 'react-native';
 
 export type PropsStoreMeter = {
   listLine: PropsLineServer[];
@@ -73,6 +73,7 @@ type PropsState = {
   typeTouchID: TYPE_TOUCH_ID;
   isBusy: boolean;
   canShowModalBusy: boolean;
+  isCredential: boolean;
 };
 
 export type PropsStore = {
@@ -82,7 +83,7 @@ export type PropsStore = {
 
 export const storeContext = React.createContext<PropsStore>(null);
 
-export const StoreProvider = ({children}) => {
+export const StoreProvider = ({ children }) => {
   const userInfo = {} as PropsInfoUser;
   const [state, setState] = useState<PropsState>({
     hhu: {
@@ -128,6 +129,7 @@ export const StoreProvider = ({children}) => {
     typeTouchID: Platform.OS === 'ios' ? 'FaceID' : 'TouchID',
     isBusy: true,
     canShowModalBusy: false,
+    isCredential: false,
   });
 
   const initialValue: PropsStore = {

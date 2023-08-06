@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import {
   Platform,
   ScrollView,
@@ -9,10 +9,16 @@ import {
 } from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {Button} from '../../component/button/button';
+import { Button } from '../../component/button/button';
 import Loader3 from '../../component/loader3';
-import {NormalTextInput} from '../../component/normalTextInput';
-import Theme, {Colors, Fonts, normalize, scale, scaleWidth} from '../../theme';
+import { NormalTextInput } from '../../component/normalTextInput';
+import Theme, {
+  Colors,
+  Fonts,
+  normalize,
+  scale,
+  scaleWidth,
+} from '../../theme';
 import {
   GetHookProps,
   hookProps,
@@ -30,8 +36,8 @@ import {
   onSearchInfo,
 } from './handleButton';
 import Feather from 'react-native-vector-icons/Feather';
-import MapView, {Marker} from 'react-native-maps';
-import {Image} from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
+import { Image } from 'react-native';
 
 export const DeclareMeterScreen = () => {
   GetHookProps();
@@ -137,7 +143,7 @@ export const DeclareMeterScreen = () => {
           blurOnSubmit={false}
         /> */}
         <View style={styles.containerSeri}>
-          <View style={{flex: 1}}>
+          <View style={{ flex: 1 }}>
             <NormalTextInput
               label="Seri đồng hồ:(*)"
               ref={hookProps.refSeriMeter}
@@ -148,7 +154,7 @@ export const DeclareMeterScreen = () => {
               onChangeText={text => {
                 hookProps.setState(state => {
                   state.data.METER_NO = text;
-                  return {...state};
+                  return { ...state };
                 });
               }}
               // onSubmitEditing={() => {
@@ -170,7 +176,7 @@ export const DeclareMeterScreen = () => {
           onChangeText={text => {
             hookProps.setState(state => {
               state.data.CUSTOMER_CODE = text;
-              return {...state};
+              return { ...state };
             });
           }}
           ref={hookProps.refCustomerCode}
@@ -187,7 +193,7 @@ export const DeclareMeterScreen = () => {
           onChangeText={text => {
             hookProps.setState(state => {
               state.data.CUSTOMER_NAME = text;
-              return {...state};
+              return { ...state };
             });
           }}
           ref={hookProps.refCustomerName}
@@ -204,7 +210,7 @@ export const DeclareMeterScreen = () => {
           onChangeText={text => {
             hookProps.setState(state => {
               state.data.PHONE = text;
-              return {...state};
+              return { ...state };
             });
           }}
           ref={hookProps.refPhoneNUmber}
@@ -219,7 +225,7 @@ export const DeclareMeterScreen = () => {
           onChangeText={text => {
             hookProps.setState(state => {
               state.data.ADDRESS = text;
-              return {...state};
+              return { ...state };
             });
           }}
           ref={hookProps.refAddress}
@@ -229,7 +235,7 @@ export const DeclareMeterScreen = () => {
           blurOnSubmit={true}
         />
         <View style={styles.containerSeri}>
-          <View style={{flex: 1}}>
+          <View style={{ flex: 1 }}>
             <NormalTextInput
               label="Toạ độ:"
               // style={styles.textInput}
@@ -238,7 +244,7 @@ export const DeclareMeterScreen = () => {
               onChangeText={text => {
                 hookProps.setState(state => {
                   state.data.COORDINATE = text;
-                  return {...state};
+                  return { ...state };
                 });
               }}
             />
@@ -252,7 +258,7 @@ export const DeclareMeterScreen = () => {
         </View>
         <View style={styles.containMapView}>
           <MapView
-            // provider="google"
+            provider="google"
             style={styles.map}
             mapType="standard"
             showsIndoorLevelPicker
@@ -265,8 +271,8 @@ export const DeclareMeterScreen = () => {
             onRegionChangeComplete={region => {
               console.log('region:', region);
               hookProps.setState(state => {
-                state.region = {...region};
-                return {...state};
+                state.region = { ...region };
+                return { ...state };
               });
             }}>
             {hookProps.state.position !== null && (
@@ -287,14 +293,14 @@ export const DeclareMeterScreen = () => {
                   console.log('onDrag end:');
                   if (e.nativeEvent?.coordinate) {
                     const latLog = e.nativeEvent.coordinate;
-                    const region = {...hookProps.state.region};
+                    const region = { ...hookProps.state.region };
                     region.latitude = latLog.latitude;
                     region.longitude = latLog.longitude;
 
                     hookProps.setState(state => {
                       state.position = latLog;
                       state.region = region;
-                      return {...state};
+                      return { ...state };
                     });
                   }
                 }}

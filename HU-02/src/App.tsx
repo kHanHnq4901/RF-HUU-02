@@ -1,13 +1,13 @@
 import 'react-native-gesture-handler';
 import React from 'react';
-import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
-import {NavigationContainer} from '@react-navigation/native';
-import {RootNavigator} from './navigation/RootNavigator';
-import {Provider as PaperProvider, DefaultTheme} from 'react-native-paper';
-import {Platform, StatusBar, Text} from 'react-native';
-import {LogBox} from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { NavigationContainer } from '@react-navigation/native';
+import { RootNavigator } from './navigation/RootNavigator';
+import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
+import { KeyboardAvoidingView, Platform, StatusBar, Text } from 'react-native';
+import { LogBox } from 'react-native';
 import Theme, { Colors } from './theme';
-import {StoreProvider} from './store';
+import { StoreProvider } from './store';
 LogBox.ignoreLogs([
   'Animated: `useNativeDriver`',
   'ViewPropTypes will be removed',
@@ -30,12 +30,18 @@ export default function App() {
             },
           }}>
           <NavigationContainer>
-            <SafeAreaView style={{flex: 1}}>
+            <SafeAreaView style={{ flex: 1 }}>
               <StatusBar
                 backgroundColor={Colors.primary}
-                barStyle={Platform.OS === 'android' ?"light-content" : 'dark-content'}
+                barStyle={
+                  Platform.OS === 'android' ? 'light-content' : 'dark-content'
+                }
               />
-              <RootNavigator />
+              <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+                <RootNavigator />
+              </KeyboardAvoidingView>
             </SafeAreaView>
           </NavigationContainer>
         </PaperProvider>

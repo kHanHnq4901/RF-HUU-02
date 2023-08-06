@@ -1,7 +1,7 @@
 import TouchID from 'react-native-touch-id';
 import * as Keychain from 'react-native-keychain';
-import {showAlert, showToast} from '../../util';
-import {hook, store} from './controller';
+import { showAlert, showToast } from '../../util';
+import { hook, store } from './controller';
 import axios from 'axios';
 
 export async function onbtnAllowSigninByFingerPress() {
@@ -15,14 +15,14 @@ export async function onbtnAllowSigninByFingerPress() {
   }
   hook.setState(state => {
     state.showModalEnterPass = true;
-    return {...state};
+    return { ...state };
   });
 }
 
 export async function onModalOkEnterPasswordPress(password: string) {
   hook.setState(state => {
     state.showModalEnterPass = false;
-    return {...state};
+    return { ...state };
   });
   try {
     const url =
@@ -42,6 +42,8 @@ export async function onModalOkEnterPasswordPress(password: string) {
 
     if (result.data.CODE === '1') {
       console.log('Đăng nhập thành công');
+
+      store.state.isCredential = true;
 
       const save = await Keychain.setGenericPassword(
         store.state.userInfo.USER_ACCOUNT,
@@ -64,11 +66,17 @@ export async function onModalOkEnterPasswordPress(password: string) {
 export function onModalCancelPress() {
   hook.setState(state => {
     state.showModalEnterPass = false;
-    return {...state};
+    return { ...state };
   });
 }
 
 export function onClearFingerPress() {
   Keychain.resetGenericPassword();
+  if (store.state.isCredential !== false) {
+    store.setState(state => {
+      state.isCredential = false;
+      return { ...state };
+    });
+  }
   showToast('Xóa thành công');
 }

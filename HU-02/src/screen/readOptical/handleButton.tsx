@@ -1,6 +1,6 @@
-import {Buffer} from 'buffer';
-import {Keyboard} from 'react-native';
-import {ObjSend} from '../../service/hhu/Ble/hhuFunc';
+import { Buffer } from 'buffer';
+import { Keyboard } from 'react-native';
+import { ObjSend } from '../../service/hhu/Ble/hhuFunc';
 import {
   FieldOpticalResponseProps,
   opticalSend,
@@ -19,23 +19,24 @@ import {
   PropsLabelOptical,
   getUnitByLabelOptical,
 } from '../../service/hhu/util/utilFunc';
-import {USER_ROLE_TYPE} from '../../service/user';
-import {showAlert, showToast, sleep} from '../../util';
-import {Struct2Array, sizeof} from '../../util/struct-and-array';
-import {hookProps} from './controller';
-import {store} from '../../component/drawer/drawerContent/controller';
+import { USER_ROLE_TYPE } from '../../service/user';
+import { showAlert, showToast, sleep } from '../../util';
+import { Struct2Array, sizeof } from '../../util/struct-and-array';
+import { hookProps } from './controller';
+import { store } from '../../component/drawer/drawerContent/controller';
 import RNFS from 'react-native-fs';
-import {log} from 'react-native-reanimated';
-import {PATH_EXPORT_LOG} from '../../shared/path';
-import {GeolocationResponse} from '@react-native-community/geolocation';
-import {getGeolocation} from '../declareMeter/handleButton';
+import { log } from 'react-native-reanimated';
+import { PATH_EXPORT_LOG } from '../../shared/path';
+import { GeolocationResponse } from '@react-native-community/geolocation';
+import { getGeolocation } from '../declareMeter/handleButton';
+import { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 
 const TAG = 'Handle Btn Read Optical';
 
 export function setStatus(message: string) {
   hookProps.setState(state => {
     state.status = message;
-    return {...state};
+    return { ...state };
   });
 }
 
@@ -84,7 +85,7 @@ export async function onBtnReadPress() {
       state.seri = '';
       state.status = 'Đang đọc ...';
       state.dataTable = [];
-      return {...state};
+      return { ...state };
     });
 
     for (let itm of hookProps.state.typeData.items) {
@@ -116,7 +117,7 @@ export async function onBtnReadPress() {
       if (state.status === 'Đang đọc ...') {
         state.status = '';
       }
-      return {...state};
+      return { ...state };
     });
   }
 
@@ -137,7 +138,7 @@ function ConvertObjToHook(objResponse: any) {
           ]);
         }
 
-        return {...state};
+        return { ...state };
       });
     } else if (
       typeof objResponse[itm] === 'object' &&
@@ -157,7 +158,7 @@ function ConvertObjToHook(objResponse: any) {
 
       hookProps.setState(state => {
         state.dataTable = state.dataTable.concat(dataTable);
-        return {...state};
+        return { ...state };
       });
     }
   }
@@ -481,10 +482,10 @@ export async function onSaveLogPress() {
   try {
     hookProps.setState(state => {
       state.isSaving = true;
-      return {...state};
+      return { ...state };
     });
     const pos = await onGetPosition();
-    if (!pos) {
+    if (!pos || !pos?.coords?.latitude || !pos?.coords?.longitude) {
       throw new Error('Không thể lấy vị trí hiện tại, hãy thử lại ...');
     }
     content += 'LatLog: ' + pos?.coords.latitude + ',' + pos?.coords.longitude;
@@ -495,7 +496,7 @@ export async function onSaveLogPress() {
     showAlert('Lấy vị trí thất baị:', err.message);
     hookProps.setState(state => {
       state.isSaving = false;
-      return {...state};
+      return { ...state };
     });
   } finally {
     console.log('here2');
@@ -545,7 +546,31 @@ export async function onSaveLogPress() {
   } finally {
     hookProps.setState(state => {
       state.isSaving = false;
-      return {...state};
+      return { ...state };
     });
   }
+}
+export function onDateStartPress(event: DateTimePickerEvent) {
+  const date = new Date(event.nativeEvent.timestamp as number);
+  const numberDate = date.getTime();
+  const orDate = hookProps.state.dateStart.getTime();
+  if (numberDate === orDate) {
+    return;
+  }
+  hookProps.setState(state => {
+    state.dateStart = date;
+    return { ...state };
+  });
+}
+export function onDateEndPress(event: DateTimePickerEvent) {
+  const date = new Date(event.nativeEvent.timestamp as number);
+  const numberDate = date.getTime();
+  const orDate = hookProps.state.dateEnd.getTime();
+  if (numberDate === orDate) {
+    return;
+  }
+  hookProps.setState(state => {
+    state.dateEnd = date;
+    return { ...state };
+  });
 }

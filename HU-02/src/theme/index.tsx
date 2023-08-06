@@ -1,4 +1,4 @@
-import {Dimensions, PixelRatio, Platform} from 'react-native';
+import { Dimensions, PixelRatio, Platform } from 'react-native';
 import StyleCommon from './styleCommon';
 import Color from 'color';
 export const Colors = {
@@ -19,7 +19,7 @@ export const Colors = {
 export const Fonts = undefined;
 //'SourceCodePro-SemiBold';
 
-const {width: SCREEN_WIDTH, height: SCREEN_HEIGHT} = Dimensions.get('screen');
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('screen');
 export const sizeScreen = Dimensions.get('screen');
 
 const getSaleWidth = (widthScreen: number): number => {
@@ -74,4 +74,4 @@ export const CommonHeight = 45 * scaleHeight;
 
 console.log('CommonFontSize:', CommonFontSize);
 
-export default {StyleCommon, Colors, Fonts};
+export default { StyleCommon, Colors, Fonts };

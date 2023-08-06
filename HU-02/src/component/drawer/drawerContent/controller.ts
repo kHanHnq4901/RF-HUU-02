@@ -1,11 +1,16 @@
 import NetInfo from '@react-native-community/netinfo';
-import {useNavigation} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {useContext} from 'react';
-import {Alert, DeviceEventEmitter, EmitterSubscription} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { useContext } from 'react';
+import {
+  Alert,
+  DeviceEventEmitter,
+  EmitterSubscription,
+  Platform,
+} from 'react-native';
 import RNFS from 'react-native-fs';
-import {checkTabelDBIfExist} from '../../../database/repository';
-import {checkTabelDeclareMeterIfExist} from '../../../database/repository/declareMeterRepository';
+import { checkTabelDBIfExist } from '../../../database/repository';
+import { checkTabelDeclareMeterIfExist } from '../../../database/repository/declareMeterRepository';
 import {
   ClearAllSentDataMeterForGarbage,
   SendDataUnsentMeterProcess,
@@ -14,24 +19,27 @@ import {
   ClearAllDeclareMeterForGarbage,
   SendUnsentDeclareMeterProcess,
 } from '../../../database/service/declareMeterService';
-import {StackRootList} from '../../../navigation/model/model';
-import {bleManagerEmitter} from '../../../screen/ble/controller';
+import { StackRootList } from '../../../navigation/model/model';
+import { bleManagerEmitter } from '../../../screen/ble/controller';
 import {
   ListenEventSucceedError,
   emitEventSuccess,
 } from '../../../service/event';
-import {UPDATE_FW_HHU} from '../../../service/event/constant';
+import { UPDATE_FW_HHU } from '../../../service/event/constant';
 import {
   connectLatestBLE,
   handleUpdateValueForCharacteristic,
 } from '../../../service/hhu/Ble/bleHhuFunc';
-import {ObjSend} from '../../../service/hhu/Ble/hhuFunc';
-import {requestPermissionWriteExternalStorage} from '../../../service/permission';
+import { ObjSend } from '../../../service/hhu/Ble/hhuFunc';
+import {
+  requestPermissionBleConnectAndroid,
+  requestPermissionWriteExternalStorage,
+} from '../../../service/permission';
 import {
   convertKeyStorageToKeyStore,
   updateValueAppSettingFromNvm,
 } from '../../../service/storage';
-import {USER_ROLE_TYPE} from '../../../service/user';
+import { USER_ROLE_TYPE } from '../../../service/user';
 import {
   PATH_EXECUTE_CSDL,
   PATH_EXPORT_LOG,
@@ -39,8 +47,8 @@ import {
   PATH_IMPORT_CSDL,
   PATH_IMPORT_XML,
 } from '../../../shared/path';
-import {PropsStore, storeContext} from '../../../store';
-import {showAlert} from '../../../util';
+import { PropsStore, storeContext } from '../../../store';
+import { showAlert } from '../../../util';
 
 const TAG = 'controllerDrawerContent:';
 
@@ -67,7 +75,7 @@ const hhuHandleDisconnectedPeripheral = data => {
   store.setState(state => {
     state.hhu.idConnected = null;
     state.hhu.connect = 'DISCONNECTED';
-    return {...state};
+    return { ...state };
   });
   ObjSend.id = null;
 };
@@ -103,7 +111,7 @@ export const onInit = async navigation => {
   store.setState(state => {
     state.appSetting = appSetting;
     state.keyAes = keyAesStore;
-    return {...state};
+    return { ...state };
   });
 
   console.log('add listener drawer');
@@ -122,12 +130,18 @@ export const onInit = async navigation => {
 
   try {
     if (store.state.hhu.connect === 'DISCONNECTED') {
-      connectLatestBLE(store);
+      let requestScan = true;
+      if (Platform.OS === 'android') {
+        requestScan = await requestPermissionBleConnectAndroid();
+      }
+      if (requestScan) {
+        connectLatestBLE(store);
+      }
     }
   } catch (err) {
     store.setState(state => {
       state.hhu.connect = 'DISCONNECTED';
-      return {...state};
+      return { ...state };
     });
   }
   if (store.state.userInfo.USER_TYPE === USER_ROLE_TYPE.CUSTOMER) {

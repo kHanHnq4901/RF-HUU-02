@@ -1,16 +1,12 @@
-import BleManager from '../../util/BleManager';
-import {sleep} from '../../util';
-import {
-  hookProps,
-  requestGps,
-  setStatus,
-  store,
-} from './controller';
+import BleManager from 'react-native-ble-manager';
+import {showAlert, sleep} from '../../util';
+import {hookProps, requestGps, setStatus, store} from './controller';
 import * as Ble from '../../util/ble';
 import {BleFunc_SaveStorage} from '../../service/hhu/Ble/bleHhuFunc';
 import {ObjSend, readVersion, ShakeHand} from '../../service/hhu/Ble/hhuFunc';
 import {checkUpdateHHU} from '../../service/api';
-import { requestPermissionScan } from '../../service/permission';
+import {requestPermissionScan} from '../../service/permission';
+import {Platform} from 'react-native';
 
 const TAG = 'handleBtn Ble:';
 
@@ -103,18 +99,27 @@ export const onScanPress = async () => {
   let requestScanPermission = await requestPermissionScan();
   let requestPermissionGps = await requestGps();
   if (requestScanPermission === true && requestPermissionGps) {
-    await BleManager.enableBluetooth();
-    await BleManager.start();
-    BleManager.scan([], 5, false)
-      .then(() => {
-        hookProps.setState(state => {
-          state.ble.isScan = true;
-          return {...state};
+    console.log('here request');
+
+    let isEnable: boolean = await BleManager.enableBluetooth();
+    if (isEnable === true) {
+      if (Platform.OS === 'android') {
+        await BleManager.start();
+      }
+
+      BleManager.scan([], 15, false)
+        .then(() => {
+          hookProps.setState(state => {
+            state.ble.isScan = true;
+            return {...state};
+          });
+        })
+        .catch(resFail => {
+          console.log('fail: ', resFail);
         });
-      })
-      .catch(resFail => {
-        console.log('fail: ', resFail);
-      });
+    } else {
+      showAlert('Thiết bị cần được bật bluetooth');
+    }
   } else {
     console.log('requestGps failed');
   }

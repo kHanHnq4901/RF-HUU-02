@@ -1,9 +1,8 @@
-import {DrawerContentScrollView} from '@react-navigation/drawer';
-import {useNavigation} from '@react-navigation/native';
+import { DrawerContentScrollView } from '@react-navigation/drawer';
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import {
   Alert,
-  BackHandler,
   Image,
   ImageBackground,
   Linking,
@@ -12,20 +11,21 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import {Avatar, Divider} from 'react-native-paper';
+import { Divider } from 'react-native-paper';
 import {
   DrawerNavigationProps,
   StackRootNavigationProp,
 } from '../../../navigation/model/model';
 
+import RNExitApp from 'react-native-exit-app';
+import { USER_ROLE_TYPE } from '../../../service/user/index';
 import * as Shared from '../../../shared';
-import {screenDatas} from '../../../shared';
-import Theme, {Colors, normalize} from '../../../theme';
-import {infoHeader} from '../../header';
-import {Text} from '../../Text';
-import {DrawerItem} from '../drawerItem';
-import {GetHookProps, onDeInit, onInit, store} from './controller';
-import {USER_ROLE_TYPE} from '../../../service/user/index';
+import { screenDatas } from '../../../shared';
+import Theme, { Colors, normalize } from '../../../theme';
+import { Text } from '../../Text';
+import { infoHeader } from '../../header';
+import { DrawerItem } from '../drawerItem';
+import { GetHookProps, onDeInit, onInit, store } from './controller';
 
 const TAG = 'DrawerContent:';
 
@@ -71,7 +71,7 @@ export const DrawerContent = props => {
           {Platform.OS === 'android' && (
             <ImageBackground
               source={require('../../../asset/images/drawer/HeaderDrawer.jpg')}
-              style={{height: 120, marginTop: -5}}
+              style={{ height: 120, marginTop: -5 }}
             />
           )}
           <View style={styles.infoUser}>
@@ -216,7 +216,8 @@ export const DrawerContent = props => {
                   {
                     text: 'OK',
                     onPress: () => {
-                      BackHandler.exitApp();
+                      // BackHandler.exitApp();
+                      RNExitApp.exitApp();
                     },
                   },
                 ]);
@@ -247,7 +248,7 @@ const styles = StyleSheet.create({
     // flex: 1,
     marginBottom: 5,
   },
-  logo: {height: 25, width: 150, marginTop: 20},
+  logo: { height: 25, width: 150, marginTop: 20 },
   textVersion: {
     fontSize: normalize(12),
     color: Colors.caption,
@@ -292,6 +293,6 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     marginRight: 10,
   },
-  logoAndroid: {height: 50, width: 150},
-  logoIOS: {height: 100, width: 200},
+  logoAndroid: { height: 50, width: 150 },
+  logoIOS: { height: 100, width: 200 },
 });

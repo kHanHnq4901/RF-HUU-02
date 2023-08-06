@@ -1,17 +1,18 @@
-import {Keyboard} from 'react-native';
+import { Keyboard } from 'react-native';
 import RNFS from 'react-native-fs';
-import {ObjSend} from '../../service/hhu/Ble/hhuFunc';
+import { ObjSend } from '../../service/hhu/Ble/hhuFunc';
 import {
   PropsModelRadio,
   PropsRead,
   RfFunc_Read,
 } from '../../service/hhu/RF/RfFunc';
-import {PropsLabel} from '../../service/hhu/defineWM';
-import {getUnitByLabel} from '../../service/hhu/util/utilFunc';
-import {PATH_EXPORT_LOG} from '../../shared/path';
-import {isAllNumeric, showAlert, showToast} from '../../util';
+import { PropsLabel } from '../../service/hhu/defineWM';
+import { getUnitByLabel } from '../../service/hhu/util/utilFunc';
+import { PATH_EXPORT_LOG } from '../../shared/path';
+import { isAllNumeric, showAlert, showToast } from '../../util';
 import * as controller from './controller';
-import {hookProps, store} from './controller';
+import { hookProps, store } from './controller';
+import { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 
 const TAG = 'handleButton ReadParams';
 
@@ -140,7 +141,7 @@ const readData = async (props: PropsRead) => {
           state.dataTable = [...state.dataTable, ...rows];
           state.registerModule = registerModule;
           //console.log('ok here');
-          return {...state};
+          return { ...state };
         });
         break;
       } else {
@@ -162,7 +163,7 @@ const readData = async (props: PropsRead) => {
           //result.message;
           //state.dataTable = rows;
           //console.log('ok here');
-          return {...state};
+          return { ...state };
         });
       }
     }
@@ -205,7 +206,7 @@ export const onBtnReadPress = async () => {
     state.registerMeter = '';
     state.deltaRegister = '';
     state.userNote = '';
-    return {...state};
+    return { ...state };
   });
 
   //init: 0x73 , reset 0x74, search 0x72, data
@@ -224,7 +225,7 @@ export const onBtnReadPress = async () => {
     if (state.status === 'Đang đọc ...') {
       state.status = '';
     }
-    return {...state};
+    return { ...state };
   });
   return;
 };
@@ -297,4 +298,29 @@ export async function onSaveLogPress() {
   } catch (err) {
     showToast('Lưu thất bại:' + err.message);
   }
+}
+
+export function onDateStartPress(event: DateTimePickerEvent) {
+  const date = new Date(event.nativeEvent.timestamp as number);
+  const numberDate = date.getTime();
+  const orDate = hookProps.state.dateStart.getTime();
+  if (numberDate === orDate) {
+    return;
+  }
+  hookProps.setState(state => {
+    state.dateStart = date;
+    return { ...state };
+  });
+}
+export function onDateEndPress(event: DateTimePickerEvent) {
+  const date = new Date(event.nativeEvent.timestamp as number);
+  const numberDate = date.getTime();
+  const orDate = hookProps.state.dateEnd.getTime();
+  if (numberDate === orDate) {
+    return;
+  }
+  hookProps.setState(state => {
+    state.dateEnd = date;
+    return { ...state };
+  });
 }

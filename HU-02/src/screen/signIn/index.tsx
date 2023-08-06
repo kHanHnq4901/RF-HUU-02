@@ -10,8 +10,8 @@ import {
   View,
 } from 'react-native';
 import FormButton from '../../component/formButton';
-import {FormInput} from '../../component/formInput';
-import {Colors, normalize, scale} from '../../theme';
+import { FormInput } from '../../component/formInput';
+import { Colors, normalize, scale } from '../../theme';
 import { IconFaceID } from '../../component/faceID';
 import {
   hook,
@@ -21,9 +21,9 @@ import {
   store,
   UpdateHook,
 } from './controller';
-import {onBtnSettingPress, onFingerPress, onLoginPress} from './handle';
+import { onBtnSettingPress, onFingerPress, onLoginPress } from './handle';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {version} from '../../shared';
+import { version } from '../../shared';
 
 export function SignInScreen() {
   UpdateHook();
@@ -51,7 +51,7 @@ export function SignInScreen() {
           onChangeText={email =>
             store.setState(state => {
               state.userInfo.USER_ACCOUNT = email;
-              return {...state};
+              return { ...state };
             })
           }
           value={store.state.userInfo.USER_ACCOUNT}
@@ -66,7 +66,7 @@ export function SignInScreen() {
           onChangeText={password =>
             hook.setState(state => {
               state.password = password;
-              return {...state};
+              return { ...state };
             })
           }
           value={hook.state.password}
@@ -95,7 +95,7 @@ export function SignInScreen() {
         <FormButton
           buttonTitle="Đăng nhập"
           isBusy={hook.state.btnSignInBusy}
-          onPress={()=> onLoginPress()}
+          onPress={() => onLoginPress()}
         />
 
         <TouchableOpacity style={styles.forgotButton} onPress={() => {}}>

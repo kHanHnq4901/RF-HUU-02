@@ -1,6 +1,7 @@
-import {Alert, AlertButton, Platform, ToastAndroid} from 'react-native';
-import {Buffer} from 'buffer';
-import {first} from 'lodash';
+import { Alert, AlertButton, Platform, ToastAndroid } from 'react-native';
+import { Buffer } from 'buffer';
+import { first } from 'lodash';
+import Snackbar from 'react-native-snackbar';
 
 export function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -61,11 +62,15 @@ export async function showAlert(
 }
 
 export function showToast(message: string, gravity?: number): void {
-  if (Platform.OS === 'android') {
-    ToastAndroid.showWithGravity(message, 2000, gravity ?? ToastAndroid.CENTER);
-  } else {
-    Alert.alert(message);
-  }
+  // if (Platform.OS === 'android') {
+  //   ToastAndroid.showWithGravity(message, 2000, gravity ?? ToastAndroid.CENTER);
+  // } else {
+  //   Alert.alert(message);
+  // }
+  Snackbar.show({
+    text: message,
+    duration: Snackbar.LENGTH_SHORT,
+  });
 }
 export const getCurrentDate = (): string => {
   const today = new Date();

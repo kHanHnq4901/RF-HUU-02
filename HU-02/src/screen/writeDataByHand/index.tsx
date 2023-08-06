@@ -1,18 +1,22 @@
-import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
-import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
+import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import throttle from 'lodash.throttle';
 import React from 'react';
 import {
+  InputAccessoryView,
+  Keyboard,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
+  Button as RNButton,
+  Platform,
 } from 'react-native';
 import TextInput from 'react-native-text-input-interactive';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {Button} from '../../component/button/button';
-import {StackWriteDataByBookCodeList} from '../../navigation/model/model';
+import { Button } from '../../component/button/button';
+import { StackWriteDataByBookCodeList } from '../../navigation/model/model';
 import Theme, {
   Colors,
   CommonFontSize,
@@ -20,8 +24,13 @@ import Theme, {
   normalize,
   scale,
 } from '../../theme';
-import {GetHook, getTableContent, hookProps, onBeforeInit} from './controller';
-import {checkCondition, onWriteByHandDone} from './handleButton';
+import {
+  GetHook,
+  getTableContent,
+  hookProps,
+  onBeforeInit,
+} from './controller';
+import { checkCondition, onWriteByHandDone } from './handleButton';
 
 type Props = {
   label: string;
@@ -41,6 +50,8 @@ const RowTable = (props: Props) => {
   );
 };
 export type PropsData = Props[];
+
+const inputAccessoryViewID = 'uniqueID';
 
 export const WriteDataByHandScreen = () => {
   GetHook();
@@ -63,6 +74,11 @@ export const WriteDataByHandScreen = () => {
   // }, []);
   return (
     <View style={styles.container}>
+      {Platform.OS === 'ios' && (
+        <InputAccessoryView nativeID={inputAccessoryViewID}>
+          <RNButton onPress={() => Keyboard.dismiss()} title="OK" />
+        </InputAccessoryView>
+      )}
       <TouchableOpacity
         style={styles.backButton}
         onPress={() => {
@@ -82,8 +98,8 @@ export const WriteDataByHandScreen = () => {
               content={item.content}
             />
           ))}
-          <View style={{marginTop: 15}} />
-          <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+          <View style={{ marginTop: 15 }} />
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
             <View style={styles.itemInputContainer}>
               <Text style={styles.title4}>Chỉ số mới:(m3)</Text>
               <TextInput
@@ -91,11 +107,12 @@ export const WriteDataByHandScreen = () => {
                 onChangeText={text => {
                   hookProps.setState(state => {
                     state.CS_Moi = text;
-                    return {...state};
+                    return { ...state };
                   });
                 }}
                 editable={hookProps.state.allowWrite}
                 keyboardType="numeric"
+                inputAccessoryViewID={inputAccessoryViewID}
                 textInputStyle={styles.title3}
                 placeholder="0"
                 placeholderTextColor={Colors.primary}
@@ -129,7 +146,7 @@ export const WriteDataByHandScreen = () => {
               }}>
               <TextInput
                 placeholder="Chọn ngày"
-                value={hookProps.state.datePick?.toLocaleDateString()}
+                value={hookProps.state.datePick?.toLocaleDateString('vi')}
                 textInputStyle={styles.title3}
                 //style={styles.searchText}
                 editable={false}
@@ -150,7 +167,7 @@ export const WriteDataByHandScreen = () => {
               onChangeText={text => {
                 hookProps.setState(state => {
                   state.ghichu = text;
-                  return {...state};
+                  return { ...state };
                 });
               }}
               //keyboardType="numeric"
@@ -179,7 +196,7 @@ export const WriteDataByHandScreen = () => {
         <View style={styles.buttonArea}>
           <Button
             label={hookProps.state.isWriting ? 'Đang ghi' : 'Ghi'}
-            style={{width: '50%', alignSelf: 'center', height: 55}}
+            style={{ width: '50%', alignSelf: 'center', height: 55 }}
             onPress={throttle(() => {
               const ok = checkCondition();
               if (ok) {

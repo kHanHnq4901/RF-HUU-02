@@ -1,19 +1,25 @@
-import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
-import {useNavigation} from '@react-navigation/native';
+import DateTimePicker, {
+  DateTimePickerAndroid,
+} from '@react-native-community/datetimepicker';
+import { useNavigation } from '@react-navigation/native';
 import throttle from 'lodash.throttle';
-import React, {useMemo} from 'react';
+import React, { useMemo } from 'react';
 import {
+  InputAccessoryView,
+  Keyboard,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
+  Button as RNButton,
+  Platform,
 } from 'react-native';
-import {Row, Rows, Table} from 'react-native-table-component';
-import {Button} from '../../component/button/button';
-import {RadioButton} from '../../component/radioButton/radioButton';
-import {AutoCompleteInput} from '../../component/TextInputSugesstion';
+import { Row, Rows, Table } from 'react-native-table-component';
+import { Button } from '../../component/button/button';
+import { RadioButton } from '../../component/radioButton/radioButton';
+import { AutoCompleteInput } from '../../component/TextInputSugesstion';
 import Theme, {
   Colors,
   CommonFontSize,
@@ -24,11 +30,16 @@ import Theme, {
   scaleHeight,
 } from '../../theme';
 import * as readParamsController from './controller';
-import {itemTypeMeter, onDeInit, onInit} from './controller';
+import { itemTypeMeter, onDeInit, onInit } from './controller';
 import * as handleButton from './handleButton';
-import {filterSeri, onEditSeriDone} from './handleButton';
-import {CheckboxButton} from '../../component/checkbox/checkbox';
-import {NormalTextInput} from '../../component/normalTextInput';
+import {
+  filterSeri,
+  onDateEndPress,
+  onDateStartPress,
+  onEditSeriDone,
+} from './handleButton';
+import { CheckboxButton } from '../../component/checkbox/checkbox';
+import { NormalTextInput } from '../../component/normalTextInput';
 
 export const ReadParameterScreen = () => {
   const hookProps = readParamsController.GetHookProps();
@@ -39,7 +50,7 @@ export const ReadParameterScreen = () => {
     return onDeInit;
   }, []);
 
-  const RenderRadioButton = ({e}: {e: any}) => {
+  const RenderRadioButton = ({ e }: { e: any }) => {
     return useMemo(() => {
       return (
         <RadioButton
@@ -48,7 +59,7 @@ export const ReadParameterScreen = () => {
           value={e}
           checked={hookProps.state.typeRead === e ? true : false}
           onPress={() => {
-            hookProps.setState(state => ({...state, typeRead: e}));
+            hookProps.setState(state => ({ ...state, typeRead: e }));
           }}
         />
       );
@@ -58,7 +69,7 @@ export const ReadParameterScreen = () => {
   const RenderTable = () => {
     return useMemo(() => {
       return (
-        <Table borderStyle={{borderWidth: 2, borderColor: '#c8e1ff'}}>
+        <Table borderStyle={{ borderWidth: 2, borderColor: '#c8e1ff' }}>
           {/* <Row
             data={readParamsController.dataHeaderTable}
             style={styles.head}
@@ -70,15 +81,22 @@ export const ReadParameterScreen = () => {
     }, [...hookProps.state.dataTable]);
   };
 
-  const styleSelectDate = {...styles.selectDate};
+  const styleSelectDate = { ...styles.selectDate };
   //console.log('hookProps.state.typeRead:', hookProps.state.typeRead);
   styleSelectDate.color =
     hookProps.state.typeRead === 'Dữ liệu gần nhất'
       ? Colors.caption
       : Colors.primary;
 
+  const inputAccessoryViewID = 'uniqueID';
+
   return (
     <View style={Theme.StyleCommon.container}>
+      {Platform.OS === 'ios' && (
+        <InputAccessoryView nativeID={inputAccessoryViewID}>
+          <RNButton onPress={() => Keyboard.dismiss()} title="OK" />
+        </InputAccessoryView>
+      )}
       <View style={styles.rowSeri}>
         <View style={styles.containerSeri}>
           <AutoCompleteInput
@@ -88,12 +106,13 @@ export const ReadParameterScreen = () => {
             keyboardType="numeric"
             selectTextOnFocus={true}
             onChangeText={text =>
-              hookProps.setState(state => ({...state, seri: text}))
+              hookProps.setState(state => ({ ...state, seri: text }))
             }
             onSelectedItem={item =>
-              hookProps.setState(state => ({...state, seri: item}))
+              hookProps.setState(state => ({ ...state, seri: item }))
             }
             placeholder="Nhập số Seri"
+            inputAccessoryViewID={inputAccessoryViewID}
           />
         </View>
 
@@ -125,177 +144,173 @@ export const ReadParameterScreen = () => {
           })}
         </View>
       </View>
-      <View style={styles.normalRow}>
-        <View>
-          <CheckboxButton
-            checked={hookProps.state.is0h}
-            label="0h"
-            onPress={() => {
-              hookProps.setState(state => {
-                state.is0h = !state.is0h;
-                return {...state};
-              });
-            }}
-          />
-        </View>
-        <View style={styles.rowSelectDate}>
-          <View style={styles.conatinerSelectDate}>
-            <Text style={styles.labelSelectDate}>Bắt đầu</Text>
-            <TouchableOpacity
-              onPress={() => {
-                if (hookProps.state.typeRead === 'Dữ liệu gần nhất') {
-                  return;
-                }
-                DateTimePickerAndroid.open({
-                  value: hookProps.state.dateStart,
-                  mode: 'time',
-                  display: 'clock',
-                  onChange: date => {
-                    //console.log(JSON.stringify(date));
-
-                    if (date.type === 'set') {
-                      hookProps.setState(state => {
-                        state.dateStart = new Date(
-                          date.nativeEvent.timestamp as string | number,
-                        );
-                        console.log(state.dateStart.toLocaleString());
-                        return {...state};
-                      });
-                    }
-                  },
-                });
-              }}>
-              <TextInput
-                // label="Chọn ngày"
-                value={hookProps.state.dateStart.toLocaleTimeString()}
-                onChangeText={() => {}}
-                //style={styles.searchText}
-                editable={false}
-                style={styleSelectDate}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                if (hookProps.state.typeRead === 'Dữ liệu gần nhất') {
-                  return;
-                }
-                DateTimePickerAndroid.open({
-                  value: hookProps.state.dateStart,
-                  mode: 'date',
-                  display: 'calendar',
-                  onChange: date => {
-                    //console.log(JSON.stringify(date));
-
-                    if (date.type === 'set') {
-                      hookProps.setState(state => {
-                        state.dateStart = new Date(
-                          date.nativeEvent.timestamp as string | number,
-                        );
-                        console.log(state.dateStart.toLocaleString());
-                        return {...state};
-                      });
-                    }
-                  },
-                });
-              }}>
-              <TextInput
-                // label="Chọn ngày"
-                value={hookProps.state.dateStart.toLocaleDateString()}
-                onChangeText={() => {}}
-                //style={styles.searchText}
-                editable={false}
-                style={styleSelectDate}
-              />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.conatinerSelectDate}>
-            <Text style={styles.labelSelectDate}>Kết thúc</Text>
-            <TouchableOpacity
-              onPress={() => {
-                if (hookProps.state.typeRead === 'Dữ liệu gần nhất') {
-                  return;
-                }
-                DateTimePickerAndroid.open({
-                  value: hookProps.state.dateEnd,
-                  mode: 'time',
-                  display: 'clock',
-                  onChange: date => {
-                    //console.log(JSON.stringify(date));
-
-                    if (date.type === 'set') {
-                      hookProps.setState(state => {
-                        state.dateEnd = new Date(
-                          date.nativeEvent.timestamp as string | number,
-                        );
-                        console.log(state.dateEnd.toLocaleString());
-                        return {...state};
-                      });
-                    }
-                  },
-                });
-              }}>
-              <TextInput
-                // label="Chọn ngày"
-                value={hookProps.state.dateEnd.toLocaleTimeString()}
-                onChangeText={() => {}}
-                //style={styles.searchText}
-                editable={false}
-                style={styleSelectDate}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                if (hookProps.state.typeRead === 'Dữ liệu gần nhất') {
-                  return;
-                }
-                DateTimePickerAndroid.open({
-                  value: hookProps.state.dateEnd,
-                  mode: 'date',
-                  display: 'calendar',
-                  onChange: date => {
-                    console.log(JSON.stringify(date));
-
-                    if (date.type === 'set') {
-                      hookProps.setState(state => {
-                        state.dateEnd = new Date(
-                          date.nativeEvent.timestamp as string | number,
-                        );
-                        return {...state};
-                      });
-                    }
-                  },
-                });
-              }}>
-              <TextInput
-                // label="Chọn ngày"
-                value={hookProps.state.dateEnd.toLocaleDateString()}
-                onChangeText={() => {}}
-                //style={styles.searchText}
-                editable={false}
-                style={styleSelectDate}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-
-      <View style={styles.rowRadioButton}>
-        {readParamsController.dataReadRadioButton.map(e => {
-          // console.log('state', hookProps.state.typeRead);
-          // console.log('e', e);
-          return <RenderRadioButton e={e} key={e} />;
-        })}
-      </View>
-
-      <Text style={styles.status}>{hookProps.state.status}</Text>
-      <Table borderStyle={{borderWidth: 2, borderColor: '#c8e1ff'}}>
-        <Row
-          data={readParamsController.dataHeaderTable}
-          style={styles.head}
-          textStyle={styles.headerTabel}
-        />
-      </Table>
       <ScrollView style={styles.table}>
+        <View style={styles.normalRow}>
+          <View>
+            <CheckboxButton
+              checked={hookProps.state.is0h}
+              label="0h"
+              onPress={() => {
+                hookProps.setState(state => {
+                  state.is0h = !state.is0h;
+                  return { ...state };
+                });
+              }}
+            />
+          </View>
+          <View style={styles.rowSelectDate}>
+            <View style={styles.conatinerSelectDate}>
+              <Text style={styles.labelSelectDate}>Bắt đầu</Text>
+
+              {Platform.OS === 'android' && (
+                <>
+                  <TouchableOpacity
+                    onPress={() => {
+                      if (hookProps.state.typeRead === 'Dữ liệu gần nhất') {
+                        return;
+                      }
+                      DateTimePickerAndroid.open({
+                        value: hookProps.state.dateStart,
+                        mode: 'time',
+                        display: 'clock',
+                        onChange: onDateStartPress,
+                      });
+                    }}>
+                    <TextInput
+                      // label="Chọn ngày"
+                      value={hookProps.state.dateStart.toLocaleTimeString(
+                        'vi',
+                        {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        },
+                      )}
+                      onChangeText={() => {}}
+                      //style={styles.searchText}
+                      editable={false}
+                      style={styleSelectDate}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      if (hookProps.state.typeRead === 'Dữ liệu gần nhất') {
+                        return;
+                      }
+                      DateTimePickerAndroid.open({
+                        value: hookProps.state.dateStart,
+                        mode: 'date',
+                        display: 'calendar',
+                        onChange: onDateStartPress,
+                      });
+                    }}>
+                    <TextInput
+                      // label="Chọn ngày"
+                      value={hookProps.state.dateStart.toLocaleDateString('vi')}
+                      onChangeText={() => {}}
+                      //style={styles.searchText}
+                      editable={false}
+                      style={styleSelectDate}
+                    />
+                  </TouchableOpacity>
+                </>
+              )}
+              {Platform.OS === 'ios' && (
+                <>
+                  <DateTimePicker
+                    value={hookProps.state.dateStart}
+                    mode="datetime"
+                    onChange={onDateStartPress}
+                    locale="vi"
+                    textColor={Colors.primary}
+                    accentColor={Colors.primary}
+                  />
+                </>
+              )}
+            </View>
+            <View style={styles.conatinerSelectDate}>
+              <Text style={styles.labelSelectDate}>Kết thúc</Text>
+              {Platform.OS === 'android' && (
+                <>
+                  <TouchableOpacity
+                    onPress={() => {
+                      if (hookProps.state.typeRead === 'Dữ liệu gần nhất') {
+                        return;
+                      }
+                      DateTimePickerAndroid.open({
+                        value: hookProps.state.dateEnd,
+                        mode: 'time',
+                        display: 'clock',
+                        onChange: onDateEndPress,
+                      });
+                    }}>
+                    <TextInput
+                      // label="Chọn ngày"
+                      value={hookProps.state.dateEnd.toLocaleTimeString('vi', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                      onChangeText={() => {}}
+                      //style={styles.searchText}
+                      editable={false}
+                      style={styleSelectDate}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      if (hookProps.state.typeRead === 'Dữ liệu gần nhất') {
+                        return;
+                      }
+                      DateTimePickerAndroid.open({
+                        value: hookProps.state.dateEnd,
+                        mode: 'date',
+                        display: 'calendar',
+                        onChange: onDateEndPress,
+                      });
+                    }}>
+                    <TextInput
+                      // label="Chọn ngày"
+                      value={hookProps.state.dateEnd.toLocaleDateString('vi')}
+                      onChangeText={() => {}}
+                      //style={styles.searchText}
+                      editable={false}
+                      style={styleSelectDate}
+                    />
+                  </TouchableOpacity>
+                </>
+              )}
+              {Platform.OS === 'ios' && (
+                <>
+                  <DateTimePicker
+                    value={hookProps.state.dateStart}
+                    mode="datetime"
+                    onChange={onDateEndPress}
+                    locale="vi"
+                    textColor={Colors.primary}
+                    accentColor={Colors.primary}
+                  />
+                </>
+              )}
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.rowRadioButton}>
+          {readParamsController.dataReadRadioButton.map(e => {
+            // console.log('state', hookProps.state.typeRead);
+            // console.log('e', e);
+            return <RenderRadioButton e={e} key={e} />;
+          })}
+        </View>
+
+        <Text style={styles.status}>{hookProps.state.status}</Text>
+        <Table borderStyle={{ borderWidth: 2, borderColor: '#c8e1ff' }}>
+          <Row
+            data={readParamsController.dataHeaderTable}
+            style={styles.head}
+            textStyle={styles.headerTabel}
+          />
+        </Table>
+        {/* <ScrollView style={styles.table}> */}
         <RenderTable />
         {hookProps.state.typeRead === 'Tức thời' && (
           <View style={styles.containerRegisterMeterArea}>
@@ -308,6 +323,9 @@ export const ReadParameterScreen = () => {
               // }}
               keyboardType="numeric"
               onEndEditing={e => {
+                if (!e.nativeEvent.text) {
+                  return;
+                }
                 let registerMeter = Number(e.nativeEvent.text);
                 let delta: string = hookProps.state.registerModule
                   ? (
@@ -317,9 +335,10 @@ export const ReadParameterScreen = () => {
                 hookProps.setState(state => {
                   state.registerMeter = e.nativeEvent.text;
                   state.deltaRegister = delta;
-                  return {...state};
+                  return { ...state };
                 });
               }}
+              inputAccessoryViewID={inputAccessoryViewID}
             />
             <NormalTextInput
               label="Sai lệch (lít): "
@@ -354,7 +373,7 @@ export const ReadParameterScreen = () => {
               if (hookProps.state.requestStop === false) {
                 hookProps.setState(state => {
                   state.requestStop = true;
-                  return {...state};
+                  return { ...state };
                 });
               }
             }}
@@ -374,7 +393,7 @@ export const ReadParameterScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  normalRow: {flexDirection: 'row', alignItems: 'center'},
+  normalRow: { flexDirection: 'row', alignItems: 'center' },
   status: {
     color: Theme.Colors.primary,
     fontSize: CommonFontSize,
@@ -486,7 +505,7 @@ const styles = StyleSheet.create({
     //width: '80%',
     maxWidth: normalize(120),
     marginLeft: 10,
-    minWidth: 100,
+    // minWidth: 100,
     //height: 38,
     color: Colors.primary,
     fontSize: normalize(16),

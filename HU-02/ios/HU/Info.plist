@@ -35,20 +35,12 @@
 			</dict>
 		</dict>
 	</dict>
-	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen</string>
-	<key>UIRequiredDeviceCapabilities</key>
-	<array>
-		<string>armv7</string>
-	</array>
-	<key>UISupportedInterfaceOrientations</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>haha t aday</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Ứng dụng cần sử dụng bluetooth để kết nối với thiết bị HU-02</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Ứng dụng cần sử dụng vị trí để khai báo đồng hồ</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>SourceCodePro-Medium.ttf</string>
@@ -73,16 +65,21 @@
 		<string>SimpleLineIcons.ttf</string>
 		<string>Zocial.ttf</string>
 	</array>
-	 <!-- 🚨 Keep only the permissions used in your app 🚨 -->
-
-	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>haha t aday</string>
-	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>Ứng dụng cần sử dụng bluetooth để kết nối với thiết bị HU-02</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Ứng dụng cần sử dụng vị trí để khai báo đồng hồ</string>
-	
-
-  <!-- … -->
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>armv7</string>
+	</array>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Ứng dụngg cần sử dụng FaceId cho tính năng xác thực người dùng</string>
 </dict>
 </plist>

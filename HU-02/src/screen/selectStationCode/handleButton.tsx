@@ -1,13 +1,15 @@
-import {dataDBTable} from '../../database/model';
+import { dataDBTable } from '../../database/model';
 import {
   KHCMISRepository,
   PropsCondition,
   PropsConditions,
 } from '../../database/repository';
-import {CMISKHServices, PropsKHCMISModelSave} from '../../database/service';
-import {StackWriteStationCodeNavigationProp} from '../../navigation/model/model';
-import {getMeterListMissByLine} from '../../service/user';
-import {hookProps, PropsTabel} from './controller';
+import { CMISKHServices, PropsKHCMISModelSave } from '../../database/service';
+import { StackWriteStationCodeNavigationProp } from '../../navigation/model/model';
+import { getMeterListMissByLine } from '../../service/user';
+import { hookProps, PropsTabel } from './controller';
+import { onDateStartPress } from '../readOptical/handleButton';
+import { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 
 const TAG = 'handlebutton Select station code';
 
@@ -24,9 +26,9 @@ export const onChangeTextSearch = (value: string) => {
       } else {
         item.show = false;
       }
-      return {...item};
+      return { ...item };
     });
-    return {...state};
+    return { ...state };
   });
 };
 
@@ -37,14 +39,14 @@ export const onOKPress = async (
   try {
     hookProps.setState(state => {
       state.isLoading = true;
-      return {...state};
+      return { ...state };
     });
     await updateSeri2Db();
   } catch (err) {
   } finally {
     hookProps.setState(state => {
       state.isLoading = false;
-      return {...state};
+      return { ...state };
     });
   }
 
@@ -82,7 +84,7 @@ export async function upDateMissData(
     updateBusy = true;
     hookProps.setState(state => {
       state.isLoading = true;
-      return {...state};
+      return { ...state };
     });
     console.log('à');
 
@@ -106,7 +108,7 @@ export async function upDateMissData(
     }
     hookProps.setState(state => {
       state.dataTabel = dataTable;
-      return {...state};
+      return { ...state };
     });
   } catch (err) {
     console.log(TAG, err.message);
@@ -114,7 +116,7 @@ export async function upDateMissData(
     updateBusy = false;
     hookProps.setState(state => {
       state.isLoading = false;
-      return {...state};
+      return { ...state };
     });
   }
 }
@@ -192,5 +194,19 @@ export async function updateSeri2Db() {
     }
 
     console.log('res save:', res);
+  }
+}
+
+export function onDateEndPress(date: DateTimePickerEvent) {
+  console.log(JSON.stringify(date));
+
+  if (date.type === 'set') {
+    const selectDate = new Date(date.nativeEvent.timestamp as string | number);
+    hookProps.setState(state => {
+      state.dateEnd = selectDate;
+      //state.dateStart = new Date(state.dateEnd);
+      return { ...state };
+    });
+    upDateMissData(selectDate);
   }
 }

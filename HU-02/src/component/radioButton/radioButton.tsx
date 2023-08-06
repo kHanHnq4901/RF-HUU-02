@@ -1,5 +1,11 @@
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Platform,
+} from 'react-native';
 import { RadioButton as RP_Paper, useTheme } from 'react-native-paper';
 import { Colors, CommonFontSize, Fonts } from '../../theme';
 
@@ -18,6 +24,10 @@ export const RadioButton = (props: Props) => {
         value={props.value}
         color={theme.colors.primary}
         onPress={props.onPress}
+        // uncheckedColor={
+        //   Platform.OS === 'ios' ? Colors.backgroundIcon : undefined
+        // }
+        // uncheckedColor="red"
         status={props.checked === true ? 'checked' : 'unchecked'}
       />
       <Text style={styles.text}>{props.label}</Text>

@@ -1,9 +1,8 @@
-import { Alert } from 'react-native';
-import { connectLatestBLE } from '../../service/hhu/Ble/bleHhuFunc';
-import { ObjSend } from '../../service/hhu/Ble/hhuFunc';
-import BleManager from '../../util/BleManager';
-import { showToast } from '../../util';
-import { navigation, store } from './controller';
+import {Alert} from 'react-native';
+import {connectLatestBLE} from '../../service/hhu/Ble/bleHhuFunc';
+import {ObjSend} from '../../service/hhu/Ble/hhuFunc';
+import BleManager from 'react-native-ble-manager';
+import {navigation, store} from './controller';
 
 export async function onBlePress() {
   // if (store.state.hhu.connected === 'BLE') {

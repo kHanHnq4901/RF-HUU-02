@@ -1,12 +1,12 @@
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import {StyleSheet, View} from 'react-native';
-import {BackButton} from '../../component/backButton';
-import {ButtonList} from '../../component/buttonList';
+import { StyleSheet, View } from 'react-native';
+import { BackButton } from '../../component/backButton';
+import { ButtonList } from '../../component/buttonList';
 import FormButton from '../../component/formButton';
-import {ModalTextInput} from '../../component/modalTextInput';
-import {Colors} from '../../theme';
-import {hook, store, UpdateHook} from './controller';
+import { ModalTextInput } from '../../component/modalTextInput';
+import { Colors } from '../../theme';
+import { hook, store, UpdateHook } from './controller';
 import { IconFaceID } from '../../component/faceID/index';
 import {
   onbtnAllowSigninByFingerPress,
@@ -31,31 +31,37 @@ export function SettingUserScreen() {
       />
       {store.state.typeTouchID === 'FaceID' ? (
         <>
-          <ButtonList
-            label="Cho phép đăng nhập bằng Face ID"
-            icon="fingerprint"
-            leftChildren={<IconFaceID size={30} color={Colors.secondary} />}
-            onPress={onbtnAllowSigninByFingerPress}
-          />
-          <ButtonList
-            label="Xóa đăng nhập bằng Face ID"
-            icon="fingerprint-off"
-            leftChildren={<IconFaceID size={30} color={Colors.secondary} />}
-            onPress={onClearFingerPress}
-          />
+          {store.state.isCredential !== true ? (
+            <ButtonList
+              label="Cho phép đăng nhập bằng Face ID"
+              icon="fingerprint"
+              leftChildren={<IconFaceID size={30} color={Colors.secondary} />}
+              onPress={onbtnAllowSigninByFingerPress}
+            />
+          ) : (
+            <ButtonList
+              label="Xóa đăng nhập bằng Face ID"
+              icon="fingerprint-off"
+              leftChildren={<IconFaceID size={30} color={Colors.secondary} />}
+              onPress={onClearFingerPress}
+            />
+          )}
         </>
       ) : (
         <>
-          <ButtonList
-            label="Cho phép đăng nhập bằng vân tay"
-            icon="fingerprint"
-            onPress={onbtnAllowSigninByFingerPress}
-          />
-          <ButtonList
-            label="Xóa đăng nhập bằng vân tay"
-            icon="fingerprint-off"
-            onPress={onClearFingerPress}
-          />
+          {store.state.isCredential !== true ? (
+            <ButtonList
+              label="Cho phép đăng nhập bằng vân tay"
+              icon="fingerprint"
+              onPress={onbtnAllowSigninByFingerPress}
+            />
+          ) : (
+            <ButtonList
+              label="Xóa đăng nhập bằng vân tay"
+              icon="fingerprint-off"
+              onPress={onClearFingerPress}
+            />
+          )}
         </>
       )}
     </View>

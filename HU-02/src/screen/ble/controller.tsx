@@ -1,17 +1,17 @@
 import React, {useContext, useState} from 'react';
 import {NativeEventEmitter, NativeModules, Platform} from 'react-native';
+import BleManager from 'react-native-ble-manager';
 import {PropsStore, storeContext} from '../../store';
-import BleManager from '../../util/BleManager';
-import {check, PERMISSIONS, request, RESULTS} from 'react-native-permissions';
 import {onScanPress} from './handleButton';
 
 import * as permission from 'react-native-permissions';
 import {
+  requestPermissionBleConnectAndroid,
   requestPermissionGPSAndroid,
   requestPermissionGPSIos,
   requestPermissionScan,
-  requestPermissionBleConnectAndroid,
 } from '../../service/permission';
+import {showAlert} from '../../util';
 var LocationEnabler =
   Platform.OS === 'android' ? require('react-native-location-enabler') : null;
 
@@ -19,13 +19,14 @@ export type PropsItemBle = {
   isConnectable?: boolean;
   name: string;
   id: string;
+  rssi?: number;
 };
 
 type PropsBLE = {
   isScan: boolean;
 
   listBondedDevice: PropsItemBle[];
-  listNewDevice: {name: string; id: string}[];
+  listNewDevice: {name: string; id: string; rssi: number}[];
   // idConnected: string | null;
 };
 
@@ -148,11 +149,11 @@ const handleDiscoverPeripheral = peripheral => {
     rssi: number;
   };
   //console.log('res:', res);
-  if (res.name !== null && res.advertising.isConnectable) {
+  if (res.name && res.advertising.isConnectable) {
     hookProps.state.ble.listNewDevice.forEach(itm => {
-      peripherals.set(itm.id, {name: itm.name, id: itm.id});
+      peripherals.set(itm.id, {name: itm.name, id: itm.id, rssi: res.rssi});
     });
-    peripherals.set(res.id, {name: res.name, id: res.id});
+    peripherals.set(res.id, {name: res.name, id: res.id, rssi: res.rssi});
 
     hookProps.setState(state => {
       state.ble.listNewDevice = Array.from(peripherals.values());
@@ -172,19 +173,26 @@ export const onInit = async navigation => {
     let requestPermissionGps = await requestGps();
     if (requestScanPermission === true && requestPermissionGps === true) {
       await BleManager.start({showAlert: false});
-      await BleManager.enableBluetooth();
-      let list: PropsListBondBle[] = await BleManager.getBondedPeripherals();
-      hookProps.setState(state => {
-        state.ble.listBondedDevice.length = 0;
-        list.forEach(item => {
-          state.ble.listBondedDevice.push({
-            id: item.id,
-            isConnectable: item.advertising.isConnectable,
-            name: item.name,
+      let isEnable: boolean = await BleManager.enableBluetooth();
+      if (isEnable === true) {
+        if (Platform.OS === 'android') {
+          console.log('get list bond device');
+          let list = await BleManager.getBondedPeripherals();
+          hookProps.setState(state => {
+            state.ble.listBondedDevice.length = 0;
+            list.forEach(item => {
+              state.ble.listBondedDevice.push({
+                id: item.id,
+                isConnectable: item.advertising.isConnectable,
+                name: item.name ?? '',
+              });
+            });
+            return {...state};
           });
-        });
-        return {...state};
-      });
+        }
+      } else {
+        showAlert('Thiết bị cần được bật bluetooth');
+      }
     }
 
     listenerStopScan = bleManagerEmitter.addListener(

@@ -1,18 +1,28 @@
 import React from 'react';
-import {ScrollView, StyleSheet, View} from 'react-native';
+import {
+  InputAccessoryView,
+  ScrollView,
+  StyleSheet,
+  View,
+  Button as RNButton,
+  Keyboard,
+  Platform,
+} from 'react-native';
 import TextInputInteractive from 'react-native-text-input-interactive';
-import {Button} from '../../component/button/button';
-import {Text} from '../../component/Text';
-import {USER_ROLE_TYPE} from '../../service/user';
-import {Colors, CommonHeight, normalize, scale} from '../../theme';
-import {CommonFontSize} from '../../theme/index';
-import {GetHookProps, hookProps, listSelectServer, store} from './controller';
+import { Button } from '../../component/button/button';
+import { Text } from '../../component/Text';
+import { USER_ROLE_TYPE } from '../../service/user';
+import { Colors, CommonHeight, normalize, scale } from '../../theme';
+import { CommonFontSize } from '../../theme/index';
+import { GetHookProps, hookProps, listSelectServer, store } from './controller';
 import {
   onNumRetriesReadSubmit,
   onSavePress,
   onSetChanelPress,
 } from './handleButton';
-import {RadioButton} from '../../component/radioButton/radioButton';
+import { RadioButton } from '../../component/radioButton/radioButton';
+
+const inputAccessoryViewID = 'uniqueID';
 
 export const SettingAndAlarmScreen = () => {
   GetHookProps();
@@ -20,6 +30,11 @@ export const SettingAndAlarmScreen = () => {
   return (
     <View style={styles.contain}>
       <ScrollView style={styles.container}>
+        {Platform.OS === 'ios' && (
+          <InputAccessoryView nativeID={inputAccessoryViewID}>
+            <RNButton onPress={() => Keyboard.dismiss()} title="OK" />
+          </InputAccessoryView>
+        )}
         <Text style={styles.title}>Chọn server:</Text>
         <View style={styles.listSelectServer}>
           {listSelectServer.map(item => {
@@ -40,7 +55,7 @@ export const SettingAndAlarmScreen = () => {
                       store.state.appSetting.server.port = '3090';
                     }
 
-                    return {...state};
+                    return { ...state };
                   });
                 }}
               />
@@ -50,7 +65,7 @@ export const SettingAndAlarmScreen = () => {
         <View style={styles.containerIPPort}>
           <View style={styles.containerItemIPPort}>
             <Text style={styles.title}>IP dữ liệu:</Text>
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               {/* <Text style={styles.textThreshold}>Nhỏ hơn:</Text> */}
               <TextInputInteractive
                 placeholder="182.237.21.93|api.emic.com.vn"
@@ -61,7 +76,7 @@ export const SettingAndAlarmScreen = () => {
                 onChangeText={text => {
                   store.setState(state => {
                     store.state.appSetting.server.host = text;
-                    return {...state};
+                    return { ...state };
                   });
                 }}
                 // onSubmitEditing={e => {
@@ -72,18 +87,19 @@ export const SettingAndAlarmScreen = () => {
           </View>
           <View style={styles.containerItemIPPort}>
             <Text style={styles.title}>Port dữ liệu:</Text>
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               {/* <Text style={styles.textThreshold}>Nhỏ hơn:</Text> */}
               <TextInputInteractive
                 placeholder="3090"
                 keyboardType="numeric"
+                inputAccessoryViewID={inputAccessoryViewID}
                 placeholderTextColor={Colors.caption}
                 value={store.state.appSetting.server.port}
                 textInputStyle={styles.valueTextInput}
                 onChangeText={text => {
                   store.setState(state => {
                     store.state.appSetting.server.port = text;
-                    return {...state};
+                    return { ...state };
                   });
                 }}
                 // onSubmitEditing={e => {
@@ -96,17 +112,18 @@ export const SettingAndAlarmScreen = () => {
         <View style={styles.containerIPPort}>
           <View style={styles.containerItemIPPort}>
             <Text style={styles.title}>IP HU:</Text>
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               {/* <Text style={styles.textThreshold}>Nhỏ hơn:</Text> */}
               <TextInputInteractive
                 placeholder=""
                 keyboardType="numeric"
+                inputAccessoryViewID={inputAccessoryViewID}
                 value={store.state.appSetting.hhu.host}
                 textInputStyle={styles.textIP}
                 onChangeText={text => {
                   store.setState(state => {
                     store.state.appSetting.hhu.host = text.trim();
-                    return {...state};
+                    return { ...state };
                   });
                 }}
                 // onSubmitEditing={e => {
@@ -117,17 +134,18 @@ export const SettingAndAlarmScreen = () => {
           </View>
           <View style={styles.containerItemIPPort}>
             <Text style={styles.title}>Port HU:</Text>
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               {/* <Text style={styles.textThreshold}>Nhỏ hơn:</Text> */}
               <TextInputInteractive
                 placeholder=""
                 keyboardType="numeric"
+                inputAccessoryViewID={inputAccessoryViewID}
                 value={store.state.appSetting.hhu.port}
                 textInputStyle={styles.valueTextInput}
                 onChangeText={text => {
                   store.setState(state => {
                     store.state.appSetting.hhu.port = text.trim();
-                    return {...state};
+                    return { ...state };
                   });
                 }}
                 // onSubmitEditing={e => {
@@ -139,17 +157,18 @@ export const SettingAndAlarmScreen = () => {
         </View>
 
         <Text style={styles.title}>Số lần đọc lại:</Text>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           {/* <Text style={styles.textThreshold}>Nhỏ hơn:</Text> */}
           <TextInputInteractive
             placeholder=""
             keyboardType="numeric"
+            inputAccessoryViewID={inputAccessoryViewID}
             value={store.state.appSetting.numRetriesRead}
             textInputStyle={styles.valueTextInput}
             onChangeText={text => {
               store.setState(state => {
                 store.state.appSetting.numRetriesRead = text.trim();
-                return {...state};
+                return { ...state };
               });
             }}
             onSubmitEditing={e => {
@@ -160,11 +179,12 @@ export const SettingAndAlarmScreen = () => {
         {store.state.userInfo.USER_TYPE === USER_ROLE_TYPE.ADMIN && (
           <>
             <Text style={styles.title}>Cấu hình kênh RF:</Text>
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               {/* <Text style={styles.textThreshold}>Nhỏ hơn:</Text> */}
               <TextInputInteractive
                 placeholder=""
                 keyboardType="numeric"
+                inputAccessoryViewID={inputAccessoryViewID}
                 editable={false}
                 value={hookProps.state.chanelRF}
                 textInputStyle={styles.valueTextInput}
@@ -196,7 +216,7 @@ export const SettingAndAlarmScreen = () => {
                     onPress={() => {
                       hookProps.setState(state => {
                         state.chanelRF = index.toString();
-                        return {...state};
+                        return { ...state };
                       });
                     }}
                   />
