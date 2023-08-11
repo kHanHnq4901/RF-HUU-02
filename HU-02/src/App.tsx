@@ -39,6 +39,7 @@ export default function App() {
               />
               <KeyboardAvoidingView
                 style={{ flex: 1 }}
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 30 : 30}
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
                 <RootNavigator />
               </KeyboardAvoidingView>

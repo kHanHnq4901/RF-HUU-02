@@ -9,11 +9,11 @@ import {
 import IconAnt from 'react-native-vector-icons/AntDesign';
 import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
 
-import {useNavigation} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {Caption} from 'react-native-paper';
-import {StackRootList} from '../../navigation/model/model';
-import {Colors, normalize} from '../../theme';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { Caption } from 'react-native-paper';
+import { StackRootList } from '../../navigation/model/model';
+import { Colors, normalize } from '../../theme';
 import {
   GetHookProps,
   hookProps,
@@ -23,7 +23,7 @@ import {
   setStatus,
   store,
 } from './controller';
-import {connectHandle, disConnect, onScanPress} from './handleButton';
+import { connectHandle, disConnect, onScanPress } from './handleButton';
 
 const TAG = 'BleScreen:';
 
@@ -39,7 +39,9 @@ const BleItem = (props: PropsItemBle) => {
         disConnect(props.id);
       }}>
       <View style={styles.row}>
-        <Text style={{...styles.titleItem, maxWidth: '80%'}}>{props.name}</Text>
+        <Text style={{ ...styles.titleItem, maxWidth: '80%' }}>
+          {props.name}
+        </Text>
         <IconFontAwesome
           name="bluetooth"
           size={25}
@@ -80,14 +82,14 @@ export const SetUpBleScreen = () => {
   //const refScroll = useRef<any>({});
 
   return (
-    <View style={{flex: 1, paddingHorizontal: 10}}>
+    <View style={{ flex: 1, paddingHorizontal: 10 }}>
       <View
         style={{
           flexDirection: 'row',
           marginVertical: 20,
           paddingHorizontal: 8,
         }}>
-        <View style={{flex: 1}} />
+        <View style={{ flex: 1 }} />
         <TouchableOpacity
           onPress={onScanPress}
           style={{
@@ -96,7 +98,7 @@ export const SetUpBleScreen = () => {
             padding: 10,
             borderRadius: 15,
           }}>
-          <Text style={{fontSize: 20, marginRight: 10, color: Colors.text}}>
+          <Text style={{ fontSize: 20, marginRight: 10, color: Colors.text }}>
             {hookProps.state.ble.isScan ? 'Đang tìm kiếm ...' : 'Tìm kiếm'}
           </Text>
           <IconAnt name="search1" size={35} color="#f70f3c" />
@@ -108,7 +110,7 @@ export const SetUpBleScreen = () => {
       <ScrollView showsVerticalScrollIndicator={false}>
         {store.state.hhu.connect === 'CONNECTED' && (
           <>
-            <Text style={{...styles.title, marginBottom: 10}}>
+            <Text style={{ ...styles.title, marginBottom: 10 }}>
               Thiết bị đang kết nối:
             </Text>
             <BleItem
@@ -118,7 +120,7 @@ export const SetUpBleScreen = () => {
           </>
         )}
 
-        <Text style={{...styles.title, marginBottom: 10}}>
+        <Text style={{ ...styles.title, marginBottom: 10 }}>
           Thiết bị khả dụng:
         </Text>
         {hookProps.state.ble.listNewDevice.map((item, index) => {
@@ -131,7 +133,7 @@ export const SetUpBleScreen = () => {
             />
           );
         })}
-        <Text style={{...styles.title, marginBottom: 10, marginTop: 25}}>
+        <Text style={{ ...styles.title, marginBottom: 10, marginTop: 25 }}>
           Thiết bị đã kết nối:
         </Text>
         {hookProps.state.ble.listBondedDevice.map((item, index) => {

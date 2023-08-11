@@ -1,8 +1,9 @@
-import {store} from '../../component/drawer/drawerContent/controller';
-import {PropsStoreMeter} from '../../store';
+import { store } from '../../component/drawer/drawerContent/controller';
+import { PropsStoreMeter } from '../../store';
 import axios from 'axios';
-import {GetFormatDate} from './util';
+import { GetFormatDate } from './util';
 import NetInfo from '@react-native-community/netinfo';
+import { endPoints, getUrl } from '../api';
 
 const TAG = 'USER Service:';
 
@@ -62,22 +63,14 @@ export async function getMeterByAccount(): Promise<PropsResponse> {
 
   try {
     //GetMeterAccount(string UserAccount, string Token)
-    const url =
-      'http://' +
-      store.state.appSetting.server.host +
-      ':' +
-      store.state.appSetting.server.port +
-      '/api' +
-      '/GetMeterAccount';
-    const {data}: {data: {CODE: string; MESSAGE: string}} = await axios.get(
-      url,
-      {
+    const url = getUrl(endPoints.getMeterAccount);
+    const { data }: { data: { CODE: string; MESSAGE: string } } =
+      await axios.get(url, {
         params: {
           UserAccount: store.state.userInfo.USER_ACCOUNT,
           Token: store.state.userInfo.TOKEN,
         },
-      },
-    );
+      });
 
     if (data.CODE === '0') {
       console.log(TAG, 'Lỗi:', data.MESSAGE);
@@ -104,7 +97,7 @@ export async function getMeterByAccount(): Promise<PropsResponse> {
 
     store.setState(state => {
       state.meter = dat;
-      return {...state};
+      return { ...state };
     });
 
     //console.log('dat:', dat);
@@ -123,24 +116,16 @@ export async function getLineList(): Promise<PropsResponse> {
 
   try {
     //GetMeterAccount(string UserAccount, string Token)
-    const url =
-      'http://' +
-      store.state.appSetting.server.host +
-      ':' +
-      store.state.appSetting.server.port +
-      '/api' +
-      '/GetLineList';
+    const url = getUrl(endPoints.getLineList);
     //console.log('store.state.userInfo.USER_ID:', store.state.userInfo.USER_ID);
 
-    const {data}: {data: {CODE: string; MESSAGE: string}} = await axios.get(
-      url,
-      {
+    const { data }: { data: { CODE: string; MESSAGE: string } } =
+      await axios.get(url, {
         params: {
           UserID: store.state.userInfo.USER_ID,
           Token: store.state.userInfo.TOKEN,
         },
-      },
-    );
+      });
 
     if (data.CODE === '0') {
       console.log(TAG, 'Lỗi:', data.MESSAGE);
@@ -148,7 +133,7 @@ export async function getLineList(): Promise<PropsResponse> {
     }
     store.setState(state => {
       state.meter.listLine = data as unknown as PropsLineServer[];
-      return {...state};
+      return { ...state };
     });
 
     //console.log('dat:', data);
@@ -170,25 +155,17 @@ export async function getMeterListMissByLine(
 
   try {
     //GetMeterAccount(string UserAccount, string Token)
-    const url =
-      'http://' +
-      store.state.appSetting.server.host +
-      ':' +
-      store.state.appSetting.server.port +
-      '/api' +
-      '/GetMeterListByLine';
+    const url = getUrl(endPoints.getMeterByLine);
     console.log('store.state.userInfo.USER_ID:', store.state.userInfo.USER_ID);
 
-    const {data}: {data: {CODE: string; MESSAGE: string}} = await axios.get(
-      url,
-      {
+    const { data }: { data: { CODE: string; MESSAGE: string } } =
+      await axios.get(url, {
         params: {
           LineID: lineID,
           DateMiss: GetFormatDate(dateMiss),
           Token: store.state.userInfo.TOKEN,
         },
-      },
-    );
+      });
 
     if (data.CODE === '0') {
       console.log(TAG, 'Lỗi:', data.MESSAGE);

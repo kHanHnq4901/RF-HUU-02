@@ -1,13 +1,13 @@
 import React from 'react';
-import {useNavigation} from '@react-navigation/native';
-import type {StackNavigationProp} from '@react-navigation/stack';
-import {getUserStorage} from '../../service/storage/user';
-import {PropsStore, TYPE_TOUCH_ID, storeContext} from '../../store';
-import {StackRootList} from '../../navigation/model/model';
-import {updateValueAppSettingFromNvm} from '../../service/storage';
-import {onFingerPress} from './handle';
+import { useNavigation } from '@react-navigation/native';
+import type { StackNavigationProp } from '@react-navigation/stack';
+import { getUserStorage } from '../../service/storage/user';
+import { PropsStore, TYPE_TOUCH_ID, storeContext } from '../../store';
+import { StackRootList } from '../../navigation/model/model';
+import { updateValueAppSettingFromNvm } from '../../service/storage';
+import { onFingerPress } from './handle';
 import TouchID from 'react-native-touch-id';
-import {showToast} from '../../util';
+import { showToast } from '../../util';
 
 type PropsState = {
   password: string;
@@ -36,17 +36,24 @@ export function UpdateHook() {
 
   navigation = useNavigation<StackNavigationProp<StackRootList>>();
 }
+
+export const olState = {
+  userName: '',
+};
+
 let firstTime = true;
 export async function onInit() {
   navigation.addListener('focus', async () => {
     hook.setState(state => {
       state.password = '';
-      return {...state};
+      return { ...state };
     });
 
     const appSetting = await updateValueAppSettingFromNvm();
 
     const user = await getUserStorage();
+
+    olState.userName = user.userAccount;
 
     let typeTouchID: TYPE_TOUCH_ID = 'TouchID';
     try {
@@ -66,7 +73,7 @@ export async function onInit() {
       state.userInfo.USER_ACCOUNT = user.userAccount;
       state.userInfo.USER_TEL = user.userAccount;
       state.typeTouchID = typeTouchID;
-      return {...state};
+      return { ...state };
     });
 
     if (

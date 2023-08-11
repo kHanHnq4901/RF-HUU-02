@@ -1,16 +1,14 @@
 import React from 'react';
 import {
-  StyleProp,
   StyleSheet,
   Text,
   TextInput,
-  TextStyle,
+  TextInputProps,
   TouchableOpacity,
   View,
 } from 'react-native';
-import {Modal, Portal} from 'react-native-paper';
-import {Colors, normalize, sizeScreen} from '../../theme';
-import {TextInputProps} from 'react-native';
+import { Modal, Portal } from 'react-native-paper';
+import { Colors, normalize, sizeScreen } from '../../theme';
 
 let valueTextInput: string = '';
 
@@ -70,11 +68,11 @@ const styles = StyleSheet.create({
   },
   containerModal: {
     position: 'absolute',
-    bottom: sizeScreen.height * 0.2,
+    top: sizeScreen.height * 0.2,
     borderRadius: 10,
     backgroundColor: 'white',
     width: sizeScreen.width * 0.8,
-    maxWidth: 250,
+    maxWidth: 300,
   },
   header: {
     height: 45,

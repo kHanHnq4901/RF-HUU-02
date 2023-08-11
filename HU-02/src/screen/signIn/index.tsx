@@ -21,7 +21,12 @@ import {
   store,
   UpdateHook,
 } from './controller';
-import { onBtnSettingPress, onFingerPress, onLoginPress } from './handle';
+import {
+  onBtnForgotPassword,
+  onBtnSettingPress,
+  onFingerPress,
+  onLoginPress,
+} from './handle';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { version } from '../../shared';
 
@@ -56,10 +61,14 @@ export function SignInScreen() {
           }
           value={store.state.userInfo.USER_ACCOUNT}
           iconType="mobile1"
-          keyboardType="email-address"
+          // keyboardType="email-address"
           autoCapitalize="none"
           autoCorrect={false}
           placeholder="Tài khoản"
+          blurOnSubmit={false}
+          onSubmitEditing={() => {
+            this.refPassword?.focus();
+          }}
         />
 
         <FormInput
@@ -69,6 +78,9 @@ export function SignInScreen() {
               return { ...state };
             })
           }
+          ref={ref => {
+            this.refPassword = ref;
+          }}
           value={hook.state.password}
           placeholder="Mật khẩu"
           iconType="lock"
@@ -98,44 +110,11 @@ export function SignInScreen() {
           onPress={() => onLoginPress()}
         />
 
-        <TouchableOpacity style={styles.forgotButton} onPress={() => {}}>
+        <TouchableOpacity
+          style={styles.forgotButton}
+          onPress={onBtnForgotPassword}>
           <Text style={styles.navButtonText}>Quên mật khẩu?</Text>
         </TouchableOpacity>
-
-        {/* {Platform.OS === 'android' ? (
-        <View>
-          <SocialButton
-            buttonTitle="Sign In with Facebook"
-            btnType="facebook"
-            color="#4867aa"
-            backgroundColor="#e6eaf4"
-            onPress={() => fbLogin()}
-          />
-
-          <SocialButton
-            buttonTitle="Sign In with Google"
-            btnType="google"
-            color="#de4d41"
-            backgroundColor="#f5e7ea"
-            onPress={() => googleLogin()}
-          />
-        </View>
-      ) : null} */}
-
-        {/* <TouchableOpacity
-          style={styles.finger}
-          onPress={() => onFingerPress(true)}>
-          <Text style={styles.navButtonText}>{'Đăng nhập bằng vân tay '}</Text>
-          <Ionicons name="finger-print" color={Colors.secondary} size={25} />
-        </TouchableOpacity> */}
-        {/* <TouchableOpacity style={styles.forgotButton} onPress={() => {}}>
-          <Text style={styles.version}>Version: {version}</Text>
-        </TouchableOpacity> */}
-        {/* <TouchableOpacity
-        style={styles.forgotButton}
-        onPress={() => navigation.navigate('SignUp')}>
-        <Text style={styles.navButtonText}>Không có tài khoản? Đăng ký</Text>
-      </TouchableOpacity> */}
       </ScrollView>
       <View style={styles.footer}>
         <Text style={styles.version}>Version: {version}</Text>

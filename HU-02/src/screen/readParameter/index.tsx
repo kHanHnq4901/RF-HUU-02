@@ -544,8 +544,8 @@ const styles = StyleSheet.create({
   containerSeri: {
     width: '45%', //sizeScreen.width * 0.45,
     maxWidth: 300,
-    height: CommonHeight * scale,
-    backgroundColor: 'pink',
+    // height: CommonHeight,
+    // backgroundColor: 'pink',
     alignItems: 'center',
     borderRadius: 5,
     justifyContent: 'center',

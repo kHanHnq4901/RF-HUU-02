@@ -1,8 +1,9 @@
-import {isEmailFormat, isInputValid, isNumeric} from '../../util';
-import {hook, store} from './controller';
-import {showAlert} from '../../util/index';
+import { isEmailFormat, isInputValid, isNumeric } from '../../util';
+import { hook, store } from './controller';
+import { showAlert } from '../../util/index';
 import axios from 'axios';
-import {Keyboard} from 'react-native';
+import { Keyboard } from 'react-native';
+import { endPoints, getUrl } from '../../service/api';
 
 function checkCondition(): boolean {
   if (
@@ -58,17 +59,11 @@ export async function onSignupPress() {
 
   hook.setState(state => {
     state.btnSignupBusy = true;
-    return {...state};
+    return { ...state };
   });
 
   try {
-    const url =
-      'http://' +
-      store.state.appSetting.server.host +
-      ':' +
-      store.state.appSetting.server.port +
-      '/api' +
-      '/CreateUser';
+    const url = getUrl(endPoints.createUser);
     const ret = await axios.get(url, {
       params: {
         UserAccount: hook.state.signupInfo.userAccount,
@@ -96,7 +91,7 @@ export async function onSignupPress() {
   } finally {
     hook.setState(state => {
       state.btnSignupBusy = false;
-      return {...state};
+      return { ...state };
     });
   }
 }

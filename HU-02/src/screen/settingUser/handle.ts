@@ -3,6 +3,7 @@ import * as Keychain from 'react-native-keychain';
 import { showAlert, showToast } from '../../util';
 import { hook, store } from './controller';
 import axios from 'axios';
+import { endPoints, getUrl } from '../../service/api';
 
 export async function onbtnAllowSigninByFingerPress() {
   let isSupport: any;
@@ -25,13 +26,7 @@ export async function onModalOkEnterPasswordPress(password: string) {
     return { ...state };
   });
   try {
-    const url =
-      'http://' +
-      store.state.appSetting.server.host +
-      ':' +
-      store.state.appSetting.server.port +
-      '/api' +
-      '/Login';
+    const url = getUrl(endPoints.login);
 
     const result = await axios.get(url, {
       params: {
@@ -43,7 +38,10 @@ export async function onModalOkEnterPasswordPress(password: string) {
     if (result.data.CODE === '1') {
       console.log('Đăng nhập thành công');
 
-      store.state.isCredential = true;
+      store.setState(state => {
+        state.isCredential = true;
+        return { ...state };
+      });
 
       const save = await Keychain.setGenericPassword(
         store.state.userInfo.USER_ACCOUNT,

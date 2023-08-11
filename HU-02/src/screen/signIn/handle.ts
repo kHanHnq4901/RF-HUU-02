@@ -1,5 +1,5 @@
-import { showAlert } from '../../util';
-import { hook, navigation, store } from './controller';
+import { showAlert, showAlertProps } from '../../util';
+import { hook, navigation, olState, store } from './controller';
 import axios from 'axios';
 import { PropsInfoUser, USER_ROLE_TYPE } from '../../service/user';
 import { Keyboard } from 'react-native';
@@ -7,6 +7,7 @@ import { saveUserStorage } from '../../service/storage/user';
 import TouchID from 'react-native-touch-id';
 import * as Keychain from 'react-native-keychain';
 import { sha256 } from 'react-native-sha256';
+import { endPoints, getUrl } from '../../service/api';
 
 const TAG = 'Handle Sigin:';
 
@@ -61,18 +62,15 @@ export async function onLoginPress(props?: PropsLogin) {
         },
       });
     } else {
-      const url =
-        'http://' +
-        store.state.appSetting.server.host +
-        ':' +
-        store.state.appSetting.server.port +
-        '/api' +
-        '/Login';
+      const userAccount =
+        props?.userAccount ?? store.state.userInfo.USER_ACCOUNT;
+      const password = props?.password ?? hook.state.password;
+      const url = getUrl(endPoints.login);
 
       const result = await axios.get(url, {
         params: {
-          UserAccount: props?.userAccount ?? store.state.userInfo.USER_ACCOUNT,
-          Password: props?.password ?? hook.state.password,
+          UserAccount: userAccount,
+          Password: password,
         },
       });
       //console.log('result: ', JSON.stringify(result));
@@ -91,10 +89,51 @@ export async function onLoginPress(props?: PropsLogin) {
         console.log('Đăng nhập thành công');
 
         saveUserStorage({
-          userAccount: props?.userAccount ?? store.state.userInfo.USER_ACCOUNT,
+          userAccount: userAccount,
           code: '',
           pwd: '',
         });
+
+        if (userAccount !== olState.userName) {
+          await Keychain.resetGenericPassword();
+          console.log('save new user');
+          saveUserStorage({
+            userAccount: userAccount,
+            pwd: '',
+            code: '',
+          });
+          olState.userName = userAccount;
+          if (
+            store.state.typeTouchID !== 'NoSupport' &&
+            (await Keychain.getGenericPassword()) === false
+          ) {
+            await showAlert(
+              'Bạn có muốn sử dụng chức năng ' +
+                store.state.typeTouchID +
+                ' cho lần sau ?',
+              {
+                label: 'Để sau',
+                func: () => {},
+              },
+              {
+                label: 'Có',
+                func: async () => {
+                  const save = await Keychain.setGenericPassword(
+                    userAccount,
+                    password,
+                  );
+
+                  if (save) {
+                    //showAlert('Thêm thành công');
+                    store.state.isCredential = true;
+                  } else {
+                    showAlert('Lỗi thêm ' + store.state.typeTouchID);
+                  }
+                },
+              },
+            );
+          }
+        }
 
         navigation.push('Drawer', {
           screen: 'Overview',
@@ -163,4 +202,13 @@ export async function onFingerPress(isShowAlert: boolean) {
 
 export function onBtnSettingPress() {
   navigation.navigate('Setting');
+}
+
+export function onBtnForgotPassword() {
+  console.log('a');
+
+  showAlertProps({
+    message:
+      'Hãy liên hệ bộ phận hỗ trợ để lấy lại mật khẩu của bạn qua email kd@emic.com.vn',
+  });
 }

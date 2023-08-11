@@ -1,8 +1,9 @@
 import React from 'react';
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 import Theme from '../../theme';
-import {WebView} from 'react-native-webview';
-import {GetHookProps, store} from './controller';
+import { WebView } from 'react-native-webview';
+import { GetHookProps, store } from './controller';
+import { endPointsNsx, getUrlNsx } from '../../service/api';
 
 export const GuideBookScreen = () => {
   // useEffect(() => {
@@ -10,10 +11,8 @@ export const GuideBookScreen = () => {
   //   return controller.onDeInit;
   // }, []);
   GetHookProps();
-  const url = `http://${store.state.appSetting.server.host}:${
-    store.state.appSetting.server.port
-  }/HU_01/HDSD_HU_02.pdf?timestamp=${new Date().getTime()}`;
-  return <WebView source={{uri: url}} />;
+  const url = getUrlNsx(endPointsNsx.getHDSD);
+  return <WebView source={{ uri: url }} />;
 };
 
 const styles = StyleSheet.create({

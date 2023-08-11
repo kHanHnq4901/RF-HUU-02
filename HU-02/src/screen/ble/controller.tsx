@@ -1,8 +1,8 @@
-import React, {useContext, useState} from 'react';
-import {NativeEventEmitter, NativeModules, Platform} from 'react-native';
+import React, { useContext, useState } from 'react';
+import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
 import BleManager from 'react-native-ble-manager';
-import {PropsStore, storeContext} from '../../store';
-import {onScanPress} from './handleButton';
+import { PropsStore, storeContext } from '../../store';
+import { onScanPress } from './handleButton';
 
 import * as permission from 'react-native-permissions';
 import {
@@ -11,7 +11,7 @@ import {
   requestPermissionGPSIos,
   requestPermissionScan,
 } from '../../service/permission';
-import {showAlert} from '../../util';
+import { showAlert } from '../../util';
 var LocationEnabler =
   Platform.OS === 'android' ? require('react-native-location-enabler') : null;
 
@@ -26,7 +26,7 @@ type PropsBLE = {
   isScan: boolean;
 
   listBondedDevice: PropsItemBle[];
-  listNewDevice: {name: string; id: string; rssi: number}[];
+  listNewDevice: { name: string; id: string; rssi: number }[];
   // idConnected: string | null;
 };
 
@@ -51,13 +51,13 @@ export const hookProps = {} as HookProps;
 export let store = {} as PropsStore;
 
 const {
-  PRIORITIES: {HIGH_ACCURACY},
+  PRIORITIES: { HIGH_ACCURACY },
   useLocationSettings,
 } =
   Platform.OS === 'android'
     ? LocationEnabler.default
     : {
-        PRIORITIES: {HIGH_ACCURACY: null},
+        PRIORITIES: { HIGH_ACCURACY: null },
         useLocationSettings: null,
       };
 
@@ -123,14 +123,14 @@ export const GetHookProps = (): HookProps => {
 const handleStopScan = () => {
   hookProps.setState(state => {
     state.ble.isScan = false;
-    return {...state};
+    return { ...state };
   });
 };
 
 export const setStatus = (status: string) => {
   hookProps.setState(state => {
     state.status = status;
-    return {...state};
+    return { ...state };
   });
 };
 
@@ -151,13 +151,13 @@ const handleDiscoverPeripheral = peripheral => {
   //console.log('res:', res);
   if (res.name && res.advertising.isConnectable) {
     hookProps.state.ble.listNewDevice.forEach(itm => {
-      peripherals.set(itm.id, {name: itm.name, id: itm.id, rssi: res.rssi});
+      peripherals.set(itm.id, { name: itm.name, id: itm.id, rssi: res.rssi });
     });
-    peripherals.set(res.id, {name: res.name, id: res.id, rssi: res.rssi});
+    peripherals.set(res.id, { name: res.name, id: res.id, rssi: res.rssi });
 
     hookProps.setState(state => {
       state.ble.listNewDevice = Array.from(peripherals.values());
-      return {...state};
+      return { ...state };
     });
     //refScroll.current.scrollToEnd({ animated: true });
     //refScroll.current.scrollTo({ x: 0, y: 0, animated: true });
@@ -172,7 +172,6 @@ export const onInit = async navigation => {
     let requestScanPermission = await requestPermissionScan();
     let requestPermissionGps = await requestGps();
     if (requestScanPermission === true && requestPermissionGps === true) {
-      await BleManager.start({showAlert: false});
       let isEnable: boolean = await BleManager.enableBluetooth();
       if (isEnable === true) {
         if (Platform.OS === 'android') {
@@ -187,7 +186,7 @@ export const onInit = async navigation => {
                 name: item.name ?? '',
               });
             });
-            return {...state};
+            return { ...state };
           });
         }
       } else {

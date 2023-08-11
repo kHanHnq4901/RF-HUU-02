@@ -29,6 +29,7 @@ import { UPDATE_FW_HHU } from '../../../service/event/constant';
 import {
   connectLatestBLE,
   handleUpdateValueForCharacteristic,
+  initModuleBle,
 } from '../../../service/hhu/Ble/bleHhuFunc';
 import { ObjSend } from '../../../service/hhu/Ble/hhuFunc';
 import {
@@ -127,6 +128,8 @@ export const onInit = async navigation => {
       handleUpdateValueForCharacteristic,
     );
   }
+
+  await initModuleBle();
 
   try {
     if (store.state.hhu.connect === 'DISCONNECTED') {

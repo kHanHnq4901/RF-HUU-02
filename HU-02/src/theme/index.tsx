@@ -13,6 +13,7 @@ export const Colors = {
   border: '#dadadd',
   blurPrmiary: Color('#f71336').lighten(0.35).toString(),
   caption: Color('#929492').darken(0.2).toString(),
+  purple: '#cf5bed',
 };
 1;
 

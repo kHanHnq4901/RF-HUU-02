@@ -18,6 +18,52 @@ export function isNumeric(str: any) {
   ); // ...and ensure strings of whitespace fail
 }
 
+type PropsShowAlert = {
+  title?: string;
+  message?: string;
+  one?: {
+    label: string;
+    func: () => void;
+  };
+  two?: {
+    label: string;
+    func: () => void;
+  };
+};
+
+export async function showAlertProps(props: PropsShowAlert) {
+  return new Promise<void>((resolve, reject) => {
+    const alertButton: AlertButton[] = [];
+    if (props.one) {
+      alertButton.push({
+        text: props.one.label,
+        onPress: () => {
+          props.one.func();
+          resolve();
+        },
+      });
+    }
+    if (props.two) {
+      alertButton.push({
+        text: props.two.label,
+        onPress: () => {
+          props.two.func();
+          resolve();
+        },
+      });
+    }
+    if (alertButton.length === 0) {
+      alertButton.push({
+        text: 'OK',
+        onPress: () => {
+          resolve();
+        },
+      });
+    }
+    Alert.alert(props.title ?? '', props.message ?? '', alertButton);
+  });
+}
+
 export async function showAlert(
   message: string,
   one?: {

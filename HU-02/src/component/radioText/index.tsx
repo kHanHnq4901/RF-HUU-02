@@ -6,9 +6,11 @@ import {
   TextInputProps,
   ViewStyle,
   StyleProp,
+  Platform,
 } from 'react-native';
-import {Colors, normalize, scale} from '../../theme';
-import {CheckboxButton} from '../checkbox/checkbox';
+import { Colors, normalize, scale } from '../../theme';
+import { CheckboxButton } from '../checkbox/checkbox';
+import { NormalTextInput } from '../normalTextInput';
 
 type Props = {
   label: string;
@@ -24,9 +26,10 @@ export const RadioText = React.forwardRef<TextInput, Props>((props, ref) => {
       <CheckboxButton
         label={props.label}
         checked={props.checked}
-        styleLabel={styles.label}
+        // styleLabel={styles.label}
         onPress={props.onCheckedChange}
       />
+
       <TextInput
         autoCorrect={false}
         autoCapitalize="none"
@@ -54,16 +57,13 @@ const styles = StyleSheet.create({
     color: Colors.caption,
   },
   textInput: {
-    borderWidth: 1,
     borderRadius: 5,
-    borderColor: Colors.border,
-    fontSize: normalize(18),
-    fontFamily: 'Lato-Regular',
-    paddingHorizontal: 10,
-    elevation: 1,
     backgroundColor: 'white',
+    elevation: 1,
+    fontFamily: 'Lato-Regular',
+    fontSize: normalize(18),
+    padding: 10 * scale,
     color: Colors.text,
-    height: 40 * scale,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,

@@ -1,12 +1,12 @@
 import BleManager from 'react-native-ble-manager';
-import {showAlert, sleep} from '../../util';
-import {hookProps, requestGps, setStatus, store} from './controller';
+import { showAlert, sleep } from '../../util';
+import { hookProps, requestGps, setStatus, store } from './controller';
 import * as Ble from '../../util/ble';
-import {BleFunc_SaveStorage} from '../../service/hhu/Ble/bleHhuFunc';
-import {ObjSend, readVersion, ShakeHand} from '../../service/hhu/Ble/hhuFunc';
-import {checkUpdateHHU} from '../../service/api';
-import {requestPermissionScan} from '../../service/permission';
-import {Platform} from 'react-native';
+import { BleFunc_SaveStorage } from '../../service/hhu/Ble/bleHhuFunc';
+import { ObjSend, readVersion, ShakeHand } from '../../service/hhu/Ble/hhuFunc';
+import { checkUpdateHHU } from '../../service/api';
+import { requestPermissionScan } from '../../service/permission';
+import { Platform } from 'react-native';
 
 const TAG = 'handleBtn Ble:';
 
@@ -19,14 +19,14 @@ export const connectHandle = async (id: string) => {
     try {
       store.setState(state => {
         state.hhu.connect = 'CONNECTING';
-        return {...state};
+        return { ...state };
       });
       //await BleManager.refreshCache(id);
       succeed = await Ble.connect(id);
     } catch (err) {
       store.setState(state => {
         state.hhu.connect = 'DISCONNECTED';
-        return {...state};
+        return { ...state };
       });
       setStatus('Kết nối thất bại: ' + err.message);
     }
@@ -36,7 +36,7 @@ export const connectHandle = async (id: string) => {
       store.setState(state => {
         state.hhu.idConnected = id;
         state.hhu.connect = 'CONNECTED';
-        return {...state};
+        return { ...state };
       });
       //Ble.startnotification(id);
       BleFunc_SaveStorage(id);
@@ -59,7 +59,7 @@ export const connectHandle = async (id: string) => {
             store.setState(state => {
               state.hhu.version = version;
               state.hhu.shortVersion = shortVersion;
-              return {...state};
+              return { ...state };
             });
             console.log('Read version succeed:' + version);
             console.log('Short version:' + shortVersion);
@@ -94,7 +94,7 @@ export const onScanPress = async () => {
   hookProps.setState(state => {
     state.ble.listNewDevice = [];
     state.status = '';
-    return {...state};
+    return { ...state };
   });
   let requestScanPermission = await requestPermissionScan();
   let requestPermissionGps = await requestGps();
@@ -103,15 +103,11 @@ export const onScanPress = async () => {
 
     let isEnable: boolean = await BleManager.enableBluetooth();
     if (isEnable === true) {
-      if (Platform.OS === 'android') {
-        await BleManager.start();
-      }
-
       BleManager.scan([], 15, false)
         .then(() => {
           hookProps.setState(state => {
             state.ble.isScan = true;
-            return {...state};
+            return { ...state };
           });
         })
         .catch(resFail => {

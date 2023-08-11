@@ -1,7 +1,13 @@
 import React from 'react';
-import {StyleSheet, View, Text, TextInput, TextInputProps} from 'react-native';
-import {Colors, normalize, scale} from '../../theme';
-import {Divider} from 'react-native-paper';
+import {
+  StyleSheet,
+  View,
+  Text,
+  TextInput,
+  TextInputProps,
+} from 'react-native';
+import { Colors, normalize, scale } from '../../theme';
+import { Divider } from 'react-native-paper';
 
 type Props = {
   label: string;

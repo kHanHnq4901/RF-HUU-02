@@ -1,9 +1,9 @@
 import axios from 'axios';
-import {showAlert, showToast} from '../../util/index';
-import {store} from '../../component/drawer/drawerContent/controller';
-import {PropsDataModel} from '../../database/model';
-import {GetFormatDate, GetFormatTime} from '../user/util';
-import {ObjSend, onOKAlertNeedUpdatePress} from '../hhu/Ble/hhuFunc';
+import { PropsDataModel } from '../../database/model';
+import { showAlert } from '../../util/index';
+import { ObjSend, onOKAlertNeedUpdatePress } from '../hhu/Ble/hhuFunc';
+import { GetFormatTime } from '../user/util';
+import { store } from '../../screen/signIn/controller';
 
 type PropsReturnGetVerion = {
   bResult: boolean;
@@ -26,6 +26,60 @@ export type PropsCommonResponse = {
 };
 
 const TAG = 'API:';
+
+const apiNsx = '';
+const api = '/api';
+
+export const endPointsNsx = {
+  getVersionHU: '/HU_02/version.txt',
+  getFirmware: '/HU_02/firmware.txt',
+  getVersionAppMobile: '/HU_02/AppMobile/version.txt',
+  getHDSD: '/HU_02/HDSD_HU_02.pdf',
+};
+
+export function getUrlNsx(endPoint: string): string {
+  let url = '';
+  const host = store.state.appSetting.hhu.host.trim();
+  const port = store.state.appSetting.hhu.port.trim();
+  if (host.includes('http')) {
+  } else {
+    url += 'http://';
+  }
+  url += host;
+  if (port.length > 0) {
+    url += ':' + port;
+  }
+  url += apiNsx;
+  url += endPoint;
+  url += `?timestamp=${new Date().getTime()}`;
+  return url;
+}
+
+export const endPoints = {
+  login: '/Login',
+  createUser: '/CreateUser',
+  getMeterAccount: '/GetMeterAccount',
+  getLineList: '/GetLineList',
+  getMeterByLine: '/GetMeterListByLine',
+};
+
+export function getUrl(endPoint: string): string {
+  let url = '';
+  const host = store.state.appSetting.server.host.trim();
+  const port = store.state.appSetting.server.port.trim();
+  if (host.includes('http')) {
+  } else {
+    url += 'http://';
+  }
+  url += host;
+  if (port.length > 0) {
+    url += ':' + port;
+  }
+  url += api;
+  url += endPoint;
+  url += `?timestamp=${new Date().getTime()}`;
+  return url;
+}
 
 const getTimeFromString = (time: string): string | undefined => {
   //console.log('time:', time);
@@ -72,9 +126,7 @@ export const getVersion = async (): Promise<PropsReturnGetVerion> => {
   ret.dateIssue = '';
   ret.priority = 'Cao';
   try {
-    const url = `http://${store.state.appSetting.hhu.host}:${
-      store.state.appSetting.hhu.port
-    }/HU_02/version.txt?timestamp=${new Date().getTime()}`;
+    const url = getUrlNsx(endPointsNsx.getVersionHU);
     //console.log('url read version:', url);
 
     const rest = await axios.get(url);
@@ -110,11 +162,8 @@ export const getStringFirmware = async (): Promise<PropsReturnGetFirmware> => {
   };
 
   try {
-    const {data}: {data: string} = await axios.get(
-      `http://${store.state.appSetting.hhu.host}:${
-        store.state.appSetting.hhu.port
-      }/HU_02/firmware.txt?timestamp=${new Date().getTime()}`,
-    );
+    const url = getUrlNsx(endPointsNsx.getFirmware);
+    const { data }: { data: string } = await axios.get(url);
     ret.bResult = true;
     ret.strFirmware = data;
   } catch (err) {
@@ -140,7 +189,7 @@ export async function checkUpdateHHU(props?: PropsReturnGetVerion) {
           if (restVersion.priority === 'Cao') {
             status += '(Quan trọng)';
             ObjSend.isNeedUpdate = true;
-            showAlert(status, {label: 'OK', func: onOKAlertNeedUpdatePress});
+            showAlert(status, { label: 'OK', func: onOKAlertNeedUpdatePress });
           } else {
             ObjSend.isNeedUpdate = false;
             showAlert(status);
@@ -190,7 +239,7 @@ export async function PushDataToServer(
         Token: store.state.userInfo.TOKEN,
       },
     });
-    const ret = rest.data as {CODE: string; MESSAGE: string};
+    const ret = rest.data as { CODE: string; MESSAGE: string };
     if (ret.CODE === '1') {
       totalSucceed++;
       //return true;
@@ -237,7 +286,7 @@ export async function SaveCoordinateMeter(
         Token: store.state.userInfo.TOKEN,
       },
     });
-    const ret = rest.data as {CODE: string; MESSAGE: string};
+    const ret = rest.data as { CODE: string; MESSAGE: string };
     if (ret.CODE === '1') {
       return true;
     } else {
@@ -291,7 +340,7 @@ export async function GetMeter(
         Token: store.state.userInfo.TOKEN,
       },
     });
-    const ret = rest.data as {CODE: string; MESSAGE: string};
+    const ret = rest.data as { CODE: string; MESSAGE: string };
 
     // console.log('ret: ', ret);
 
@@ -365,7 +414,7 @@ export async function AddMeter(
     const rest = await axios.get(url, {
       params: params,
     });
-    const ret = rest.data as {CODE: string; MESSAGE: string};
+    const ret = rest.data as { CODE: string; MESSAGE: string };
     if (ret.CODE === '1') {
       response.bSucceeded = true;
       return response;
@@ -407,7 +456,7 @@ export async function GetListLine(): Promise<PropsCommonResponse> {
         Token: store.state.userInfo.TOKEN,
       },
     });
-    let ret = rest.data as {CODE: string; MESSAGE: string};
+    let ret = rest.data as { CODE: string; MESSAGE: string };
     if (ret.CODE === '0') {
       response.bSucceeded = false;
       response.strMessage = ret.MESSAGE;
@@ -448,7 +497,7 @@ export async function GetMeterModel(): Promise<PropsCommonResponse> {
         Token: store.state.userInfo.TOKEN,
       },
     });
-    let ret = rest.data as {CODE: string; MESSAGE: string};
+    let ret = rest.data as { CODE: string; MESSAGE: string };
     if (ret.CODE === '0') {
       response.bSucceeded = false;
       response.strMessage = ret.MESSAGE;

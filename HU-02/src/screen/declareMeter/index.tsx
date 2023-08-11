@@ -1,11 +1,14 @@
 import React, { useEffect } from 'react';
 import {
+  InputAccessoryView,
+  Keyboard,
   Platform,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
+  Button as RNButton,
 } from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -39,6 +42,8 @@ import Feather from 'react-native-vector-icons/Feather';
 import MapView, { Marker } from 'react-native-maps';
 import { Image } from 'react-native';
 
+const inputAccessoryViewID = 'uniqueID';
+
 export const DeclareMeterScreen = () => {
   GetHookProps();
   useEffect(() => {
@@ -52,6 +57,11 @@ export const DeclareMeterScreen = () => {
         <View style={styles.containerLoader}>
           <Loader3 />
         </View>
+      )}
+      {Platform.OS === 'ios' && (
+        <InputAccessoryView nativeID={inputAccessoryViewID}>
+          <RNButton onPress={() => Keyboard.dismiss()} title="OK" />
+        </InputAccessoryView>
       )}
       <Text style={styles.status}>{hookProps.state.status}</Text>
       <View
@@ -128,20 +138,7 @@ export const DeclareMeterScreen = () => {
       <ScrollView
         showsVerticalScrollIndicator={false}
         ref={hookProps.refScroll}>
-        {/* <NormalTextInput
-          label="Seri cơ khí:(*)"
-          keyboardType="number-pad"
-          maxLength={10}
-
-          onChangeText={text => {
-            hookProps.data.infoDeclare.seriMeter = text;
-          }}
-          ref={hookProps.refSeriMeter}
-          onSubmitEditing={() => {
-            hookProps.refCustomerCode.current?.focus();
-          }}
-          blurOnSubmit={false}
-        /> */}
+        
         <View style={styles.containerSeri}>
           <View style={{ flex: 1 }}>
             <NormalTextInput
@@ -150,6 +147,7 @@ export const DeclareMeterScreen = () => {
               // style={styles.textInput}
 
               keyboardType="decimal-pad"
+              inputAccessoryViewID={inputAccessoryViewID}
               value={hookProps.state.data.METER_NO}
               onChangeText={text => {
                 hookProps.setState(state => {
@@ -206,6 +204,7 @@ export const DeclareMeterScreen = () => {
           label="Số điện thoại:"
           maxLength={12}
           keyboardType="number-pad"
+          inputAccessoryViewID={inputAccessoryViewID}
           value={hookProps.state.data.PHONE}
           onChangeText={text => {
             hookProps.setState(state => {

@@ -92,6 +92,10 @@ export const BleFunc_TryConnectToLatest = async (): Promise<{
   return { result: false, id: null };
 };
 
+export async function initModuleBle() {
+  await BleManager.start({ showAlert: false });
+}
+
 export const connectLatestBLE = async (store: PropsStore) => {
   try {
     console.log(TAG, 'try connect to latest');
@@ -100,7 +104,7 @@ export const connectLatestBLE = async (store: PropsStore) => {
       state.hhu.connect = 'CONNECTING';
       return { ...state };
     });
-    await BleManager.start({ showAlert: false });
+
     let isEnable: boolean = await BleManager.enableBluetooth();
     if (isEnable !== true) {
       store.setState(state => {
