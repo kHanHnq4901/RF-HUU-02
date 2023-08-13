@@ -17,6 +17,10 @@ import { Row, Rows, Table } from 'react-native-table-component';
 import { Button } from '../../component/button/button';
 import { CheckboxButton } from '../../component/checkbox/checkbox';
 import { RadioButton } from '../../component/radioButton/radioButton';
+import {
+  DrawerNavigationProps,
+  StackReadOpticalNavigationProp,
+} from '../../navigation/model/model';
 import Theme, {
   Colors,
   CommonFontSize,
@@ -26,17 +30,23 @@ import Theme, {
   sizeScreen,
 } from '../../theme';
 import * as readParamsController from './controller';
-import { onDeInit, onInit } from './controller';
+import {
+  GetHookProps,
+  hookProps,
+  navigationStackReadOptical,
+  onDeInit,
+  onInit,
+} from './controller';
 import {
   onBtnReadPress,
   onDateEndPress,
   onDateStartPress,
-  onSaveLogPress,
 } from './handleButton';
 
 export const ReadOpticalScreen = () => {
-  const hookProps = readParamsController.GetHookProps();
-  const navigation = useNavigation();
+  GetHookProps();
+
+  const navigationDrawer = useNavigation<DrawerNavigationProps>();
   React.useEffect(() => {
     onInit();
 
@@ -313,7 +323,17 @@ export const ReadOpticalScreen = () => {
         <Button
           style={styles.button1}
           label={hookProps.state.isSaving ? 'Đang lưu...' : 'Lưu log'}
-          onPress={onSaveLogPress}
+          onPress={() => {
+            navigationDrawer.navigate('StackReadOptical', {
+              screen: 'LogReadOptical',
+              params: {
+                data: hookProps.state.dataOpticalResPonseObj,
+              },
+            });
+            // navigation.navigate('LogReadOptical', {
+            //   data: hookProps.state.dataOpticalResPonseObj,
+            // });
+          }}
         />
       </View>
     </View>

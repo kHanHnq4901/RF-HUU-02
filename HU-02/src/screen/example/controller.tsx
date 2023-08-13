@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {PropsStore, storeContext} from '../../store';
+import React, { useState } from 'react';
+import { PropsStore, storeContext } from '../../store';
 
 export type HookState = {};
 

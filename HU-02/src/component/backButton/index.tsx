@@ -1,6 +1,6 @@
 import React from 'react';
-import {TouchableOpacity, StyleSheet} from 'react-native';
-import {Colors, scale} from '../../theme';
+import { TouchableOpacity, StyleSheet } from 'react-native';
+import { Colors, scale } from '../../theme';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 type Props = {
@@ -18,9 +18,9 @@ export function BackButton(props: Props) {
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    top: 10,
+    top: 5,
     left: 15,
-    height: 50 * scale,
+    height: 45 * scale,
     width: 40 * scale,
     borderRadius: 20,
     elevation: 3,

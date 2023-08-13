@@ -1,10 +1,15 @@
-import {Alert, BackHandler, DeviceEventEmitter, Vibration} from 'react-native';
+import {
+  Alert,
+  BackHandler,
+  DeviceEventEmitter,
+  Vibration,
+} from 'react-native';
 import RNFS from 'react-native-fs';
 import ReceiveSharingIntent from 'react-native-receive-sharing-intent';
 import SoundPlayer from 'react-native-sound-player';
-import {PATH_IMPORT_CSDL, PATH_IMPORT_XML} from '../../shared/path';
-import {getFilExtension} from '../../util';
-import {importXmlFromPath} from '../../xml/xmlUtil';
+import { PATH_IMPORT_CSDL, PATH_IMPORT_XML } from '../../shared/path';
+import { getFilExtension } from '../../util';
+import { importXmlFromPath } from '../../xml/xmlUtil';
 import {
   EVENT_ERROR,
   EVENT_SUCCEEDED,
@@ -35,12 +40,11 @@ export function ListenEventSucceedError() {
       console.log('cannot play the sound file', e);
     }
   });
-    DeviceEventEmitter.addListener(EVENT_ERROR, () => {
+  DeviceEventEmitter.addListener(EVENT_ERROR, () => {
     Vibration.vibrate();
   });
-  SoundPlayer.addEventListener('FinishedLoading', (data) => {
+  SoundPlayer.addEventListener('FinishedLoading', data => {
     // console.log(TAG, 'finish loading mp3 file:' + JSON.stringify(data));
-    
   });
 }
 

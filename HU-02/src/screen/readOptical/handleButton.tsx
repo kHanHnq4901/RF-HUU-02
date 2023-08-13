@@ -124,7 +124,7 @@ export async function onBtnReadPress() {
   return;
 }
 
-function ConvertObjToHook(objResponse: any) {
+export function ConvertObjToHook(objResponse: any) {
   for (let itm in objResponse) {
     if (typeof objResponse[itm] === 'string') {
       hookProps.setState(state => {
@@ -136,6 +136,7 @@ function ConvertObjToHook(objResponse: any) {
             itm,
             objResponse[itm] + getUnitByLabelOptical(itm as PropsLabelOptical),
           ]);
+          state.dataOpticalResPonseObj[itm] = objResponse[itm];
         }
 
         return { ...state };
@@ -162,7 +163,7 @@ function ConvertObjToHook(objResponse: any) {
       });
     }
   }
-  console.log('dataTable:', hookProps.state.dataTable);
+  // console.log('dataTable:', hookProps.state.dataTable);
 }
 
 async function commonRead(arrCommand: OPTICAL_CMD[]) {
@@ -434,7 +435,7 @@ export async function onGetPosition(): Promise<GeolocationResponse | null> {
     console.log('i:', i);
 
     location = await getGeolocation();
-    if (location === null || location.coords.accuracy > 20) {
+    if (i !== 4 && (location === null || location.coords.accuracy > 100)) {
       continue;
     } else {
       if (location?.coords.longitude && location?.coords.latitude) {

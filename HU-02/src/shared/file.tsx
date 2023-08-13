@@ -20,6 +20,19 @@ export const deleteFile = async (filePath: string) => {
   }
 };
 
+export const convertImage2Base64 = async (
+  filePath: string,
+): Promise<string | null> => {
+  try {
+    // console.log(TAG, 'Delete :', filePath);
+    const base64 = await RNFS.readFile(filePath, 'base64');
+    return base64;
+  } catch (err) {
+    console.log(TAG, 'Error her: ', err.message);
+  }
+  return null;
+};
+
 export const writeXmlFile = async (
   path: string,
   strXml: string,

@@ -1,8 +1,9 @@
 import Geolocation from '@react-native-community/geolocation';
-import React, {useState} from 'react';
-import {PropsStore, storeContext} from '../../store';
+import React, { useState } from 'react';
+import { PropsStore, storeContext } from '../../store';
 
-import {Platform, ScrollView, TextInput} from 'react-native';
+import { Platform, ScrollView, TextInput } from 'react-native';
+import { LatLng, MapMarker, Region } from 'react-native-maps';
 import SelectDropdown from 'react-native-select-dropdown';
 import {
   GetListLine,
@@ -11,9 +12,9 @@ import {
   PropsReturnGetListLine,
   PropsReturnGetModelMeter,
 } from '../../service/api/index';
-import {turnOnLocation} from '../ble/controller';
-import {getGeolocation, onGetPositionPress} from './handleButton';
-import {LatLng, MapMarker, Marker, Region} from 'react-native-maps';
+import { turnOnLocation } from '../ble/controller';
+import { onGetPositionPress } from './handleButton';
+import { UserImageProps } from '../../component/getPicture';
 var LocationEnabler =
   Platform.OS === 'android' ? require('react-native-location-enabler') : null;
 
@@ -28,6 +29,7 @@ export type HookState = {
   data: PropsGetMeterServer;
   region: Region;
   position: LatLng | null;
+  images: UserImageProps[];
 };
 
 export type HookProps = {
@@ -68,13 +70,13 @@ export let ListModelMeterObj: PropsReturnGetModelMeter = [];
 export let listModelMeterName: string[] = [];
 
 const {
-  PRIORITIES: {HIGH_ACCURACY},
+  PRIORITIES: { HIGH_ACCURACY },
   useLocationSettings,
 } =
   Platform.OS === 'android'
     ? LocationEnabler.default
     : {
-        PRIORITIES: {HIGH_ACCURACY: null},
+        PRIORITIES: { HIGH_ACCURACY: null },
         useLocationSettings: null,
       };
 
@@ -86,7 +88,7 @@ let enableLocationHook = {} as {
 export function setStatus(str: string) {
   hookProps.setState(state => {
     state.status = str;
-    return {...state};
+    return { ...state };
   });
 }
 
@@ -134,14 +136,15 @@ export const GetHookProps = (): HookProps => {
     data: {} as PropsGetMeterServer,
     region: {
       latitude: 21.108353280242344,
-      latitudeDelta: 0.05554526982951913,
+      latitudeDelta: 0.0022966737221068456,
       longitude: 105.99402224645019,
-      longitudeDelta: 0.05683634430170059,
+      longitudeDelta: 0.002686232328400706,
     },
     position: {
       latitude: 21.108353280242344,
       longitude: 105.99402224645019,
     },
+    images: [],
   });
   hookProps.state = state;
   hookProps.setState = setState;
@@ -198,7 +201,7 @@ export const onInit = async () => {
   if (ListStationObj.length === 0 || ListModelMeterObj.length === 0) {
     hookProps.setState(state => {
       state.isBusy = true;
-      return {...state};
+      return { ...state };
     });
     if (ListStationObj.length === 0) {
       hookProps.refStation.current?.reset();
@@ -233,7 +236,7 @@ export const onInit = async () => {
     }
     hookProps.setState(state => {
       state.isBusy = false;
-      return {...state};
+      return { ...state };
     });
   }
 };

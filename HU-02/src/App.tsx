@@ -8,6 +8,7 @@ import { KeyboardAvoidingView, Platform, StatusBar, Text } from 'react-native';
 import { LogBox } from 'react-native';
 import Theme, { Colors } from './theme';
 import { StoreProvider } from './store';
+import { navigationRef } from './navigation/StackRootNavigator';
 LogBox.ignoreLogs([
   'Animated: `useNativeDriver`',
   'ViewPropTypes will be removed',
@@ -29,7 +30,7 @@ export default function App() {
               primary: '#f53765',
             },
           }}>
-          <NavigationContainer>
+          <NavigationContainer ref={navigationRef}>
             <SafeAreaView style={{ flex: 1 }}>
               <StatusBar
                 backgroundColor={Colors.primary}

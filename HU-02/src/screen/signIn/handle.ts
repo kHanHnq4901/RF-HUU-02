@@ -67,6 +67,12 @@ export async function onLoginPress(props?: PropsLogin) {
       const password = props?.password ?? hook.state.password;
       const url = getUrl(endPoints.login);
 
+      // console.log('url: ' + url);
+      // console.log('params: ', {
+      //   UserAccount: userAccount,
+      //   Password: password,
+      // });
+
       const result = await axios.get(url, {
         params: {
           UserAccount: userAccount,
@@ -87,12 +93,6 @@ export async function onLoginPress(props?: PropsLogin) {
           return { ...state };
         });
         console.log('Đăng nhập thành công');
-
-        saveUserStorage({
-          userAccount: userAccount,
-          code: '',
-          pwd: '',
-        });
 
         if (userAccount !== olState.userName) {
           await Keychain.resetGenericPassword();
@@ -146,6 +146,10 @@ export async function onLoginPress(props?: PropsLogin) {
         //navigation.navigate('Home');
       } else {
         showAlert('Tài khoản hoặc mật khẩu không chính xác');
+        if (props?.password) {
+          await Keychain.resetGenericPassword();
+          // login by touch ID
+        }
       }
     }
   } catch (e: any) {
@@ -160,6 +164,10 @@ export async function onLoginPress(props?: PropsLogin) {
 
 export async function onFingerPress(isShowAlert: boolean) {
   let isSupport: any;
+
+  if (hook.state.btnSignInBusy === true) {
+    return;
+  }
   try {
     isSupport = await TouchID.isSupported();
   } catch (err: any) {
@@ -189,6 +197,8 @@ export async function onFingerPress(isShowAlert: boolean) {
       });
       console.log('result:', result);
       if (result === true) {
+        // console.log('credential:', credential);
+
         await onLoginPress({
           userAccount: credential.username,
           password: credential.password,

@@ -104,6 +104,7 @@ export const ReadParameterScreen = () => {
             filter={filterSeri}
             onEditDone={onEditSeriDone}
             keyboardType="numeric"
+            inputAccessoryViewID={inputAccessoryViewID}
             selectTextOnFocus={true}
             onChangeText={text =>
               hookProps.setState(state => ({ ...state, seri: text }))
@@ -112,7 +113,6 @@ export const ReadParameterScreen = () => {
               hookProps.setState(state => ({ ...state, seri: item }))
             }
             placeholder="Nhập số Seri"
-            inputAccessoryViewID={inputAccessoryViewID}
           />
         </View>
 

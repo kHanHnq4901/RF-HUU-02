@@ -1,4 +1,4 @@
-import {emitEventFailure, emitEventSuccess} from '../../service/event';
+import { emitEventFailure, emitEventSuccess } from '../../service/event';
 import {
   FieldOpticalResponseProps,
   OpticalDailyProps,
@@ -15,17 +15,19 @@ import {
   Optical_SeriType,
   SIZE_HOST,
 } from '../../service/hhu/Optical/opticalProtocol';
-import {SIZE_SERIAL} from '../../service/hhu/RF/radioProtocol';
+import { SIZE_SERIAL } from '../../service/hhu/RF/radioProtocol';
 import {
   ByteArrayFromHexString,
   ByteArrayFromString,
   ByteArrayToString,
   isNumeric,
   showAlert,
+  showAlertProps,
 } from '../../util';
-import {sizeof} from '../../util/struct-and-array';
-import {hookProps, RadioTextProps} from './controller';
-import {Buffer} from 'buffer';
+import { sizeof } from '../../util/struct-and-array';
+import { hookProps, RadioTextProps } from './controller';
+import { Buffer } from 'buffer';
+import { checkMeterNo, checkModuleNo } from '../../service/api';
 
 function checkIsItemSelected(): boolean {
   let hasItem = false;
@@ -47,7 +49,7 @@ function checkIsItemSelected(): boolean {
 export function setStatus(str: string) {
   hookProps.setState(state => {
     state.status = str;
-    return {...state};
+    return { ...state };
   });
 }
 
@@ -91,7 +93,7 @@ export async function onReadOpticalPress() {
 
     hookProps.setState(state => {
       state.isBusy = true;
-      return {...state};
+      return { ...state };
     });
 
     let bRet = await opticalShakeHand('00000000');
@@ -273,7 +275,7 @@ export async function onReadOpticalPress() {
     hookProps.setState(state => {
       state.status = message;
       state.isBusy = false;
-      return {...state};
+      return { ...state };
     });
     if (bHasError) {
       emitEventFailure();
@@ -327,6 +329,27 @@ async function checkCondition(): Promise<boolean> {
   return true;
 }
 
+async function checkMeterNoExist() {
+  if (hookProps.state.seriMeter.checked) {
+    const noMeter = hookProps.data.seriMeter;
+    const ret = await checkMeterNo({ NO: noMeter });
+    if (ret.bSucceeded === false && ret.strMessage.length > 0) {
+      showAlertProps({
+        message: 'số NO đồng hồ: ' + noMeter + ' ' + ret.strMessage,
+      });
+    }
+  }
+  if (hookProps.state.seriModule.checked) {
+    const noModule = hookProps.data.seriModule;
+    const ret = await checkModuleNo({ NO: noModule });
+    if (ret.bSucceeded === false && ret.strMessage.length > 0) {
+      showAlertProps({
+        message: 'số NO module: ' + noModule + ' ' + ret.strMessage,
+      });
+    }
+  }
+}
+
 export async function onWriteOpticalPress() {
   let message = '';
   let bHasError = false;
@@ -338,19 +361,23 @@ export async function onWriteOpticalPress() {
     let hasItem = checkIsItemSelected();
     if (hasItem !== true) {
       showAlert('Chưa có item nào được chọn');
+      bHasError = true;
       return;
     }
 
     if ((await checkCondition()) === false) {
+      bHasError = true;
       return;
     }
 
-    console.log('hook props data:', hookProps.data);
+    // console.log('hook props data:', hookProps.data);
 
     hookProps.setState(state => {
       state.isBusy = true;
-      return {...state};
+      return { ...state };
     });
+
+    checkMeterNoExist();
 
     let bRet = await opticalShakeHand('12345', Optical_PasswordType.PW_TYPE_P2);
     if (!bRet) {
@@ -501,7 +528,7 @@ export async function onWriteOpticalPress() {
     hookProps.setState(state => {
       state.status = message + ' ' + date.toLocaleTimeString('vi');
       state.isBusy = false;
-      return {...state};
+      return { ...state };
     });
     if (bHasError) {
       emitEventFailure();

@@ -19,7 +19,11 @@ import {
   ClearAllDeclareMeterForGarbage,
   SendUnsentDeclareMeterProcess,
 } from '../../../database/service/declareMeterService';
-import { StackRootList } from '../../../navigation/model/model';
+import {
+  DrawerNavigationProps,
+  DrawerParamsList,
+  StackRootList,
+} from '../../../navigation/model/model';
 import { bleManagerEmitter } from '../../../screen/ble/controller';
 import {
   ListenEventSucceedError,
@@ -50,12 +54,14 @@ import {
 } from '../../../shared/path';
 import { PropsStore, storeContext } from '../../../store';
 import { showAlert } from '../../../util';
+import { DrawerNavigationProp } from '@react-navigation/drawer';
 
 const TAG = 'controllerDrawerContent:';
 
 export let store = {} as PropsStore;
 
-let navigationStackRoot = {} as StackNavigationProp<StackRootList>;
+export let navigationStackRoot = {} as StackNavigationProp<StackRootList>;
+export let navigationDrawer = {} as DrawerNavigationProp<DrawerParamsList>;
 
 let hhuDisconnectListener: any = null;
 let hhuReceiveDataListener: any = null;
@@ -69,6 +75,7 @@ let unsubscribeNet;
 export const GetHookProps = () => {
   store = useContext(storeContext);
   navigationStackRoot = useNavigation<StackNavigationProp<StackRootList>>();
+  navigationDrawer = useNavigation<DrawerNavigationProps>();
 };
 
 const hhuHandleDisconnectedPeripheral = data => {

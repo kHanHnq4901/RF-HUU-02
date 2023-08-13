@@ -1,6 +1,6 @@
-import {Platform} from 'react-native';
+import { Platform } from 'react-native';
 import * as permission from 'react-native-permissions';
-import {check, PERMISSIONS, request, RESULTS} from 'react-native-permissions';
+import { check, PERMISSIONS, request, RESULTS } from 'react-native-permissions';
 
 const TAG = 'Request Permission: ';
 
@@ -324,3 +324,61 @@ export const requestPermissionScan = async (): Promise<boolean> => {
     return false;
   }
 };
+
+export async function requestCameraPermissions() {
+  if (Platform.OS === 'android') {
+    try {
+      let result = await permission.check(
+        permission.PERMISSIONS.ANDROID.CAMERA,
+      );
+      switch (result) {
+        case permission.RESULTS.UNAVAILABLE:
+          console.log(
+            TAG,
+            'CAMERA',
+            'This feature is not available (on this device / in this context)',
+          );
+          break;
+        case permission.RESULTS.DENIED:
+          console.log(
+            TAG,
+            'CAMERA',
+            'The permission has not been requested / is denied but requestable',
+          );
+          let status = await permission.request(
+            permission.PERMISSIONS.ANDROID.CAMERA,
+          );
+          if (
+            status === permission.RESULTS.GRANTED ||
+            status === permission.RESULTS.BLOCKED
+          ) {
+            return true;
+          } else {
+            return false;
+          }
+
+        case permission.RESULTS.LIMITED:
+          console.log(
+            TAG,
+            'CAMERA',
+            'The permission is limited: some actions are possible',
+          );
+          break;
+        case permission.RESULTS.GRANTED:
+          //console.log(TAG, 'CAMERA', 'The permission is granted');
+          return true;
+        case permission.RESULTS.BLOCKED:
+          console.log(
+            TAG,
+            'CAMERA',
+            'The permission is denied and not requestable anymore',
+          );
+          return true;
+      }
+      return false;
+    } catch (err) {
+      console.log(TAG, 'CAMERA', err.message);
+      return false;
+    }
+  }
+}

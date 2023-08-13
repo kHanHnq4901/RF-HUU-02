@@ -3,17 +3,20 @@ import {
   InputAccessoryView,
   Keyboard,
   Platform,
+  Button as RNButton,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  Button as RNButton,
 } from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown';
+import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Button } from '../../component/button/button';
+import { GetPicture } from '../../component/getPicture';
 import Loader3 from '../../component/loader3';
+import { UserMap } from '../../component/map';
 import { NormalTextInput } from '../../component/normalTextInput';
 import Theme, {
   Colors,
@@ -36,13 +39,13 @@ import {
   onGoogleMapPress,
   onLineSelected,
   onModelMeterSelected,
+  onRegionChangeComplete,
   onSearchInfo,
 } from './handleButton';
-import Feather from 'react-native-vector-icons/Feather';
-import MapView, { Marker } from 'react-native-maps';
-import { Image } from 'react-native';
 
 const inputAccessoryViewID = 'uniqueID';
+
+const sizeMarkerFake = 35;
 
 export const DeclareMeterScreen = () => {
   GetHookProps();
@@ -138,7 +141,6 @@ export const DeclareMeterScreen = () => {
       <ScrollView
         showsVerticalScrollIndicator={false}
         ref={hookProps.refScroll}>
-        
         <View style={styles.containerSeri}>
           <View style={{ flex: 1 }}>
             <NormalTextInput
@@ -255,69 +257,31 @@ export const DeclareMeterScreen = () => {
             <Feather name="map-pin" size={normalize(30)} color="#f3d20e" />
           </TouchableOpacity>
         </View>
-        <View style={styles.containMapView}>
-          <MapView
-            provider="google"
-            style={styles.map}
-            mapType="standard"
-            showsIndoorLevelPicker
-            // style={StyleSheet.absoluteFillObject}
-            region={hookProps.state.region}
-            onPoiClick={e => {
-              console.log('onPoiClick:', e.nativeEvent.coordinate);
-            }}
-            // showsUserLocation
-            onRegionChangeComplete={region => {
-              console.log('region:', region);
-              hookProps.setState(state => {
-                state.region = { ...region };
-                return { ...state };
-              });
-            }}>
-            {hookProps.state.position !== null && (
-              <Marker
-                ref={hookProps.refMarker}
-                draggable
-                coordinate={hookProps.state.position}
-                pinColor="red"
-                // icon={require('../../asset/images/image/placeholder.png')}
-                // image={require('../../asset/images/image/placeholder.png')}
-                // title={hookProps.state.data.METER_NO}
-                // description={
-                //   hookProps.state.region.latitude +
-                //   ',' +
-                //   hookProps.state.region.longitude
-                // }
-                onDragEnd={e => {
-                  console.log('onDrag end:');
-                  if (e.nativeEvent?.coordinate) {
-                    const latLog = e.nativeEvent.coordinate;
-                    const region = { ...hookProps.state.region };
-                    region.latitude = latLog.latitude;
-                    region.longitude = latLog.longitude;
+        <Text style={styles.label}> Ảnh:</Text>
+        <GetPicture
+          images={hookProps.state.images}
+          onDeleteImages={image => {
+            hookProps.setState(state => {
+              state.images = state.images.filter(
+                img => img.fileName !== image.fileName,
+              );
+              return { ...state };
+            });
+          }}
+          onInsertImages={images => {
+            hookProps.setState(state => {
+              for (let image of images) {
+                state.images.push(image);
+              }
 
-                    hookProps.setState(state => {
-                      state.position = latLog;
-                      state.region = region;
-                      return { ...state };
-                    });
-                  }
-                }}
-                onPress={() => {
-                  console.log('onPress');
-                  onGoogleMapPress();
-                  // hookProps.refMarker.current?.forceUpdate();
-                }}>
-                {/* <Text style={styles.labelInMap}>
-                  {hookProps.state.data.METER_NO}
-                </Text> */}
-                {/* <Image
-                  source={require('../../asset/images/image/placeholder.png')}
-                /> */}
-              </Marker>
-            )}
-          </MapView>
-        </View>
+              return { ...state };
+            });
+          }}
+        />
+        <UserMap
+          region={hookProps.state.region}
+          onChangeRegion={onRegionChangeComplete}
+        />
 
         <NormalTextInput
           value={hookProps.state.data.CREATED}
@@ -331,16 +295,16 @@ export const DeclareMeterScreen = () => {
           //   });
           // }}
         />
+        <Button
+          // labelStyle={{color: 'black'}}
+          style={styles.styleBtn}
+          label="Khai báo"
+          onPress={() => {
+            onDeclarePress();
+          }}
+        />
       </ScrollView>
 
-      <Button
-        // labelStyle={{color: 'black'}}
-        style={styles.styleBtn}
-        label="Khai báo"
-        onPress={() => {
-          onDeclarePress();
-        }}
-      />
       {/* <Button
         // labelStyle={{color: 'black'}}
         style={styles.styleBtn}
@@ -357,6 +321,14 @@ const styles = StyleSheet.create({
   containMapView: {
     width: '100%',
     height: heightMap * scale,
+  },
+  fakeMarker: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    zIndex: 1000,
+    marginTop: -sizeMarkerFake / 2 - sizeMarkerFake / 1.5,
+    marginLeft: -sizeMarkerFake / 2,
   },
   labelInMap: {
     fontFamily: Fonts,

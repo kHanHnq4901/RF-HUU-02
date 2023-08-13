@@ -1,23 +1,25 @@
 import Geolocation, {
   GeolocationResponse,
 } from '@react-native-community/geolocation';
-import {createOpenLink} from 'react-native-open-maps';
+import { createOpenLink } from 'react-native-open-maps';
 import {
   AddDeclareMeter,
   SendUnsentDeclareMeterProcess,
 } from '../../database/service/declareMeterService';
-import {AddMeter, GetMeter, PropsGetMeterServer} from '../../service/api';
-import {PropsAddMeter} from '../../service/api/index';
-import {emitEventSuccess} from '../../service/event';
-import {emitEventFailure} from '../../service/event/index';
-import {showAlert, showToast} from '../../util';
-import {isAllNumeric} from '../../util/index';
+import { AddMeter, GetMeter, PropsGetMeterServer } from '../../service/api';
+import { PropsAddMeter } from '../../service/api/index';
+import { emitEventSuccess } from '../../service/event';
+import { emitEventFailure } from '../../service/event/index';
+import { showAlert, showToast } from '../../util';
+import { isAllNumeric } from '../../util/index';
+import { Region } from 'react-native-maps';
 import {
   ListModelMeterObj,
   ListStationObj,
   hookProps,
   lisStationName,
 } from './controller';
+import { deleteFile } from '../../shared/file';
 
 const TAG = 'Declare Meter Handle Button';
 
@@ -107,6 +109,28 @@ export async function onDeclarePress() {
     return;
   }
 
+  let ok = true;
+  await showAlert(
+    'Bạn có chắc vị trí hiện tại ?',
+    {
+      label: 'OK',
+      func: () => {
+        ok = true;
+      },
+    },
+    {
+      label: 'Huỷ',
+      func: () => {
+        ok = false;
+      },
+    },
+  );
+
+  if (ok) {
+  } else {
+    return;
+  }
+
   const strSeri = hookProps.state.data.METER_NO;
   const customerName = hookProps.state.data.CUSTOMER_NAME;
   const customerCode = hookProps.state.data.CUSTOMER_CODE;
@@ -126,7 +150,7 @@ export async function onDeclarePress() {
       },
 
       {
-        label: 'Lấy vị trí hiện tại',
+        label: 'Lấy vị trí trên bản đồ',
         func: () => {
           ok = true;
         },
@@ -138,7 +162,7 @@ export async function onDeclarePress() {
     hookProps.setState(state => {
       state.isBusy = true;
       state.status = 'Đang khai báo ...';
-      return {...state};
+      return { ...state };
     });
     // let location: GeolocationResponse | null = null;
 
@@ -166,21 +190,10 @@ export async function onDeclarePress() {
     } else {
       //const location =
 
-      let rest: GeolocationResponse | null = null;
-      if (iSNewGPS) {
-        rest = await getCurrentPosition();
-        if (rest === null) {
-          throw new Error('Không thể lấy toạ độ hiện tại');
-        }
-      }
-
-      const position = {...hookProps.state.position};
-      position.latitude = rest?.coords.latitude;
-      position.longitude = rest?.coords.longitude;
-      hookProps.state.position = position;
-
       const coordinate = iSNewGPS
-        ? rest?.coords.latitude + ',' + rest?.coords.longitude
+        ? hookProps.state.region.latitude +
+          ',' +
+          hookProps.state.region.longitude
         : hookProps.state.data.COORDINATE;
 
       const lineStatiobObj = ListStationObj.find(
@@ -222,6 +235,12 @@ export async function onDeclarePress() {
           hookProps.state.data.CUSTOMER_CODE = '';
           hookProps.state.data.ADDRESS = '';
           hookProps.state.data.PHONE = '';
+          for (let image of hookProps.state.images) {
+            if (image.uri) {
+              await deleteFile(image.uri);
+            }
+          }
+          hookProps.state.images = [];
 
           // hookProps.refPhoneNUmber.current?.clear();
           // hookProps.refSeriMeter.current?.clear();
@@ -273,7 +292,7 @@ export async function onDeclarePress() {
     hookProps.setState(state => {
       state.isBusy = false;
       state.status = message + ' ' + date.toLocaleTimeString('vi');
-      return {...state};
+      return { ...state };
     });
   }
 }
@@ -281,13 +300,13 @@ export async function onDeclarePress() {
 export function onLineSelected(itemSelected: string) {
   hookProps.setState(state => {
     state.infoDeclare.selectedStation = itemSelected;
-    return {...state};
+    return { ...state };
   });
 }
 export function onModelMeterSelected(itemSelected: string) {
   hookProps.setState(state => {
     state.infoDeclare.selectedModelMeter = itemSelected;
-    return {...state};
+    return { ...state };
   });
 }
 
@@ -314,7 +333,7 @@ export async function onSearchInfo(): Promise<PropsReturnSearchInfo> {
       state.data = {} as PropsGetMeterServer;
       state.data.METER_NO = seri;
 
-      return {...state};
+      return { ...state };
     });
 
     const rest1 = await GetMeter({
@@ -371,8 +390,8 @@ export async function onSearchInfo(): Promise<PropsReturnSearchInfo> {
           rest.latitude = Number(arrLatitude[0]);
           rest.longtitude = Number(arrLatitude[1]);
 
-          const region = {...hookProps.state.region};
-          const position = {...hookProps.state.position};
+          const region = { ...hookProps.state.region };
+          const position = { ...hookProps.state.position };
 
           region.latitude = rest.latitude;
           region.longitude = rest.longtitude;
@@ -408,7 +427,7 @@ export async function onSearchInfo(): Promise<PropsReturnSearchInfo> {
       } else {
         state.status = '';
       }
-      return {...state};
+      return { ...state };
     });
   }
 
@@ -426,9 +445,9 @@ export async function onGoogleMapPress() {
       // latitude: rest.latitude,
       // longitude: rest.longtitude,
       query:
-        hookProps.state.position.latitude +
+        hookProps.state.region.latitude +
         ',' +
-        hookProps.state.position.longitude,
+        hookProps.state.region.longitude,
       zoom: 0,
       waypoints: [],
     });
@@ -442,7 +461,7 @@ async function getCurrentPosition(): Promise<GeolocationResponse | null> {
   let location: GeolocationResponse | null = null;
   for (let i = 0; i < 5; i++) {
     location = await getGeolocation();
-    if (location === null || location.coords.accuracy > 20) {
+    if (i !== 4 && (location === null || location.coords.accuracy > 100)) {
       continue;
     } else {
       if (location?.coords.longitude && location?.coords.latitude) {
@@ -462,13 +481,13 @@ export async function onGetPositionPress() {
   let location: GeolocationResponse | null = null;
   for (let i = 0; i < 5; i++) {
     location = await getGeolocation();
-    if (location === null || location.coords.accuracy > 20) {
+    if (i !== 4 && (location === null || location.coords.accuracy > 100)) {
       continue;
     } else {
       if (location?.coords.longitude && location?.coords.latitude) {
         hookProps.setState(state => {
-          const position = {...state.position};
-          const region = {...state.region};
+          const position = { ...state.position };
+          const region = { ...state.region };
 
           position.latitude = location.coords.latitude;
           position.longitude = location.coords.longitude;
@@ -480,12 +499,21 @@ export async function onGetPositionPress() {
 
           state.position = position;
           state.region = region;
-          return {...state};
+          return { ...state };
         });
         showToast('Đã cập nhật toạ độ hiện tại');
+        return;
       }
 
       break;
     }
   }
+}
+
+export function onRegionChangeComplete(region: Region) {
+  console.log('region:', region);
+  hookProps.setState(state => {
+    state.region = { ...region };
+    return { ...state };
+  });
 }

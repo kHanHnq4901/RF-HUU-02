@@ -35,6 +35,7 @@ export const endPointsNsx = {
   getFirmware: '/HU_02/firmware.txt',
   getVersionAppMobile: '/HU_02/AppMobile/version.txt',
   getHDSD: '/HU_02/HDSD_HU_02.pdf',
+  log: '/HU_02/log',
 };
 
 export function getUrlNsx(endPoint: string): string {
@@ -61,6 +62,9 @@ export const endPoints = {
   getMeterAccount: '/GetMeterAccount',
   getLineList: '/GetLineList',
   getMeterByLine: '/GetMeterListByLine',
+  deleteAccount: '/DeleteAccount',
+  checkMeterNo: '/CheckMeterNo',
+  checkModuleNo: '/CheckModuleNo',
 };
 
 export function getUrl(endPoint: string): string {
@@ -263,6 +267,83 @@ export async function PushDataToServer(
   }
 
   return res;
+}
+
+type PropsCheckNo = {
+  NO: string;
+};
+export async function checkMeterNo(
+  props: PropsCheckNo,
+): Promise<PropsCommonResponse> {
+  //SaveActiveTotal(string ModuleNo, string DataTime, string ActiveTotal, string NegactiveTotal, string Token)
+
+  let response: PropsCommonResponse = {
+    bSucceeded: false,
+    strMessage: '',
+    obj: undefined,
+  };
+  try {
+    const url = getUrl(endPoints.checkMeterNo);
+
+    const rest = await axios.get(url, {
+      params: {
+        MeterNo: props.NO,
+
+        Token: store.state.userInfo.TOKEN,
+      },
+    });
+    const ret = rest.data as { CODE: string; MESSAGE: string };
+    console.log('retcheckMeterNo:', ret);
+    if (ret.CODE === '1') {
+      response.bSucceeded = true;
+      return response;
+      //return true;
+    } else {
+      console.log(TAG, 'err:', ret);
+      response.bSucceeded = false;
+      response.strMessage = ret.MESSAGE;
+      //return false;
+    }
+  } catch (err) {}
+
+  return response;
+}
+export async function checkModuleNo(
+  props: PropsCheckNo,
+): Promise<PropsCommonResponse> {
+  //SaveActiveTotal(string ModuleNo, string DataTime, string ActiveTotal, string NegactiveTotal, string Token)
+
+  let response: PropsCommonResponse = {
+    bSucceeded: false,
+    strMessage: '',
+    obj: undefined,
+  };
+  try {
+    const url = getUrl(endPoints.checkModuleNo);
+
+    const rest = await axios.get(url, {
+      params: {
+        MeterNo: props.NO,
+
+        Token: store.state.userInfo.TOKEN,
+      },
+    });
+    const ret = rest.data as { CODE: string; MESSAGE: string };
+    console.log('retcheckModuleNo:', ret);
+
+    if (ret.CODE === '1') {
+      response.bSucceeded = true;
+      return response;
+      //return true;
+    } else {
+      console.log(TAG, 'err:', ret);
+      response.bSucceeded = false;
+      response.strMessage = ret.MESSAGE;
+      //return false;
+    }
+  } catch (err) {}
+
+  return response;
 }
 
 export type PropsSaveCoordinateMeter = {

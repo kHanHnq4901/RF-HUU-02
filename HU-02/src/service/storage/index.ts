@@ -1,9 +1,9 @@
 import AsyncStorage from '@react-native-community/async-storage';
-import {PATH_EXECUTE_CSDL, PATH_EXPORT_XML} from '../../shared/path';
-import {aes_128_dec, aes_128_en} from '../../util/aes128';
-import {ByteArrayFromHexString, ByteArrayToString} from '../../util/index';
-import {PropsKeyAesStore, getDefaultKeyAesStore} from '../../store';
-import {Buffer} from 'buffer';
+import { PATH_EXECUTE_CSDL, PATH_EXPORT_XML } from '../../shared/path';
+import { aes_128_dec, aes_128_en } from '../../util/aes128';
+import { ByteArrayFromHexString, ByteArrayToString } from '../../util/index';
+import { PropsKeyAesStore, getDefaultKeyAesStore } from '../../store';
+import { Buffer } from 'buffer';
 
 const KEY_SETTING = 'APP_SETTING';
 const TAG = 'STORAGE SERVICE:';
@@ -93,8 +93,8 @@ export const getDefaultStorageValue = (): PropsAppSetting => {
   storageVariable.CMISPath = '';
   storageVariable.numRetriesRead = '1';
   storageVariable.server = {
-    host: '',//'api.emic.com.vn',
-    port: '',//'80',
+    host: '', //'api.emic.com.vn',
+    port: '', //'80',
   };
   storageVariable.userAdmin =
     '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918';
@@ -143,7 +143,6 @@ export const updateValueAppSettingFromNvm =
 
         storageVariable.keyAes = storageVar.keyAes;
 
-        
         for (let i in storageVariable) {
           if (storageVariable[i] === undefined || storageVariable[i] === null) {
             storageVariable = getDefaultStorageValue();

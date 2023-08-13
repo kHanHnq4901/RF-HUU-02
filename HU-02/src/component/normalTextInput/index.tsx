@@ -1,23 +1,26 @@
 import React from 'react';
 import {
+  StyleProp,
   StyleSheet,
-  View,
   Text,
   TextInput,
   TextInputProps,
+  View,
+  ViewStyle,
 } from 'react-native';
-import { Colors, normalize, scale } from '../../theme';
 import { Divider } from 'react-native-paper';
+import { Colors, normalize, scale } from '../../theme';
 
 type Props = {
   label: string;
   ref?: React.LegacyRef<TextInput>;
+  styleContainer?: StyleProp<ViewStyle>;
 } & TextInputProps;
 
 export const NormalTextInput = React.forwardRef<TextInput, Props>(
   (props, ref) => {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, props.styleContainer]}>
         <Text style={styles.label}>{props.label}</Text>
         <TextInput
           autoCorrect={false}

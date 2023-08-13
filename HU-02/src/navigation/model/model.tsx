@@ -1,7 +1,8 @@
-import {DrawerNavigationProp} from '@react-navigation/drawer';
-import {NavigatorScreenParams} from '@react-navigation/native';
-import type {StackNavigationProp} from '@react-navigation/stack';
-import {PropsDataTable} from '../../screen/writeDataByStationCode/controller';
+import { DrawerNavigationProp } from '@react-navigation/drawer';
+import { NavigatorScreenParams } from '@react-navigation/native';
+import type { StackNavigationProp } from '@react-navigation/stack';
+import { PropsDataTable } from '../../screen/writeDataByStationCode/controller';
+import { FieldOpticalResponseProps } from '../../service/hhu/Optical/opticalFunc';
 export type StackRootList = {
   SignIn: undefined;
   SignUp: undefined;
@@ -17,10 +18,14 @@ export type StackWriteDataList = {
   };
 };
 
-export type StackViewDataList = {
-  ViewRegister: ParamsDrawerProps;
-  ViewRegisterDetailed: {
-    data: PropsDataTable;
+export type PropsDataLogReadOptical = Partial<{
+  [K in FieldOpticalResponseProps]: string;
+}>;
+
+export type StackReadOpticalList = {
+  ReadOptical: ParamsDrawerProps;
+  LogReadOptical: {
+    data?: PropsDataLogReadOptical;
   };
 };
 
@@ -59,8 +64,8 @@ export type StackRootNavigationProp = StackNavigationProp<StackRootList>;
 export type StackWiteDataNavigationProp =
   StackNavigationProp<StackWriteDataList>;
 
-export type StackViewDataNavigationProp =
-  StackNavigationProp<StackViewDataList>;
+export type StackReadOpticalNavigationProp =
+  StackNavigationProp<StackReadOpticalList>;
 
 export type StackWriteBookCodeNavigationProp =
   StackNavigationProp<StackWriteDataByBookCodeList>;
@@ -76,14 +81,15 @@ export type ParamsDrawerProps = {
 
 export type DrawerParamsList = {
   Overview: ParamsDrawerProps;
-  ViewData: NavigatorScreenParams<StackViewDataNavigationProp>;
+  ViewData: NavigatorScreenParams<StackReadOpticalNavigationProp>;
   ViewDataByVolatge: ParamsDrawerProps;
   WriteDataByStationCode: NavigatorScreenParams<StackWriteStationCodeNavigationProp>;
   WriteDataByPosition: ParamsDrawerProps;
   ReadParameter: ParamsDrawerProps;
   DeclareMeter: ParamsDrawerProps;
-  PositionMeter: ParamsDrawerProps;
-  ReadOptical: ParamsDrawerProps;
+  Log: ParamsDrawerProps;
+  // ReadOptical: ParamsDrawerProps;
+  StackReadOptical: NavigatorScreenParams<StackReadOpticalList>;
   WriteOptical: ParamsDrawerProps;
   AbnormalRegister: ParamsDrawerProps;
   ImportExportCSDL: ParamsDrawerProps;

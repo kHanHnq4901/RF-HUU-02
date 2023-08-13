@@ -69,5 +69,6 @@ const styles = StyleSheet.create({
     textAlignVertical: 'center',
     fontSize: normalize(18),
     color: Colors.text,
+    marginLeft: Platform.OS === 'ios' ? -3 : 0,
   },
 });

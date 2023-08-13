@@ -48,6 +48,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.backgroundColor,
+    paddingBottom: 5,
   },
   row: {
     flexDirection: 'row',
@@ -59,7 +60,7 @@ const styles = StyleSheet.create({
   textInput: {
     borderRadius: 5,
     backgroundColor: 'white',
-    elevation: 1,
+
     fontFamily: 'Lato-Regular',
     fontSize: normalize(18),
     padding: 10 * scale,
@@ -69,7 +70,9 @@ const styles = StyleSheet.create({
       width: 0,
       height: 1,
     },
-    shadowOpacity: 0.18,
-    shadowRadius: 1.0,
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+
+    elevation: 2,
   },
 });

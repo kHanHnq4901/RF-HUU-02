@@ -5,15 +5,18 @@ import { BackButton } from '../../component/backButton';
 import { ButtonList } from '../../component/buttonList';
 import FormButton from '../../component/formButton';
 import { ModalTextInput } from '../../component/modalTextInput';
-import { Colors } from '../../theme';
+import { Colors, normalize, scale } from '../../theme';
 import { hook, store, UpdateHook } from './controller';
 import { IconFaceID } from '../../component/faceID/index';
 import {
   onbtnAllowSigninByFingerPress,
+  onClearAccountPress,
   onClearFingerPress,
   onModalCancelPress,
   onModalOkEnterPasswordPress,
+  onModalOkPress,
 } from './handle';
+import { Button } from '../../component/button/button';
 
 export function SettingUserScreen() {
   UpdateHook();
@@ -23,7 +26,7 @@ export function SettingUserScreen() {
       <BackButton onPress={navigation.goBack} />
       <ModalTextInput
         label="Nhập lại mật khẩu"
-        onOkPress={onModalOkEnterPasswordPress}
+        onOkPress={onModalOkPress}
         onDissmiss={onModalCancelPress}
         secureTextEntry
         textAlign="center"
@@ -64,6 +67,12 @@ export function SettingUserScreen() {
           )}
         </>
       )}
+      <Button
+        textStyle={styles.textUpdateMeterVersion}
+        style={styles.btnClearAllData}
+        label="Xoá tài khoản"
+        onPress={onClearAccountPress}
+      />
     </View>
   );
 }
@@ -76,5 +85,18 @@ const styles = StyleSheet.create({
   },
   btn: {
     color: Colors.primary,
+  },
+  btnClearAllData: {
+    marginVertical: 15,
+    backgroundColor: '#f3d20d',
+    maxWidth: 200 * scale,
+    height: 25 * scale,
+    alignSelf: 'flex-end',
+    //justifyContent:borderWidth: 1,
+  },
+  textUpdateMeterVersion: {
+    color: 'black',
+    fontWeight: 'normal',
+    fontSize: normalize(14),
   },
 });

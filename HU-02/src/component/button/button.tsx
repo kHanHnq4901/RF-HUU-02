@@ -1,20 +1,19 @@
 import React from 'react';
 import {
   Omit,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  Text,
   StyleProp,
+  StyleSheet,
+  Text,
   TextStyle,
+  TouchableOpacity,
 } from 'react-native';
-import {Button as Btn, useTheme} from 'react-native-paper';
-import Theme, {Fonts, normalize, scale} from '../../theme';
+import { Button as Btn } from 'react-native-paper';
+import Theme, { Fonts, normalize } from '../../theme';
 
 type Props = {
   label: string;
   onPress: () => void;
-  labelStyle?: StyleProp<TextStyle>;
+  textStyle?: StyleProp<TextStyle>;
 } & Omit<React.ComponentProps<typeof Btn>, 'children'>;
 
 export const Button = (props: Props) => {
@@ -34,7 +33,7 @@ export const Button = (props: Props) => {
         mode="contained">
         {props.label}
       </Btn> */}
-      <Text style={{...styles.label, ...props.labelStyle}}>{props.label}</Text>
+      <Text style={{ ...styles.label, ...props.textStyle }}>{props.label}</Text>
     </TouchableOpacity>
   );
 };
@@ -46,18 +45,11 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: Theme.Colors.primary,
-    borderRadius: 35,
-    elevation: 10,
-    height: 40 * scale,
+    borderRadius: 25,
+    elevation: 3,
+    height: 40,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
   },
   label: {
     textAlign: 'center',

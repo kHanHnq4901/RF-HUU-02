@@ -1,6 +1,5 @@
-import { Alert, AlertButton, Platform, ToastAndroid } from 'react-native';
 import { Buffer } from 'buffer';
-import { first } from 'lodash';
+import { Alert, AlertButton } from 'react-native';
 import Snackbar from 'react-native-snackbar';
 
 export function sleep(ms: number) {

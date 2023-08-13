@@ -1,21 +1,23 @@
-import {DrawerHeaderProps} from '@react-navigation/drawer/lib/typescript/src/types';
+import { DrawerHeaderProps } from '@react-navigation/drawer/lib/typescript/src/types';
 import React from 'react';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {Appbar, Avatar} from 'react-native-paper';
-import {CircleSnail} from 'react-native-progress';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Appbar, Avatar } from 'react-native-paper';
+import { CircleSnail } from 'react-native-progress';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import {RouteProp, useRoute} from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import {
   DrawerParamsList,
   ParamsDrawerProps,
 } from '../../navigation/model/model';
-import Theme, {Colors, normalize, scale} from '../../theme';
-import {ModalInfo} from '../modal/modalShowInfo';
-import {onBleLongPress, onBlePress} from './handleButton';
-import {GetHookProps, store} from './controller';
-import {screenDatas} from '../../shared';
+import Theme, { Colors, normalize, scale } from '../../theme';
+import { ModalInfo } from '../modal/modalShowInfo';
+import { onBleLongPress, onBlePress } from './handleButton';
+import { GetHookProps, store } from './controller';
+import { screenDatas } from '../../shared';
 import LoadingModal from '../loadingModal/index';
+import { navigationRef } from '../../navigation/StackRootNavigator';
+import { navigationStackReadOptical } from '../../screen/readOptical/controller';
 
 const TAG = 'HEADER:';
 
@@ -35,6 +37,38 @@ export function Header(props: DrawerHeaderProps) {
   //   params = props.route.params as ParamsDrawerProps;
   // }
 
+  const title = navigationRef?.isReady()
+    ? navigationRef?.getCurrentOptions()?.title ??
+      route.params?.title ??
+      props.route.name
+    : route.params?.title ?? props.route.name;
+
+  if (navigationRef?.isReady()) {
+    console.log('title:', navigationRef?.getCurrentOptions()?.title);
+  }
+
+  let back: boolean = false;
+
+  // React.useEffect(() => {
+  //   if (title === 'Log') {
+  //     props.navigation.setOptions({
+  //       headerShown: false,
+  //     });
+  //   } else {
+  //     if (props.options.headerShown === false) {
+  //       props.navigation.setOptions({
+  //         headerShown: true,
+  //       });
+  //     }
+  //   }
+  // }, [title]);
+
+  // console.log('props.back:', props.back);
+
+  if (title === 'Log') {
+    back = true;
+  }
+
   //theme.colors.surface
   return (
     <>
@@ -53,9 +87,9 @@ export function Header(props: DrawerHeaderProps) {
         //dark={false}
         //theme={{ colors: { primary: 'transparent' } }}
       >
-        {props.back ? (
+        {back ? (
           <Appbar.BackAction
-            onPress={props.navigation.goBack}
+            onPress={navigationStackReadOptical.goBack}
             color={Colors.secondary}
           />
         ) : (
@@ -90,8 +124,8 @@ export function Header(props: DrawerHeaderProps) {
         titleStyle={{ alignSelf: 'center', fontSize: normalize(18) }}
         title={route.params?.title}
       /> */}
-        <Text style={styles.title}>{route.params?.title}</Text>
-        <View style={{flex: 1}} />
+        <Text style={styles.title}>{title}</Text>
+        <View style={{ flex: 1 }} />
         <TouchableOpacity
           onLongPress={onBleLongPress}
           onPress={onBlePress}

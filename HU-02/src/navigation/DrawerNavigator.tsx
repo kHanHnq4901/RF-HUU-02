@@ -15,7 +15,7 @@ const heightHeader = 50 * scale;
 export const DrawerNavigator = () => {
   return (
     <Drawer.Navigator
-      initialRouteName="ReadOptical"
+      initialRouteName="Overview"
       screenOptions={{
         headerTitleStyle: { fontFamily: Fonts },
         drawerStyle: { width: '80%', maxWidth: 450 },

@@ -1,5 +1,5 @@
-import {Buffer} from 'buffer';
-import {crc16, crc16_offset} from '../../../util/crc16';
+import { Buffer } from 'buffer';
+import { crc16, crc16_offset } from '../../../util/crc16';
 import {
   Array2Struct,
   Struct2Array,
@@ -14,13 +14,13 @@ import {
   hhuFunc_Send,
   hhuFunc_wait,
 } from '../Ble/hhuFunc';
-import {PropsRead} from '../RF/RfFunc';
+import { PropsRead } from '../RF/RfFunc';
 import {
   Rtc_SimpleTimeProps,
   Rtc_SimpleTimeType,
   SIZE_SERIAL,
 } from '../RF/radioProtocol';
-import {SimpleTimeToSTring, formatDateTimeDB} from '../util/utilFunc';
+import { SimpleTimeToSTring, formatDateTimeDB } from '../util/utilFunc';
 import {
   DataManager_IlluminateRecordProps,
   DataManager_IlluminateRecordType,
@@ -49,16 +49,16 @@ import {
   Sensor_NvmErrorProps,
   Sensor_NvmErrorType,
 } from './opticalProtocol';
-import {aes_128_dec, aes_128_en} from '../../../util/aes128';
-import {store} from '../../../component/drawer/drawerContent/controller';
-import {log} from 'react-native-reanimated';
+import { aes_128_dec, aes_128_en } from '../../../util/aes128';
+import { store } from '../../../component/drawer/drawerContent/controller';
+import { log } from 'react-native-reanimated';
 import {
   Get_State_Reset,
   Get_State_Reset_By_User,
   convertRtcTime2String,
   getStateSend,
 } from './opticalUtil';
-import {StringFromArray} from '../../../util';
+import { StringFromArray } from '../../../util';
 
 const TAG = 'opticalFunc:';
 

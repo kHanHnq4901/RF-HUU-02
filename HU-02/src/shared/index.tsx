@@ -1,17 +1,17 @@
-import {StackWriteStationCodeNavigator} from '../navigation/StackWriteBySatationCode';
-import {DrawerParamsList} from '../navigation/model/model';
-import {AboutScreen} from '../screen/about';
-import {BoardBLEScreen} from '../screen/boardBLE';
-import {DeclareMeterScreen} from '../screen/declareMeter';
-import {ExportLogScreen} from '../screen/exportLog';
-import {OverViewScreen} from '../screen/overview';
-import {PositionMeterScreen} from '../screen/positionMeter';
-import {ReadOpticalScreen} from '../screen/readOptical';
-import {ReadParameterScreen} from '../screen/readParameter';
-import {SettingAndAlarmScreen} from '../screen/settingAndAlarm';
-import {WriteOpticalScreen} from '../screen/writeOptical';
+import { StackReadOptical } from '../navigation/StackReadOptical';
+import { StackWriteStationCodeNavigator } from '../navigation/StackWriteBySatationCode';
+import { DrawerParamsList } from '../navigation/model/model';
+import { AboutScreen } from '../screen/about';
+import { BoardBLEScreen } from '../screen/boardBLE';
+import { DeclareMeterScreen } from '../screen/declareMeter';
+import { ExportLogScreen } from '../screen/exportLog';
+import { LogReadOpticalScreenScreen } from '../screen/logReadOptical';
+import { OverViewScreen } from '../screen/overview';
+import { ReadParameterScreen } from '../screen/readParameter';
+import { SettingAndAlarmScreen } from '../screen/settingAndAlarm';
+import { WriteOpticalScreen } from '../screen/writeOptical';
 
-export const version = '1.3.1';
+export const version = '1.4.1';
 
 // export const widthScreen = Dimensions.get('screen').width;
 // export const heighScreen = Dimensions.get('screen').height;
@@ -102,14 +102,32 @@ export const screenDatas: DataScreensProps = [
     icon: 'ios-pencil',
     component: WriteOpticalScreen,
   },
+  // {
+  //   title: 'Đọc cổng quang',
+  //   info: `
+
+  //   `,
+  //   id: 'ReadOptical',
+  //   icon: 'ios-book-outline',
+  //   component: ReadOpticalScreen,
+  // },
   {
     title: 'Đọc cổng quang',
     info: `
     
     `,
-    id: 'ReadOptical',
+    id: 'StackReadOptical',
     icon: 'ios-book-outline',
-    component: ReadOpticalScreen,
+    component: StackReadOptical,
+  },
+  {
+    title: 'Log ',
+    info: `
+    
+    `,
+    id: 'Log',
+    icon: 'ios-pencil',
+    component: LogReadOpticalScreenScreen,
   },
 
   {

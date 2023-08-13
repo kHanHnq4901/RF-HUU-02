@@ -1,12 +1,14 @@
-import React, {useState} from 'react';
-import {PropsStore, storeContext} from '../../store';
-import {USER_ROLE_TYPE} from '../../service/user';
-import {store} from '../../component/drawer/drawerContent/controller';
-import Geolocation, {
-  GeolocationResponse,
-} from '@react-native-community/geolocation';
-import {Platform} from 'react-native';
-import {turnOnLocation} from '../ble/controller';
+import Geolocation from '@react-native-community/geolocation';
+import { useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
+import { Platform } from 'react-native';
+import { store } from '../../component/drawer/drawerContent/controller';
+import {
+  PropsDataLogReadOptical,
+  StackReadOpticalNavigationProp,
+} from '../../navigation/model/model';
+import { USER_ROLE_TYPE } from '../../service/user';
+import { turnOnLocation } from '../ble/controller';
 var LocationEnabler =
   Platform.OS === 'android' ? require('react-native-location-enabler') : null;
 
@@ -61,6 +63,7 @@ export type HookState = {
   requestStop: boolean;
   is0h: boolean;
   isSaving: boolean;
+  dataOpticalResPonseObj: PropsDataLogReadOptical;
 };
 
 export type HookProps = {
@@ -113,6 +116,7 @@ function getInitialState(): HookState {
     requestStop: false,
     is0h: false,
     isSaving: false,
+    dataOpticalResPonseObj: {},
   };
   if (
     store.state.userInfo.USER_TYPE === USER_ROLE_TYPE.ADMIN ||
@@ -143,18 +147,18 @@ function getInitialState(): HookState {
 export function setStatus(status: string) {
   hookProps.setState(state => {
     state.status = status;
-    return {...state};
+    return { ...state };
   });
 }
 
 const {
-  PRIORITIES: {HIGH_ACCURACY},
+  PRIORITIES: { HIGH_ACCURACY },
   useLocationSettings,
 } =
   Platform.OS === 'android'
     ? LocationEnabler.default
     : {
-        PRIORITIES: {HIGH_ACCURACY: null},
+        PRIORITIES: { HIGH_ACCURACY: null },
         useLocationSettings: null,
       };
 
@@ -190,6 +194,8 @@ export const requestGps = async (): Promise<boolean> => {
   return false;
 };
 
+export let navigationStackReadOptical = {} as StackReadOpticalNavigationProp;
+
 export const GetHookProps = (): HookProps => {
   const [state, setState] = useState<HookState>(getInitialState());
   if (Platform.OS === 'android') {
@@ -206,6 +212,9 @@ export const GetHookProps = (): HookProps => {
   }
   hookProps.state = state;
   hookProps.setState = setState;
+
+  navigationStackReadOptical = useNavigation<StackReadOpticalNavigationProp>();
+
   return hookProps;
 };
 
@@ -230,6 +239,16 @@ export const onInit = async () => {
     },
   );
   requestGps();
+
+  // const obj = {
+  //   'Seri đồng hồ': '2350001141',
+  //   'Seri module': '2240000597',
+  //   'Test RF': 'Thành công',
+  //   Rssi: '99',
+  //   'Có IP': 'NO_IP',
+  //   QCCID: '8984012209500014329F',
+  // };
+  // ConvertObjToHook(obj);
 };
 
 export const onDeInit = () => {};

@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {StackViewDataList} from '../../navigation/model/model';
+import {StackReadOptical} from '../../navigation/model/model';
 import Theme, {Colors, normalize} from '../../theme';
 import {GetHook, getTableContent, onBeforeInit} from './controller';
 
@@ -34,7 +34,7 @@ export type PropsData = Props[];
 export const ViewDetailRegisterScreen = () => {
   GetHook();
   const route =
-    useRoute<RouteProp<StackViewDataList, 'ViewRegisterDetailed'>>();
+    useRoute<RouteProp<StackReadOptical, 'ViewRegisterDetailed'>>();
 
   const props = route.params;
 

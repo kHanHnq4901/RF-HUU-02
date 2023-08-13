@@ -1,11 +1,11 @@
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import {ScrollView, StyleSheet, View} from 'react-native';
-import {Avatar, TextInput} from 'react-native-paper';
-import {BackButton} from '../../component/backButton';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { Avatar, TextInput } from 'react-native-paper';
+import { BackButton } from '../../component/backButton';
 
-import {Colors, normalize, scale, sizeScreen} from '../../theme';
-import {store, UpdateHook} from './controller';
+import { Colors, normalize, scale, sizeScreen } from '../../theme';
+import { store, UpdateHook } from './controller';
 
 export function UserInfoScreen() {
   UpdateHook();
@@ -32,7 +32,7 @@ export function UserInfoScreen() {
           editable={false}
           underlineColor="transparent"
         />
-        <TextInput
+        {/* <TextInput
           style={styles.textInput}
           value={store.state.userInfo.USER_ADDRESS}
           label="Địa chỉ"
@@ -47,7 +47,7 @@ export function UserInfoScreen() {
           autoCorrect={false}
           editable={false}
           underlineColor="transparent"
-        />
+        /> */}
         <TextInput
           style={styles.textInput}
           value={store.state.userInfo.USER_EMAIL}

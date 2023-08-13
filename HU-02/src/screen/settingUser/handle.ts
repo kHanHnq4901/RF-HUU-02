@@ -4,6 +4,7 @@ import { showAlert, showToast } from '../../util';
 import { hook, store } from './controller';
 import axios from 'axios';
 import { endPoints, getUrl } from '../../service/api';
+import { navigation } from '../signIn/controller';
 
 export async function onbtnAllowSigninByFingerPress() {
   let isSupport: any;
@@ -14,6 +15,7 @@ export async function onbtnAllowSigninByFingerPress() {
     showAlert('Thiết bị lỗi Touch ID hoặc không hỗ trợ');
     return;
   }
+  onModalOkPress = onModalOkEnterPasswordPress;
   hook.setState(state => {
     state.showModalEnterPass = true;
     return { ...state };
@@ -77,4 +79,72 @@ export function onClearFingerPress() {
     });
   }
   showToast('Xóa thành công');
+}
+
+export let onModalOkPress: (pass: string) => void = () => {};
+
+export async function onModalOkDeleteAccountPress(password: string) {
+  hook.setState(state => {
+    state.showModalEnterPass = false;
+    return { ...state };
+  });
+  try {
+    const url = getUrl(endPoints.deleteAccount);
+    console.log('url:', url);
+    console.log('params:', {
+      UserAccount: store.state.userInfo.USER_ACCOUNT,
+      Password: password,
+    });
+
+    const result = await axios.get(url, {
+      params: {
+        UserAccount: store.state.userInfo.USER_ACCOUNT,
+        Password: password,
+      },
+    });
+
+    if (result.data.CODE === '1') {
+      console.log('Xoá tài khoản thành công');
+
+      showAlert('Xoá tài khoản thành công', {
+        label: 'OK',
+        func: () => {
+          navigation.push('SignIn');
+        },
+      });
+    } else {
+      showAlert('Xoá tài khoản thất bại' + ':' + result.data.MESSAGE);
+    }
+  } catch (e: any) {
+    showAlert('Lỗi: ' + e.message);
+  } finally {
+  }
+}
+
+export function onClearAccountPress() {
+  showAlert(
+    'Bạn có chắc chắn muốn xoá tài khoản ?',
+    {
+      label: 'Xoá',
+      func: async () => {
+        let isSupport: any;
+        try {
+          isSupport = await TouchID.isSupported();
+        } catch (err: any) {
+          console.log('err:', err);
+          showAlert(t('login.handle.noSupportTouchID'));
+          return;
+        }
+        onModalOkPress = onModalOkDeleteAccountPress;
+        hook.setState(state => {
+          state.showModalEnterPass = true;
+          return { ...state };
+        });
+      },
+    },
+    {
+      label: 'Huỷ',
+      func: () => {},
+    },
+  );
 }
