@@ -3,10 +3,11 @@ import { Region } from 'react-native-maps';
 import { showAlert, showToast } from '../../util';
 import { getGeolocation } from '../declareMeter/handleButton';
 import { hookProps, store } from './controller';
-import { endPointsNsx, getUrlNsx } from '../../service/api';
+import { endPoints, endPointsNsx, getUrl, getUrlNsx } from '../../service/api';
 import axios from 'axios';
 import { convertImage2Base64, deleteFile } from '../../shared/file';
 import { emitEventSuccess } from '../../service/event';
+import { Platform } from 'react-native';
 
 export function onRegionChangeComplete(region: Region) {
   console.log('region:', region);
@@ -50,8 +51,51 @@ export async function onGetPositionPress() {
   }
 }
 
+export function uriToBlob(uri: string): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+
+    // If successful -> return with blob
+    xhr.onload = function () {
+      resolve(xhr.response);
+    };
+
+    // reject on error
+    xhr.onerror = function () {
+      reject(new Error('uriToBlob failed'));
+    };
+
+    // Set the response type to 'blob' - this means the server's response
+    // will be accessed as a binary object
+    xhr.responseType = 'blob';
+
+    // Initialize the request. The third argument set to 'true' denotes
+    // that the request is asynchronous
+    xhr.open('GET', uri, true);
+
+    // Send the request. The 'null' argument means that no body content is given for the request
+    xhr.send(null);
+  });
+}
+
+function checkCondition(): boolean {
+  if (hookProps.state.data.seriMeter.trim().length === 0) {
+    showAlert('Chưa điền số seri cơ khí');
+    return false;
+  }
+  if (hookProps.state.data.seriModule.trim().length === 0) {
+    showAlert('Chưa điền số seri module');
+    return false;
+  }
+  return true;
+}
+
 export async function onSaveLogPress() {
   if (hookProps.state.isBusy) {
+    return;
+  }
+
+  if (checkCondition() === false) {
     return;
   }
   let ok = true;
@@ -76,42 +120,83 @@ export async function onSaveLogPress() {
       return { ...state };
     });
 
+    let formData = new FormData();
+
+    let sendOk = false;
+
     try {
-      const imagesBase64: string[] = [];
+      //const imagesBase64: string[] = [];
 
       for (let image of hookProps.state.images) {
         if (image.uri) {
-          const base64 = await convertImage2Base64(image.uri);
-          if (base64) {
-            imagesBase64.push(base64);
-          }
+          // const base64 = await convertImage2Base64(image.uri);
+          // if (base64) {
+          //   imagesBase64.push(base64);
+          // }
+
+          // blob.
+          // formData.append('Images', blob);
+
+          // const blob = await uriToBlob(image.uri);
+          // console.log('blob:', JSON.stringify(blob));
+
+          // formData.append('Files', blob);
+
+          const obj = {
+            name: image.fileName,
+            type: image.type,
+            uri:
+              Platform.OS === 'ios'
+                ? image.uri.replace('file://', '')
+                : image.uri,
+            // uri: image.uri.replace('file://', ''),
+          };
+          formData.append('file', obj);
         }
       }
 
-      const url = getUrlNsx(endPointsNsx.log);
-      const result = await axios.get(url, {
-        params: {
-          UserAccount: store.state.userInfo.USER_ACCOUNT,
-          Token: store.state.userInfo.TOKEN,
-          SeriModule: hookProps.state.data.seriModule,
-          SeriMeter: hookProps.state.data.seriMeter,
+      const params = {
+        UserID: store.state.userInfo.USER_ID,
+        Token: store.state.userInfo.TOKEN,
+        ModuleNo: hookProps.state.data.seriModule,
+        MeterNo: hookProps.state.data.seriMeter,
 
-          QCCID: hookProps.state.data.QCCID,
-          Rssi: hookProps.state.data.rssi,
-          Active: hookProps.state.data.active,
-          RegisterModule: hookProps.state.data.registerModule,
-          RegisterMeter: hookProps.state.data.registerMeter,
-          Note: hookProps.state.data.note,
+        QCCID: hookProps.state.data.QCCID,
+        RSSI: hookProps.state.data.rssi,
+        Active: hookProps.state.data.active,
+        RegisterModule: hookProps.state.data.registerModule,
+        RegisterMeter: hookProps.state.data.registerMeter,
+        Note: hookProps.state.data.note,
 
-          Fixed: hookProps.state.data.fixed,
+        Fixed: hookProps.state.data.fixed,
 
-          LatLog:
-            hookProps.state.region.latitude +
-            ',' +
-            hookProps.state.region.longitude,
-          Images: imagesBase64,
+        LatLog:
+          hookProps.state.region.latitude +
+          ',' +
+          hookProps.state.region.longitude,
+      };
+      let url = getUrl(endPoints.log);
+
+      for (let item in params) {
+        // formData.append(item, params[item]);
+        url += `&${item}=${params[item]}`;
+      }
+
+      console.log('url:', url);
+      console.log('formData:', formData);
+
+      const result = await axios({
+        method: 'POST',
+        data: formData,
+        url: url,
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'multipart/form-data',
         },
+
+        // transformRequest: form => form,
       });
+
       //console.log('result: ', JSON.stringify(result));
 
       const response: { CODE: '0' | '1'; MESSAGE: string } = result.data;
@@ -119,12 +204,7 @@ export async function onSaveLogPress() {
       console.log('response:', response);
 
       if (response.CODE === '1') {
-        for (let image of hookProps.state.images) {
-          if (image.uri) {
-            await deleteFile(image.uri);
-          }
-        }
-        hookProps.state.images = [];
+        sendOk = true;
       } else {
         showAlert('Lỗi:' + response.MESSAGE ?? '');
       }
@@ -135,6 +215,37 @@ export async function onSaveLogPress() {
         state.isBusy = false;
         return { ...state };
       });
+      if (sendOk) {
+        emitEventSuccess();
+        showAlert(
+          'Bạn có muốn xoá tất cả ?',
+          {
+            label: 'Không',
+            func: () => {},
+          },
+          {
+            label: 'Xoá',
+            func: async () => {
+              for (let image of hookProps.state.images) {
+                if (image.uri) {
+                  await deleteFile(image.uri);
+                }
+              }
+              hookProps.state.images = [];
+              const _data = hookProps.state.data;
+              for (let itm in _data) {
+                _data[itm] = '';
+              }
+              _data.fixed = false;
+
+              hookProps.setState(state => {
+                state.data = _data;
+                return { ...state };
+              });
+            },
+          },
+        );
+      }
     }
   }
 }

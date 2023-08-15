@@ -84,6 +84,8 @@ export function SignInScreen() {
           value={hook.state.password}
           placeholder="Mật khẩu"
           iconType="lock"
+          autoCapitalize="none"
+          autoCorrect={false}
           secureTextEntry={true}
           rightChildren={
             store.state.typeTouchID !== 'NoSupport' && (

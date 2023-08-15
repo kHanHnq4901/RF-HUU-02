@@ -183,6 +183,7 @@ export async function onFingerPress(isShowAlert: boolean) {
       if (!credential) {
         if (isShowAlert) {
           showAlert('Chưa cài đặt chức năng này trong ứng dụng');
+          olState.userName = '';
         }
 
         return;

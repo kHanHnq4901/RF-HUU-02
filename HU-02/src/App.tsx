@@ -17,6 +17,7 @@ LogBox.ignoreLogs([
   'Require cycle: node_modules',
   'Non-serializable values were found',
 ]);
+
 //console.log('isDark:', DefaultTheme.colors);
 export default function App() {
   return (

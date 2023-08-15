@@ -42,7 +42,7 @@
     "@react-navigation/native": "^6.0.10",
     "@react-navigation/native-stack": "^6.6.2",
     "@react-navigation/stack": "^6.2.1",
-    "axios": "^0.27.2",
+    "axios": "^1.4.0",
     "buffer": "^6.0.3",
     "color": "^4.2.3",
     "double-click-react-native": "^0.1.8",

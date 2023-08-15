@@ -289,13 +289,14 @@ async function checkCondition(): Promise<boolean> {
   let text = '';
   if (hookProps.state.seriMeter.checked) {
     text = hookProps.data.seriMeter.trim();
+    if (text !== '0') {
+      if (isNumeric(text) === false || text.length !== 10) {
+        console.log('text 1:', text);
+        await showAlert('Số seri đồng hồ không hợp lệ');
 
-    if (isNumeric(text) === false || text.length !== 10) {
-      console.log('text 1:', text);
-      await showAlert('Số seri đồng hồ không hợp lệ');
-
-      hookProps.refSeriMeter.current?.clear();
-      return false;
+        hookProps.refSeriMeter.current?.clear();
+        return false;
+      }
     }
   }
   if (hookProps.state.seriModule.checked) {
@@ -335,7 +336,13 @@ async function checkMeterNoExist() {
     const ret = await checkMeterNo({ NO: noMeter });
     if (ret.bSucceeded === false && ret.strMessage.length > 0) {
       showAlertProps({
-        message: 'số NO đồng hồ: ' + noMeter + ' ' + ret.strMessage,
+        message:
+          'chú ý số NO đồng hồ: ' +
+          noMeter +
+          ' ' +
+          (ret.strMessage === 'existed'
+            ? 'đã tồn tại trên hệ thống'
+            : ret.strMessage),
       });
     }
   }
@@ -344,7 +351,13 @@ async function checkMeterNoExist() {
     const ret = await checkModuleNo({ NO: noModule });
     if (ret.bSucceeded === false && ret.strMessage.length > 0) {
       showAlertProps({
-        message: 'số NO module: ' + noModule + ' ' + ret.strMessage,
+        message:
+          'chú ý số NO module: ' +
+          noModule +
+          ' ' +
+          (ret.strMessage === 'existed'
+            ? 'đã tồn tại trên hệ thống'
+            : ret.strMessage),
       });
     }
   }

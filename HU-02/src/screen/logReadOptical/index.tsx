@@ -217,6 +217,7 @@ export const LogReadOpticalScreenScreen = () => {
               for (let image of images) {
                 state.images.push(image);
               }
+              state.images = [...state.images];
 
               return { ...state };
             });

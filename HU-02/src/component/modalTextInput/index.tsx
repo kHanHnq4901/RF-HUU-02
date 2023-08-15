@@ -36,6 +36,8 @@ export function ModalTextInput(props: Props) {
               // }}
               onChangeText={text => (valueTextInput = text)}
               style={styles.textInput}
+              autoCapitalize="none"
+              autoCorrect={false}
               {...props}
             />
           </View>

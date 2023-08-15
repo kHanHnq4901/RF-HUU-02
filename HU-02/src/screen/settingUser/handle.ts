@@ -94,14 +94,18 @@ export async function onModalOkDeleteAccountPress(password: string) {
     console.log('params:', {
       UserAccount: store.state.userInfo.USER_ACCOUNT,
       Password: password,
+      Token: store.state.userInfo.TOKEN,
     });
 
     const result = await axios.get(url, {
       params: {
         UserAccount: store.state.userInfo.USER_ACCOUNT,
         Password: password,
+        Token: store.state.userInfo.TOKEN,
       },
     });
+
+    console.log('result:', result.data);
 
     if (result.data.CODE === '1') {
       console.log('Xoá tài khoản thành công');
@@ -113,7 +117,12 @@ export async function onModalOkDeleteAccountPress(password: string) {
         },
       });
     } else {
-      showAlert('Xoá tài khoản thất bại' + ':' + result.data.MESSAGE);
+      showAlert(
+        'Xoá tài khoản thất bại' +
+          ':' +
+          result.data.MESSAGE +
+          '. Có thể mật khẩu không chính xác',
+      );
     }
   } catch (e: any) {
     showAlert('Lỗi: ' + e.message);

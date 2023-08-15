@@ -49,7 +49,7 @@ export function GetPicture(props: Props) {
           </Pressable>
         </View>
       ))}
-      {props.images.length < 2 && (
+      {props.images.length < 1 && (
         <View style={styles.imageEmpty}>
           <TouchableOpacity
             onPress={() => onTakePicturePress(props.onInsertImages)}

@@ -35,7 +35,6 @@ export const endPointsNsx = {
   getFirmware: '/HU_02/firmware.txt',
   getVersionAppMobile: '/HU_02/AppMobile/version.txt',
   getHDSD: '/HU_02/HDSD_HU_02.pdf',
-  log: '/HU_02/log',
 };
 
 export function getUrlNsx(endPoint: string): string {
@@ -62,9 +61,10 @@ export const endPoints = {
   getMeterAccount: '/GetMeterAccount',
   getLineList: '/GetLineList',
   getMeterByLine: '/GetMeterListByLine',
-  deleteAccount: '/DeleteAccount',
+  deleteAccount: '/DeleteUser',
   checkMeterNo: '/CheckMeterNo',
   checkModuleNo: '/CheckModuleNo',
+  log: '/CreateLogReadOptical',
 };
 
 export function getUrl(endPoint: string): string {
@@ -278,7 +278,7 @@ export async function checkMeterNo(
   //SaveActiveTotal(string ModuleNo, string DataTime, string ActiveTotal, string NegactiveTotal, string Token)
 
   let response: PropsCommonResponse = {
-    bSucceeded: false,
+    bSucceeded: true, // must be true
     strMessage: '',
     obj: undefined,
   };
@@ -295,13 +295,14 @@ export async function checkMeterNo(
     const ret = rest.data as { CODE: string; MESSAGE: string };
     console.log('retcheckMeterNo:', ret);
     if (ret.CODE === '1') {
-      response.bSucceeded = true;
+      response.bSucceeded = false;
+      response.strMessage = ret.MESSAGE;
       return response;
       //return true;
     } else {
       console.log(TAG, 'err:', ret);
-      response.bSucceeded = false;
-      response.strMessage = ret.MESSAGE;
+      response.bSucceeded = true;
+
       //return false;
     }
   } catch (err) {}
@@ -314,7 +315,7 @@ export async function checkModuleNo(
   //SaveActiveTotal(string ModuleNo, string DataTime, string ActiveTotal, string NegactiveTotal, string Token)
 
   let response: PropsCommonResponse = {
-    bSucceeded: false,
+    bSucceeded: true, // must be true
     strMessage: '',
     obj: undefined,
   };
@@ -323,7 +324,7 @@ export async function checkModuleNo(
 
     const rest = await axios.get(url, {
       params: {
-        MeterNo: props.NO,
+        ModuleNo: props.NO,
 
         Token: store.state.userInfo.TOKEN,
       },
@@ -332,13 +333,14 @@ export async function checkModuleNo(
     console.log('retcheckModuleNo:', ret);
 
     if (ret.CODE === '1') {
-      response.bSucceeded = true;
+      response.bSucceeded = false;
+      response.strMessage = ret.MESSAGE;
       return response;
       //return true;
     } else {
       console.log(TAG, 'err:', ret);
-      response.bSucceeded = false;
-      response.strMessage = ret.MESSAGE;
+      response.bSucceeded = true;
+
       //return false;
     }
   } catch (err) {}
