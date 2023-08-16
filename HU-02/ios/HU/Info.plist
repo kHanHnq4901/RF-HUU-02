@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -47,8 +49,12 @@
 	<string>Ứng dụngg cần sử dụng FaceId cho tính năng xác thực người dùng</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Ứng dụng cần sử dụng vị trí để khai báo đồng hồ</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Ứng dụng cần sử dụng vị trí để lấy vị trí báo đồng hồ</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Cho phép ứng dụng truy cập ảnh thư viện</string>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>Cho phép ứng dụng phát âm thanh</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>SourceCodePro-Medium.ttf</string>

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android --active-arch-only",
-    "ios": "react-native run-ios --simulator=\"iPhone Xs Max\"",
+    "ios": "react-native run-ios --simulator=\"iPhone 8 Plus\"",
     "iosr": "react-native run-ios --device",
     "start": "react-native start",
     "test": "jest",
@@ -12,25 +12,15 @@
     "postinstall": "react-native setup-ios-permissions && patch-package"
   },
   "reactNativePermissionsIOS": [
-    "AppTrackingTransparency",
     "BluetoothPeripheral",
-    "Calendars",
     "Camera",
-    "Contacts",
     "FaceID",
     "LocationAccuracy",
-    "LocationAlways",
     "LocationWhenInUse",
     "MediaLibrary",
-    "Microphone",
-    "Motion",
     "Notifications",
     "PhotoLibrary",
-    "PhotoLibraryAddOnly",
-    "Reminders",
-    "Siri",
-    "SpeechRecognition",
-    "StoreKit"
+    "PhotoLibraryAddOnly"
   ],
   "dependencies": {
     "@react-native-community/art": "^1.2.0",
