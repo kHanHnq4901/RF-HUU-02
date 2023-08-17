@@ -188,7 +188,7 @@ export const DeclareMeterScreen = () => {
           blurOnSubmit={false}
         />
         <NormalTextInput
-          label="Tên khách hàng:"
+          label="Tên khách hàng: (không bắt buộc)"
           value={hookProps.state.data.CUSTOMER_NAME}
           onChangeText={text => {
             hookProps.setState(state => {
@@ -203,7 +203,7 @@ export const DeclareMeterScreen = () => {
           blurOnSubmit={false}
         />
         <NormalTextInput
-          label="Số điện thoại:"
+          label="Số điện thoại: (không bắt buộc)"
           maxLength={12}
           keyboardType="number-pad"
           inputAccessoryViewID={inputAccessoryViewID}
@@ -221,7 +221,7 @@ export const DeclareMeterScreen = () => {
           blurOnSubmit={false}
         />
         <NormalTextInput
-          label="Địa chỉ:"
+          label="Địa chỉ: (không bắt buộc)"
           value={hookProps.state.data.ADDRESS}
           onChangeText={text => {
             hookProps.setState(state => {

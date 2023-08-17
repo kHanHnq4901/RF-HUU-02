@@ -9,26 +9,20 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { IconFaceID } from '../../component/faceID';
 import FormButton from '../../component/formButton';
 import { FormInput } from '../../component/formInput';
+import { version } from '../../shared';
 import { Colors, normalize, scale } from '../../theme';
-import { IconFaceID } from '../../component/faceID';
-import {
-  hook,
-  navigation,
-  onDeInit,
-  onInit,
-  store,
-  UpdateHook,
-} from './controller';
+import { UpdateHook, hook, onDeInit, onInit, store } from './controller';
 import {
   onBtnForgotPassword,
   onBtnSettingPress,
   onFingerPress,
   onLoginPress,
 } from './handle';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import { version } from '../../shared';
 
 export function SignInScreen() {
   UpdateHook();
@@ -36,15 +30,17 @@ export function SignInScreen() {
     onInit();
     return onDeInit;
   }, []);
+  const safeAreaInsets = useSafeAreaInsets();
   return (
     <>
+      <StatusBar backgroundColor="white" />
       <ScrollView contentContainerStyle={styles.container}>
         <TouchableOpacity
           style={styles.areaSetting}
           onPress={onBtnSettingPress}>
           <Ionicons name="settings" size={25 * scale} color="#76777a" />
         </TouchableOpacity>
-        <StatusBar backgroundColor="white" barStyle="dark-content" />
+
         <Image
           source={require('../../asset/images/logo/logo.png')}
           style={styles.logo}
@@ -118,7 +114,7 @@ export function SignInScreen() {
           <Text style={styles.navButtonText}>Quên mật khẩu?</Text>
         </TouchableOpacity>
       </ScrollView>
-      <View style={styles.footer}>
+      <View style={{ ...styles.footer, paddingBottom: safeAreaInsets.bottom }}>
         <Text style={styles.version}>Version: {version}</Text>
         <Text style={styles.hostPortInfoContainer}>
           {store.state.appSetting.server.host}:

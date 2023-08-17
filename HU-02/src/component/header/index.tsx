@@ -6,18 +6,18 @@ import { CircleSnail } from 'react-native-progress';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { RouteProp, useRoute } from '@react-navigation/native';
+import { navigationRef } from '../../navigation/StackRootNavigator';
 import {
   DrawerParamsList,
   ParamsDrawerProps,
 } from '../../navigation/model/model';
-import Theme, { Colors, normalize, scale } from '../../theme';
-import { ModalInfo } from '../modal/modalShowInfo';
-import { onBleLongPress, onBlePress } from './handleButton';
-import { GetHookProps, store } from './controller';
-import { screenDatas } from '../../shared';
-import LoadingModal from '../loadingModal/index';
-import { navigationRef } from '../../navigation/StackRootNavigator';
 import { navigationStackReadOptical } from '../../screen/readOptical/controller';
+import { screenDatas } from '../../shared';
+import Theme, { Colors, normalize, scale } from '../../theme';
+import { STATUS_BAR_HEIGHT } from '../customStatusBar';
+import LoadingModal from '../loadingModal/index';
+import { GetHookProps, store } from './controller';
+import { onBleLongPress, onBlePress } from './handleButton';
 
 const TAG = 'HEADER:';
 
@@ -71,49 +71,34 @@ export function Header(props: DrawerHeaderProps) {
 
   //theme.colors.surface
   return (
-    <>
-      <Appbar.Header
-        style={{
-          backgroundColor: 'white',
-          elevation: 1,
-          shadowColor: '#000',
-          shadowOffset: {
-            width: 0,
-            height: 1,
-          },
-          shadowOpacity: 0.18,
-          shadowRadius: 1.0,
-        }}
-        //dark={false}
-        //theme={{ colors: { primary: 'transparent' } }}
-      >
-        {back ? (
-          <Appbar.BackAction
-            onPress={navigationStackReadOptical.goBack}
-            color={Colors.secondary}
+    <View style={styles.header}>
+      {back ? (
+        <Appbar.BackAction
+          onPress={navigationStackReadOptical.goBack}
+          color={Colors.secondary}
+        />
+      ) : (
+        <TouchableOpacity onPress={() => props.navigation.openDrawer()}>
+          <Avatar.Image
+            size={40 * scale}
+            source={require('../../asset/images/icon/rf.jpg')}
+            style={{
+              elevation: 5,
+              marginLeft: 5,
+              zIndex: 100,
+              shadowColor: '#000',
+              shadowOffset: {
+                width: 0,
+                height: 1,
+              },
+              shadowOpacity: 0.22,
+              shadowRadius: 2.22,
+            }}
           />
-        ) : (
-          <TouchableOpacity onPress={() => props.navigation.openDrawer()}>
-            <Avatar.Image
-              size={40 * scale}
-              source={require('../../asset/images/icon/rf.jpg')}
-              style={{
-                elevation: 5,
-                marginLeft: 5,
-                zIndex: 100,
-                shadowColor: '#000',
-                shadowOffset: {
-                  width: 0,
-                  height: 1,
-                },
-                shadowOpacity: 0.22,
-                shadowRadius: 2.22,
-              }}
-            />
-            {/* <Icon name="user-circle" size={40} color={theme.colors.primary} /> */}
-          </TouchableOpacity>
-        )}
-        {/* <Appbar.Content
+          {/* <Icon name="user-circle" size={40} color={theme.colors.primary} /> */}
+        </TouchableOpacity>
+      )}
+      {/* <Appbar.Content
         style={{
           //alignItems: 'center',
           //backgroundColor: 'pink',
@@ -124,33 +109,33 @@ export function Header(props: DrawerHeaderProps) {
         titleStyle={{ alignSelf: 'center', fontSize: normalize(18) }}
         title={route.params?.title}
       /> */}
-        <Text style={styles.title}>{title}</Text>
-        <View style={{ flex: 1 }} />
-        <TouchableOpacity
-          onLongPress={onBleLongPress}
-          onPress={onBlePress}
-          style={styles.borderIcon}>
-          {store.state.hhu.connect === 'CONNECTING' ? (
-            <CircleSnail
-              color={['red', 'green', 'blue']}
-              size={sizeIcon}
-              indeterminate={true}
-              thickness={1}
-              //borderWidth={1}
-            />
-          ) : (
-            <MaterialCommunityIcons
-              name={
-                store.state.hhu.connect ? 'bluetooth-connect' : 'bluetooth-off'
-              }
-              size={sizeIcon}
-              color={
-                store.state.hhu.connect === 'CONNECTED' ? '#5fe321' : 'black'
-              }
-            />
-          )}
-        </TouchableOpacity>
-        {/* <View style={styles.borderIcon}>
+      <Text style={styles.title}>{title}</Text>
+      <View style={{ flex: 1 }} />
+      <TouchableOpacity
+        onLongPress={onBleLongPress}
+        onPress={onBlePress}
+        style={styles.borderIcon}>
+        {store.state.hhu.connect === 'CONNECTING' ? (
+          <CircleSnail
+            color={['red', 'green', 'blue']}
+            size={sizeIcon}
+            indeterminate={true}
+            thickness={1}
+            //borderWidth={1}
+          />
+        ) : (
+          <MaterialCommunityIcons
+            name={
+              store.state.hhu.connect ? 'bluetooth-connect' : 'bluetooth-off'
+            }
+            size={sizeIcon}
+            color={
+              store.state.hhu.connect === 'CONNECTED' ? '#5fe321' : 'black'
+            }
+          />
+        )}
+      </TouchableOpacity>
+      {/* <View style={styles.borderIcon}>
           <MaterialCommunityIcons
             name="information-outline"
             onPress={() => {
@@ -164,10 +149,10 @@ export function Header(props: DrawerHeaderProps) {
           />
         </View> */}
 
-        {/* <ModalListBle />
+      {/* <ModalListBle />
       <ModalListUsb />
       <ModalSetting /> */}
-      </Appbar.Header>
+
       {/* <Divider /> */}
 
       {/* <ModalInfo title="Thông tin" info={infoHeader.info} /> */}
@@ -178,11 +163,29 @@ export function Header(props: DrawerHeaderProps) {
         }
         // modalVisible={true}
       />
-    </>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  header: {
+    backgroundColor: 'white',
+    elevation: 5,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+    // height: 60 * scaleHeight,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.18,
+    shadowRadius: 1.0,
+    paddingTop: 5,
+  },
   itemMenu: {
     height: 30,
     marginHorizontal: 5,

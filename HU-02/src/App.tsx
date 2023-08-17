@@ -1,14 +1,14 @@
-import 'react-native-gesture-handler';
-import React from 'react';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
+import React from 'react';
+import { KeyboardAvoidingView, LogBox, Platform } from 'react-native';
+import 'react-native-gesture-handler';
+import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { CustomStatusBar } from './component/customStatusBar/index';
 import { RootNavigator } from './navigation/RootNavigator';
-import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
-import { KeyboardAvoidingView, Platform, StatusBar, Text } from 'react-native';
-import { LogBox } from 'react-native';
-import Theme, { Colors } from './theme';
-import { StoreProvider } from './store';
 import { navigationRef } from './navigation/StackRootNavigator';
+import { StoreProvider } from './store';
+import { Colors } from './theme';
 LogBox.ignoreLogs([
   'Animated: `useNativeDriver`',
   'ViewPropTypes will be removed',
@@ -19,6 +19,11 @@ LogBox.ignoreLogs([
 ]);
 
 //console.log('isDark:', DefaultTheme.colors);
+
+export const statusBarConst = {
+  colorStatusBar: 'white',
+};
+
 export default function App() {
   return (
     <SafeAreaProvider>
@@ -30,22 +35,23 @@ export default function App() {
               ...DefaultTheme.colors,
               primary: '#f53765',
             },
+            dark: false,
           }}>
+          <CustomStatusBar
+            backgroundColor={
+              Platform.OS === 'android' ? Colors.primary : undefined
+            }
+            barStyle={Platform.OS === 'android' ? 'light-content' : undefined}
+          />
           <NavigationContainer ref={navigationRef}>
-            <SafeAreaView style={{ flex: 1 }}>
-              <StatusBar
-                backgroundColor={Colors.primary}
-                barStyle={
-                  Platform.OS === 'android' ? 'light-content' : 'dark-content'
-                }
-              />
+            <SafeAreaProvider>
               <KeyboardAvoidingView
                 style={{ flex: 1 }}
                 keyboardVerticalOffset={Platform.OS === 'ios' ? 30 : 30}
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
                 <RootNavigator />
               </KeyboardAvoidingView>
-            </SafeAreaView>
+            </SafeAreaProvider>
           </NavigationContainer>
         </PaperProvider>
       </StoreProvider>

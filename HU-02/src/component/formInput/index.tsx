@@ -21,7 +21,7 @@ export const FormInput = React.forwardRef<TextInput, Props>(
           value={props.value}
           style={styles.input}
           numberOfLines={1}
-          //placeholderTextColor="#666"
+          placeholderTextColor="#c2bebe"
           {...props}
           caretHidden={false}
         />

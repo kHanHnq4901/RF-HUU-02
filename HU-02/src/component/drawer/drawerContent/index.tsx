@@ -7,7 +7,6 @@ import {
   ImageBackground,
   Linking,
   Platform,
-  StatusBar,
   StyleSheet,
   View,
 } from 'react-native';
@@ -18,11 +17,13 @@ import {
 } from '../../../navigation/model/model';
 
 import RNExitApp from 'react-native-exit-app';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { USER_ROLE_TYPE } from '../../../service/user/index';
 import * as Shared from '../../../shared';
 import { screenDatas } from '../../../shared';
 import Theme, { Colors, normalize } from '../../../theme';
 import { Text } from '../../Text';
+import { STATUS_BAR_HEIGHT } from '../../customStatusBar';
 import { infoHeader } from '../../header';
 import { DrawerItem } from '../drawerItem';
 import { GetHookProps, onDeInit, onInit, store } from './controller';
@@ -43,15 +44,7 @@ export const DrawerContent = props => {
     };
   }, []);
 
-  // useEffect(() => {
-  //   //console.log('a');
-  //   return () => {
-  //     console.log('onDeinit:', store.state.appSetting);
-  //     saveValueAppSettingToNvm(store.state.appSetting as PropsAppSetting);
-  //   };
-  // }, [store.state.appSetting]);
-
-  //console.log('ren drawer');
+  const safeAreaInsets = useSafeAreaInsets();
 
   const role =
     store.state.userInfo.USER_TYPE === USER_ROLE_TYPE.ADMIN
@@ -61,11 +54,13 @@ export const DrawerContent = props => {
       : 'Khách hàng';
 
   return (
-    <>
-      <StatusBar
-        backgroundColor={Theme.Colors.primary}
-        barStyle={Platform.OS === 'android' ? 'light-content' : 'dark-content'}
-      />
+    <View
+      style={{
+        flex: 1,
+        // paddingTop: STATUS_BAR_HEIGHT,
+        paddingBottom: safeAreaInsets.bottom,
+        backgroundColor: 'white',
+      }}>
       <DrawerContentScrollView {...props}>
         <View style={styles.containerInfo}>
           {Platform.OS === 'android' && (
@@ -239,7 +234,7 @@ export const DrawerContent = props => {
         </Text>
         <Text style={styles.textVersion}>Phiên bản {Shared.version}</Text>
       </View>
-    </>
+    </View>
   );
 };
 
@@ -261,7 +256,7 @@ const styles = StyleSheet.create({
   infoUser: {
     flexDirection: 'column',
     alignItems: 'center',
-    marginTop: Platform.OS === 'android' ? -90 : -30,
+    marginTop: Platform.OS === 'android' ? -90 : -20,
   },
   version: {
     alignItems: 'flex-end',

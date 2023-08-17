@@ -3,11 +3,13 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import component from '../component';
 import { Header } from '../component/header';
 import { screenDatas } from '../shared';
-import { Fonts, scale } from '../theme';
+import { Colors, Fonts, scale } from '../theme';
 import { DrawerParamsList } from './model/model';
 import { UserInfoScreen } from '../screen/userInfoScreen';
 import { SettingUserScreen } from '../screen/settingUser';
 import { GuideBookScreen } from '../screen/guideBook';
+import { Platform } from 'react-native';
+import { statusBarConst } from '../App';
 
 const Drawer = createDrawerNavigator<DrawerParamsList>();
 
