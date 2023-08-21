@@ -8,6 +8,7 @@ import axios from 'axios';
 import { convertImage2Base64, deleteFile } from '../../shared/file';
 import { emitEventSuccess } from '../../service/event';
 import { Platform } from 'react-native';
+import FormData from 'form-data';
 
 export function onRegionChangeComplete(region: Region) {
   console.log('region:', region);
@@ -124,6 +125,8 @@ export async function onSaveLogPress() {
 
     let sendOk = false;
 
+    let lengthFormData = 0;
+
     try {
       //const imagesBase64: string[] = [];
 
@@ -152,6 +155,7 @@ export async function onSaveLogPress() {
             // uri: image.uri.replace('file://', ''),
           };
           formData.append('file', obj);
+          lengthFormData += image.fileSize ?? 0;
         }
       }
 
@@ -185,13 +189,21 @@ export async function onSaveLogPress() {
       console.log('url:', url);
       console.log('formData:', formData);
 
+      // const formHeaders = formData.getHeaders();
+
+      console.log('lengthFormData:', lengthFormData);
+
       const result = await axios({
-        method: 'POST',
-        data: formData,
+        method: 'post',
+        data: hookProps.state.images.length === 0 ? undefined : formData,
         url: url,
+        // timeout: 15000,
+
         headers: {
           Accept: 'application/json',
           'Content-Type': 'multipart/form-data',
+          'Content-Length':
+            hookProps.state.images.length === 0 ? undefined : lengthFormData,
         },
 
         // transformRequest: form => form,

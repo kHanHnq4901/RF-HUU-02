@@ -250,12 +250,12 @@ export const DeclareMeterScreen = () => {
               }}
             />
           </View>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.btnUpdate}
             onLongPress={onGoogleMapPress}
             onPress={onGetPositionPress}>
             <Feather name="map-pin" size={normalize(30)} color="#f3d20e" />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
         <Text style={styles.label}> Ảnh:</Text>
         <GetPicture

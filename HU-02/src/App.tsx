@@ -38,16 +38,16 @@ export default function App() {
             dark: false,
           }}>
           <CustomStatusBar
-            backgroundColor={
-              Platform.OS === 'android' ? Colors.primary : undefined
-            }
-            barStyle={Platform.OS === 'android' ? 'light-content' : undefined}
+          // backgroundColor={
+          //   Platform.OS === 'android' ? Colors.primary : undefined
+          // }
+          // barStyle={Platform.OS === 'android' ? 'light-content' : undefined}
           />
           <NavigationContainer ref={navigationRef}>
             <SafeAreaProvider>
               <KeyboardAvoidingView
                 style={{ flex: 1 }}
-                keyboardVerticalOffset={Platform.OS === 'ios' ? 30 : 30}
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 30}
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
                 <RootNavigator />
               </KeyboardAvoidingView>

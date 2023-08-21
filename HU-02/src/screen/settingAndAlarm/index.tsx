@@ -254,6 +254,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 10,
     paddingTop: 15,
+    backgroundColor: 'white',
   },
   title: {
     fontSize: normalize(18),

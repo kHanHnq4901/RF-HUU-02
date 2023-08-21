@@ -63,12 +63,6 @@ export const DrawerContent = props => {
       }}>
       <DrawerContentScrollView {...props}>
         <View style={styles.containerInfo}>
-          {Platform.OS === 'android' && (
-            <ImageBackground
-              source={require('../../../asset/images/drawer/HeaderDrawer.jpg')}
-              style={{ height: 120, marginTop: -5 }}
-            />
-          )}
           <View style={styles.infoUser}>
             {/* <Avatar.Image
               size={60}
@@ -78,9 +72,7 @@ export const DrawerContent = props => {
 
             <Image
               source={require('../../../asset/images/logo/logo.png')}
-              style={
-                Platform.OS === 'android' ? styles.logoAndroid : styles.logoIOS
-              }
+              style={styles.logoIOS}
               resizeMode="contain"
             />
             <Text style={styles.logoText}>HU-02</Text>
@@ -256,7 +248,7 @@ const styles = StyleSheet.create({
   infoUser: {
     flexDirection: 'column',
     alignItems: 'center',
-    marginTop: Platform.OS === 'android' ? -90 : -20,
+    marginTop: -20,
   },
   version: {
     alignItems: 'flex-end',
