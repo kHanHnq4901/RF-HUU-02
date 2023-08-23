@@ -8,6 +8,7 @@ import { updateValueAppSettingFromNvm } from '../../service/storage';
 import { onFingerPress } from './handle';
 import TouchID from 'react-native-touch-id';
 import { showToast } from '../../util';
+import { checkUpdateFromStore } from '../../service/user';
 
 type PropsState = {
   password: string;
@@ -48,6 +49,8 @@ export async function onInit() {
       state.password = '';
       return { ...state };
     });
+
+    checkUpdateFromStore();
 
     const appSetting = await updateValueAppSettingFromNvm();
 

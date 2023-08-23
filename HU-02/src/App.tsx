@@ -37,17 +37,12 @@ export default function App() {
             },
             dark: false,
           }}>
-          <CustomStatusBar
-          // backgroundColor={
-          //   Platform.OS === 'android' ? Colors.primary : undefined
-          // }
-          // barStyle={Platform.OS === 'android' ? 'light-content' : undefined}
-          />
           <NavigationContainer ref={navigationRef}>
             <SafeAreaProvider>
+              <CustomStatusBar />
               <KeyboardAvoidingView
-                style={{ flex: 1 }}
-                keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 30}
+                style={{ flex: 1, backgroundColor: 'white' }}
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
                 <RootNavigator />
               </KeyboardAvoidingView>

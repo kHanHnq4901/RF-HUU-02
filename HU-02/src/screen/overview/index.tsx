@@ -85,12 +85,12 @@ export const OverViewScreen = () => {
       />
       <Text style={styles.text}>HU-02</Text>
       <ImageBackground
-        resizeMode="stretch"
+        resizeMode="contain"
         style={{ flex: 1 }}
         source={require('../../asset/images/image/ov.jpg')}
       />
       <ImageBackground
-        resizeMode="stretch"
+        resizeMode="contain"
         style={{ flex: 1 }}
         source={require('../../asset/images/image/model1.jpg')}
       />

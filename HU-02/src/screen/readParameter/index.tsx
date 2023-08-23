@@ -223,6 +223,7 @@ export const ReadParameterScreen = () => {
                     locale="vi"
                     textColor={Colors.primary}
                     accentColor={Colors.primary}
+                    themeVariant="light"
                   />
                 </>
               )}
@@ -287,6 +288,7 @@ export const ReadParameterScreen = () => {
                     locale="vi"
                     textColor={Colors.primary}
                     accentColor={Colors.primary}
+                    themeVariant="light"
                   />
                 </>
               )}

@@ -205,6 +205,7 @@ export const ReadOpticalScreen = () => {
                       locale="vi"
                       textColor={Colors.primary}
                       accentColor={Colors.primary}
+                      themeVariant="light"
                     />
                   </>
                 )}
@@ -272,6 +273,7 @@ export const ReadOpticalScreen = () => {
                       locale="vi"
                       textColor={Colors.primary}
                       accentColor={Colors.primary}
+                      themeVariant="light"
                     />
                   </>
                 )}

@@ -133,10 +133,9 @@ const styles = StyleSheet.create({
     padding: 3,
   },
   hostPortInfoContainer: {
+    color: Colors.caption,
+    fontSize: normalize(16),
     fontFamily: 'Lato-Regular',
-    //width: '100%',
-    // textAlign: 'right',
-    // padding: 3,
   },
   container: {
     justifyContent: 'center',

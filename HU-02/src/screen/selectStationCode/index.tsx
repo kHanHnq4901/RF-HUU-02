@@ -225,6 +225,7 @@ export const SelectStationCodeScreen = () => {
                 locale="vi"
                 textColor={Colors.primary}
                 accentColor={Colors.primary}
+                themeVariant="light"
               />
             )}
           </View>

@@ -202,6 +202,7 @@ export async function checkUpdateHHU(props?: PropsReturnGetVerion) {
           console.log('current version:', currentVersion);
         } else {
           console.log('Không có bản cập nhật nào');
+          showAlert('Phiên bản phần mềm thiết bị cầm tay đang là mới nhất');
         }
       }
       //console.log('rest version:', rest);

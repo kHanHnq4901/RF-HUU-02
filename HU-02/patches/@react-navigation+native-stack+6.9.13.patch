@@ -1,0 +1,13 @@
+diff --git a/node_modules/@react-navigation/native-stack/src/views/NativeStackView.native.tsx b/node_modules/@react-navigation/native-stack/src/views/NativeStackView.native.tsx
+index 2653ecf..8a2ab38 100644
+--- a/node_modules/@react-navigation/native-stack/src/views/NativeStackView.native.tsx
++++ b/node_modules/@react-navigation/native-stack/src/views/NativeStackView.native.tsx
+@@ -218,7 +218,7 @@ const SceneView = ({
+     (Platform.OS === 'ios' && isModal) ||
+     (isIPhone && isLandscape)
+       ? 0
+-      : insets.top;
++      : 0;//insets.top;
+ 
+   const { preventedRoutes } = usePreventRemoveContext();
+ 

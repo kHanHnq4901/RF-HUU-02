@@ -1,14 +1,14 @@
 import { GeolocationResponse } from '@react-native-community/geolocation';
+import axios from 'axios';
+import FormData from 'form-data';
+import { Platform } from 'react-native';
 import { Region } from 'react-native-maps';
+import { endPoints, getUrl } from '../../service/api';
+import { emitEventSuccess } from '../../service/event';
+import { deleteFile } from '../../shared/file';
 import { showAlert, showToast } from '../../util';
 import { getGeolocation } from '../declareMeter/handleButton';
 import { hookProps, store } from './controller';
-import { endPoints, endPointsNsx, getUrl, getUrlNsx } from '../../service/api';
-import axios from 'axios';
-import { convertImage2Base64, deleteFile } from '../../shared/file';
-import { emitEventSuccess } from '../../service/event';
-import { Platform } from 'react-native';
-import FormData from 'form-data';
 
 export function onRegionChangeComplete(region: Region) {
   console.log('region:', region);
