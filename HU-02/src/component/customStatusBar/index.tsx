@@ -1,31 +1,36 @@
 import React from 'react';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type Props = {
   backgroundColor?: string;
   barStyle?: 'dark-content' | 'light-content';
 };
 
+export let MARGIN_TOP = 0;
+
+export let SAFE_AREA_INSET = {} as EdgeInsets;
+
 export function CustomStatusBar(props: Props) {
+  const safeAreaInsets = useSafeAreaInsets();
+  MARGIN_TOP = safeAreaInsets.top < 24 ? 24 : safeAreaInsets.top;
+  SAFE_AREA_INSET = safeAreaInsets;
   return (
     <View
       style={{
         ...styles.container,
+        height: MARGIN_TOP,
         backgroundColor: props.backgroundColor ?? 'white',
+        //backgroundColor: 'white',
       }}>
       <StatusBar
         translucent
         barStyle={props.barStyle ?? 'dark-content'}
-        backgroundColor={props.backgroundColor}
+        backgroundColor={props.backgroundColor ?? 'white'}
       />
     </View>
   );
 }
-
-export const STATUS_BAR_HEIGHT =
-  (Platform.OS === 'android' ? StatusBar.currentHeight : 40) ?? 40;
-
-console.log('STATUS_BAR_HEIGHT:' + Platform.OS + ': ', STATUS_BAR_HEIGHT);
 
 const styles = StyleSheet.create({
   container: {
@@ -33,7 +38,7 @@ const styles = StyleSheet.create({
     // top: 0,
     // left: 0,
     // right: 0,
-    height: STATUS_BAR_HEIGHT,
-    backgroundColor: 'white',
+    // height: STATUS_BAR_HEIGHT,
+    // backgroundColor: 'white',
   },
 });

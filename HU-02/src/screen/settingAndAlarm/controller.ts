@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {PropsStore, storeContext} from '../../store';
+import React, { useState } from 'react';
+import { PropsStore, storeContext } from '../../store';
 
 type PropsHookState = {
   chanelRF: string;
@@ -18,7 +18,7 @@ type PropsValueAlarmRegister = 'Percent' | 'Value';
 
 type PropsSelectServer = 'EMIC' | 'Sawaco';
 
-export const listSelectServer : PropsSelectServer[] = ['EMIC', 'Sawaco'];
+export const listSelectServer: PropsSelectServer[] = ['EMIC', 'Sawaco'];
 
 export const typeAlarmRegister: {
   title: PropsTypeAlarmRegister;

@@ -2,21 +2,19 @@ import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { BackButton } from '../../component/backButton';
+import { Button } from '../../component/button/button';
 import { ButtonList } from '../../component/buttonList';
-import FormButton from '../../component/formButton';
+import { IconFaceID } from '../../component/faceID/index';
 import { ModalTextInput } from '../../component/modalTextInput';
 import { Colors, normalize, scale } from '../../theme';
-import { hook, store, UpdateHook } from './controller';
-import { IconFaceID } from '../../component/faceID/index';
+import { UpdateHook, hook, store } from './controller';
 import {
-  onbtnAllowSigninByFingerPress,
   onClearAccountPress,
   onClearFingerPress,
   onModalCancelPress,
-  onModalOkEnterPasswordPress,
   onModalOkPress,
+  onbtnAllowSigninByFingerPress,
 } from './handle';
-import { Button } from '../../component/button/button';
 
 export function SettingUserScreen() {
   UpdateHook();

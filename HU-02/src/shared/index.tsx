@@ -10,8 +10,9 @@ import { OverViewScreen } from '../screen/overview';
 import { ReadParameterScreen } from '../screen/readParameter';
 import { SettingAndAlarmScreen } from '../screen/settingAndAlarm';
 import { WriteOpticalScreen } from '../screen/writeOptical';
+import VersionCheck from 'react-native-version-check';
 
-export const version = '1.4.7';
+export const version = VersionCheck.getCurrentVersion();
 
 // export const widthScreen = Dimensions.get('screen').width;
 // export const heighScreen = Dimensions.get('screen').height;
