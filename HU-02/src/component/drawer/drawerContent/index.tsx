@@ -4,7 +4,6 @@ import React from 'react';
 import {
   Alert,
   Image,
-  ImageBackground,
   Linking,
   Platform,
   StyleSheet,
@@ -23,7 +22,6 @@ import * as Shared from '../../../shared';
 import { screenDatas } from '../../../shared';
 import Theme, { Colors, normalize } from '../../../theme';
 import { Text } from '../../Text';
-import { STATUS_BAR_HEIGHT } from '../../customStatusBar';
 import { infoHeader } from '../../header';
 import { DrawerItem } from '../drawerItem';
 import { GetHookProps, onDeInit, onInit, store } from './controller';
