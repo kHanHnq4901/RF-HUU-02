@@ -13,12 +13,7 @@ import { emitEventFailure } from '../../service/event/index';
 import { showAlert, showToast } from '../../util';
 import { isAllNumeric } from '../../util/index';
 import { Region } from 'react-native-maps';
-import {
-  ListModelMeterObj,
-  ListStationObj,
-  hookProps,
-  lisStationName,
-} from './controller';
+import { hookProps } from './controller';
 import { deleteFile } from '../../shared/file';
 
 const TAG = 'Declare Meter Handle Button';
@@ -196,10 +191,10 @@ export async function onDeclarePress() {
           hookProps.state.region.longitude
         : hookProps.state.data.COORDINATE;
 
-      const lineStatiobObj = ListStationObj.find(
+      const lineStatiobObj = hookProps.state.listStationObj.find(
         item => item.LINE_NAME === hookProps.state.infoDeclare.selectedStation,
       );
-      const modelMeterObj = ListModelMeterObj.find(item =>
+      const modelMeterObj = hookProps.state.listModelMeterObj.find(item =>
         item.METER_MODEL_DESC.includes(modelMeter),
       );
 
@@ -357,7 +352,7 @@ export async function onSearchInfo(): Promise<PropsReturnSearchInfo> {
       console.log(TAG, 'COORDINATE:', data.COORDINATE);
 
       if (data.METER_NO) {
-        const indexStation = lisStationName.findIndex(
+        const indexStation = hookProps.state.lisStationName.findIndex(
           item => item === data.LINE_NAME,
         );
         console.log('indexStation:', indexStation);
@@ -371,7 +366,7 @@ export async function onSearchInfo(): Promise<PropsReturnSearchInfo> {
           data.METER_MODEL_DESC.slice(4);
         hookProps.state.infoDeclare.selectedStation = data.LINE_NAME;
 
-        const indexMeterModel = ListModelMeterObj.findIndex(
+        const indexMeterModel = hookProps.state.listModelMeterObj.findIndex(
           item => item.METER_MODEL_DESC === data.METER_MODEL_DESC,
         );
         // console.log('listModelMeterName:', listModelMeterName);

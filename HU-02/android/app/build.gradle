@@ -139,8 +139,8 @@ android {
         applicationId "com.gelex.emic.hu_02_esoft"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 29
-        versionName "1.4.9"
+        versionCode 30
+        versionName "1.5.0"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
 
         if (isNewArchitectureEnabled()) {

@@ -1,12 +1,6 @@
 import { DrawerHeaderProps } from '@react-navigation/drawer/lib/typescript/src/types';
 import React from 'react';
-import {
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Appbar, Avatar } from 'react-native-paper';
 import { CircleSnail } from 'react-native-progress';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -20,7 +14,6 @@ import {
 import { navigationStackReadOptical } from '../../screen/readOptical/controller';
 import { screenDatas } from '../../shared';
 import Theme, { Colors, normalize, scale } from '../../theme';
-import { STATUS_BAR_HEIGHT } from '../customStatusBar';
 import LoadingModal from '../loadingModal/index';
 import { GetHookProps, store } from './controller';
 import { onBleLongPress, onBlePress } from './handleButton';

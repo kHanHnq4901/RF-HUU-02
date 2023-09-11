@@ -5,7 +5,6 @@ import {
   Image,
   ImageBackground,
   Platform,
-  StatusBar,
   StyleSheet,
   Text,
   View,
