@@ -1,6 +1,6 @@
 import React from 'react';
-import {View, Modal, StyleSheet, Text, ActivityIndicator} from 'react-native';
-import {Colors} from '../../theme';
+import { View, Modal, StyleSheet, Text, ActivityIndicator } from 'react-native';
+import { Colors } from '../../theme';
 
 type Props = {
   task?: string;

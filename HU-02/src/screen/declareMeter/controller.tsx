@@ -30,6 +30,11 @@ export type HookState = {
   region: Region;
   position: LatLng | null;
   images: UserImageProps[];
+
+  listStationObj: PropsReturnGetListLine;
+  lisStationName: string[];
+  listModelMeterObj: PropsReturnGetModelMeter;
+  listModelMeterName: string[];
 };
 
 export type HookProps = {
@@ -64,10 +69,10 @@ export let store = {} as PropsStore;
 //   },
 // };
 
-export let ListStationObj: PropsReturnGetListLine = [];
-export let lisStationName: string[] = [];
-export let ListModelMeterObj: PropsReturnGetModelMeter = [];
-export let listModelMeterName: string[] = [];
+// export let ListStationObj: PropsReturnGetListLine = [];
+// export let lisStationName: string[] = [];
+// export let ListModelMeterObj: PropsReturnGetModelMeter = [];
+// export let listModelMeterName: string[] = [];
 
 const {
   PRIORITIES: { HIGH_ACCURACY },
@@ -145,6 +150,11 @@ export const GetHookProps = (): HookProps => {
       longitude: 105.99402224645019,
     },
     images: [],
+
+    listStationObj: [],
+    lisStationName: [],
+    listModelMeterObj: [],
+    listModelMeterName: [],
   });
   hookProps.state = state;
   hookProps.setState = setState;
@@ -198,48 +208,46 @@ export const onInit = async () => {
     },
   );
   requestGps();
-  if (ListStationObj.length === 0 || ListModelMeterObj.length === 0) {
-    hookProps.setState(state => {
-      state.isBusy = true;
-      return { ...state };
-    });
-    if (ListStationObj.length === 0) {
-      hookProps.refStation.current?.reset();
-      let response = await GetListLine();
-      if (response.bSucceeded) {
-        ListStationObj = response.obj;
-        lisStationName = [];
-        for (let obj of ListStationObj) {
-          lisStationName.push(obj.LINE_NAME);
-        }
-        console.log('update list line succeed');
-
-        //console.log('lisStationName:', lisStationName);
-      } else {
-        console.log('update list line failed: ', response);
-      }
-    }
-
-    if (ListModelMeterObj.length === 0) {
-      let response = await GetMeterModel();
-      if (response.bSucceeded) {
-        ListModelMeterObj = response.obj;
-        listModelMeterName = [];
-        for (let obj of ListModelMeterObj) {
-          listModelMeterName.push(obj.METER_MODEL_DESC.slice(4));
-        }
-        console.log('update list model meter succeed');
-        //console.log('lisStationName:', lisStationName);
-      } else {
-        console.log('update list model meter failed: ', response);
-      }
-    }
-    hookProps.setState(state => {
-      state.isBusy = false;
-      return { ...state };
-    });
-  }
+  UpdateListLineAndModelMeter();
 };
+
+export async function UpdateListLineAndModelMeter() {
+  hookProps.setState(state => {
+    state.isBusy = true;
+    return { ...state };
+  });
+  //hookProps.refStation.current?.reset();
+  let response = await GetListLine();
+  if (response.bSucceeded) {
+    hookProps.state.listStationObj = response.obj;
+    hookProps.state.lisStationName = [];
+    for (let obj of hookProps.state.listStationObj) {
+      hookProps.state.lisStationName.push(obj.LINE_NAME);
+    }
+    console.log('update list line succeed');
+
+    //console.log('lisStationName:', lisStationName);
+  } else {
+    console.log('update list line failed: ', response);
+  }
+
+  response = await GetMeterModel();
+  if (response.bSucceeded) {
+    hookProps.state.listModelMeterObj = response.obj;
+    hookProps.state.listModelMeterName = [];
+    for (let obj of hookProps.state.listModelMeterObj) {
+      hookProps.state.listModelMeterName.push(obj.METER_MODEL_DESC.slice(4));
+    }
+    console.log('update list model meter succeed');
+    //console.log('lisStationName:', lisStationName);
+  } else {
+    console.log('update list model meter failed: ', response);
+  }
+  hookProps.setState(state => {
+    state.isBusy = false;
+    return { ...state };
+  });
+}
 
 export const onDeInit = () => {
   if (intervalGPS) {

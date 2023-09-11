@@ -5,22 +5,13 @@ import {
   Image,
   ImageBackground,
   Platform,
-  ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
-import { VictoryPie } from 'victory-native';
 import Theme, { normalize } from '../../theme';
-import {
-  GetHook,
-  colorsChart,
-  dummyDataTable,
-  hookProps,
-  labelsStock,
-  onDeInit,
-  onInit,
-} from './controller';
+import { GetHook, onDeInit, onInit } from './controller';
 
 const deviceWidth = Dimensions.get('window').width;
 

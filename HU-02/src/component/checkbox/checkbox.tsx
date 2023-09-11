@@ -63,11 +63,11 @@ export const CheckboxButton = (props: Props) => {
 const styles = StyleSheet.create({
   conatiner: {
     flexDirection: 'row',
-    marginVertical: 2,
+    marginVertical: 5,
     //justifyContent: 'center',
     alignItems: 'center',
     marginRight: 5,
-    height: 25,
+    height: 30,
   },
   text: {
     textAlignVertical: 'center',

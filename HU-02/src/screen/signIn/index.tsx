@@ -33,7 +33,6 @@ export function SignInScreen() {
   const safeAreaInsets = useSafeAreaInsets();
   return (
     <>
-      <StatusBar backgroundColor="white" />
       <ScrollView contentContainerStyle={styles.container}>
         <TouchableOpacity
           style={styles.areaSetting}

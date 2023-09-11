@@ -59,15 +59,20 @@ export const DrawerContent = props => {
         paddingBottom: safeAreaInsets.bottom,
         backgroundColor: 'white',
       }}>
-      <DrawerContentScrollView {...props}>
+      <DrawerContentScrollView {...props} bounces={false}>
+        <Image
+          source={require('../../../asset/images/drawer/HeaderDrawer.png')}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: 120,
+          }}
+          resizeMode="stretch"
+        />
         <View style={styles.containerInfo}>
           <View style={styles.infoUser}>
-            {/* <Avatar.Image
-              size={60}
-              style={{marginBottom: 10, elevation: 1}}
-              source={require('../../../asset/images/icon/rf.jpg')}
-            /> */}
-
             <Image
               source={require('../../../asset/images/logo/logo.png')}
               style={styles.logoIOS}

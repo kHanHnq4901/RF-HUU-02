@@ -4,8 +4,10 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { useContext } from 'react';
 import {
   Alert,
+  AppState,
   DeviceEventEmitter,
   EmitterSubscription,
+  NativeEventSubscription,
   Platform,
 } from 'react-native';
 import RNFS from 'react-native-fs';
@@ -53,7 +55,7 @@ import {
   PATH_IMPORT_XML,
 } from '../../../shared/path';
 import { PropsStore, storeContext } from '../../../store';
-import { showAlert } from '../../../util';
+import { showAlert, showAlertProps } from '../../../util';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 
 const TAG = 'controllerDrawerContent:';
@@ -97,8 +99,34 @@ function checkTokenValidInterval() {
       showAlert('Phiên làm việc đã hết hạn, vui lòng đăng nhập lại');
       navigationStackRoot.push('SignIn');
     }
-  }, 10000);
+  }, 5 * 60000);
 }
+
+let isShowAlertInvalidToken = false;
+export async function checkIsInvalidToken(errIsInvalidToken: string) {
+  if (isShowAlertInvalidToken === true) {
+    return;
+  }
+
+  isShowAlertInvalidToken = true;
+  console.log('errIsInvalidToken:', errIsInvalidToken);
+
+  if (errIsInvalidToken && errIsInvalidToken === 'invalid token') {
+    showAlertProps({
+      message:
+        'Tài khoản đang được đăng nhập bởi 1 thiết bị khác hoặc đã hết phiên làm việc',
+      one: {
+        label: 'Đăng nhập lại',
+        func: () => {
+          navigationStackRoot.push('SignIn');
+          isShowAlertInvalidToken = false;
+        },
+      },
+    });
+  }
+}
+
+let subscriptionAppState: NativeEventSubscription | null = null;
 
 export const onInit = async navigation => {
   let appSetting = await updateValueAppSettingFromNvm();
@@ -154,7 +182,16 @@ export const onInit = async navigation => {
       return { ...state };
     });
   }
-  if (store.state.userInfo.USER_TYPE === USER_ROLE_TYPE.CUSTOMER) {
+
+  // console.log(
+  //   'store.state.userInfo.USER_TYPE:',
+  //   store.state.userInfo.USER_TYPE,
+  // );
+
+  if (
+    store.state.userInfo.USER_TYPE === USER_ROLE_TYPE.CUSTOMER ||
+    store.state.userInfo.USER_TYPE === USER_ROLE_TYPE.STAFF
+  ) {
     try {
       //await getMeterByAccount();
 
@@ -164,12 +201,20 @@ export const onInit = async navigation => {
     } catch (err) {
       console.log(TAG, err.message);
     }
+
+    subscriptionAppState = AppState.addEventListener('change', nextState => {
+      console.log('nextState:', nextState);
+
+      if (nextState === 'active') {
+        checkTokenValidInterval();
+      }
+    });
   }
 
   try {
     let result = await requestPermissionWriteExternalStorage();
 
-    console.log(TAG, 'result request:', result);
+    //console.log(TAG, 'result request:', result);
 
     if (result === true) {
       try {
@@ -266,4 +311,6 @@ export const onDeInit = async () => {
   if (unsubscribeNet) {
     unsubscribeNet();
   }
+
+  subscriptionAppState?.remove();
 };

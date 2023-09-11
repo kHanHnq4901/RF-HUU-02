@@ -4,6 +4,7 @@ import { showAlert } from '../../util/index';
 import { ObjSend, onOKAlertNeedUpdatePress } from '../hhu/Ble/hhuFunc';
 import { GetFormatTime } from '../user/util';
 import { store } from '../../screen/signIn/controller';
+import { checkIsInvalidToken } from '../../component/drawer/drawerContent/controller';
 
 type PropsReturnGetVerion = {
   bResult: boolean;
@@ -250,8 +251,10 @@ export async function PushDataToServer(
       //return true;
     } else {
       console.log(TAG, 'err:', ret);
+      const msgError = ret.MESSAGE;
+      checkIsInvalidToken(msgError);
 
-      //return false;
+      return false;
     }
   }
 
@@ -376,6 +379,9 @@ export async function SaveCoordinateMeter(
     } else {
       console.log(TAG, 'err:', ret);
 
+      const msgError = ret.MESSAGE;
+      checkIsInvalidToken(msgError);
+
       return false;
     }
   } catch (err) {
@@ -432,6 +438,10 @@ export async function GetMeter(
       console.log(TAG, 'err:', ret);
       response.strMessage = ret.MESSAGE;
       response.bSucceeded = false;
+
+      const msgError = ret.MESSAGE;
+      checkIsInvalidToken(msgError);
+
       return response;
     } else {
       response.bSucceeded = true;
@@ -506,6 +516,10 @@ export async function AddMeter(
       console.log(TAG, 'err:', ret);
       response.bSucceeded = false;
       response.strMessage = ret.MESSAGE;
+
+      const msgError = ret.MESSAGE;
+      checkIsInvalidToken(msgError);
+
       return response;
     }
   } catch (err) {
@@ -544,6 +558,10 @@ export async function GetListLine(): Promise<PropsCommonResponse> {
     if (ret.CODE === '0') {
       response.bSucceeded = false;
       response.strMessage = ret.MESSAGE;
+
+      const msgError = ret.MESSAGE;
+      checkIsInvalidToken(msgError);
+
       return response;
     }
     const realValue = rest.data as PropsReturnGetListLine;
@@ -585,6 +603,10 @@ export async function GetMeterModel(): Promise<PropsCommonResponse> {
     if (ret.CODE === '0') {
       response.bSucceeded = false;
       response.strMessage = ret.MESSAGE;
+
+      const msgError = ret.MESSAGE;
+      checkIsInvalidToken(msgError);
+
       return response;
     }
     const realValue = rest.data as PropsReturnGetModelMeter;

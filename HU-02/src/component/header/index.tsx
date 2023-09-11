@@ -1,6 +1,12 @@
 import { DrawerHeaderProps } from '@react-navigation/drawer/lib/typescript/src/types';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { Appbar, Avatar } from 'react-native-paper';
 import { CircleSnail } from 'react-native-progress';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -81,7 +87,7 @@ export function Header(props: DrawerHeaderProps) {
         <TouchableOpacity onPress={() => props.navigation.openDrawer()}>
           <Avatar.Image
             size={40 * scale}
-            source={require('../../asset/images/icon/rf.jpg')}
+            source={require('../../asset/images/icon/user.png')}
             style={{
               elevation: 5,
               marginLeft: 5,
@@ -185,6 +191,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.18,
     shadowRadius: 1.0,
     paddingTop: 5,
+    minHeight: 50,
   },
   itemMenu: {
     height: 30,

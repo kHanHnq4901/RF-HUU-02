@@ -1,11 +1,13 @@
-import {Alert} from 'react-native';
-import {configRFBoardBle} from '../../service/hhu/Ble/hhuFunc';
-import {PropsAppSetting, saveValueAppSettingToNvm} from '../../service/storage';
-import {isNumeric, showToast} from '../../util';
-import {hookProps, store} from './controller';
-import {hook} from '../settingUser/controller';
-import {uint8_t} from '../../util/custom_typedef';
-import { ListStationObj } from '../declareMeter/controller';
+import { Alert } from 'react-native';
+import { configRFBoardBle } from '../../service/hhu/Ble/hhuFunc';
+import {
+  PropsAppSetting,
+  saveValueAppSettingToNvm,
+} from '../../service/storage';
+import { isNumeric, showToast } from '../../util';
+import { hookProps, store } from './controller';
+import { hook } from '../settingUser/controller';
+import { uint8_t } from '../../util/custom_typedef';
 
 export const onNumRetriesReadSubmit = (text: string) => {
   let err = false;
@@ -32,7 +34,7 @@ export const onNumRetriesReadSubmit = (text: string) => {
     ]);
     store.setState(state => {
       state.appSetting.numRetriesRead = '1';
-      return {...state};
+      return { ...state };
     });
   }
 };
@@ -41,7 +43,7 @@ export async function onSavePress() {
   console.log('save');
 
   await saveValueAppSettingToNvm(store.state.appSetting as PropsAppSetting);
-  ListStationObj.length = 0;
+
   showToast('Đã lưu');
 }
 

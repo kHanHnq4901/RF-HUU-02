@@ -39,7 +39,10 @@ export default function App() {
           }}>
           <NavigationContainer ref={navigationRef}>
             <SafeAreaProvider>
-              <CustomStatusBar />
+              <CustomStatusBar
+                barStyle="light-content"
+                backgroundColor={Colors.cyan}
+              />
               <KeyboardAvoidingView
                 style={{ flex: 1, backgroundColor: 'white' }}
                 keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}

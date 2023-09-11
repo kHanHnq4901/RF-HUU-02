@@ -4,14 +4,13 @@ import {
   Keyboard,
   Platform,
   Button as RNButton,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown';
-import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Button } from '../../component/button/button';
 import { GetPicture } from '../../component/getPicture';
@@ -27,21 +26,19 @@ import Theme, {
 } from '../../theme';
 import {
   GetHookProps,
+  UpdateListLineAndModelMeter,
   hookProps,
-  lisStationName,
-  listModelMeterName,
   onDeInit,
   onInit,
 } from './controller';
 import {
   onDeclarePress,
-  onGetPositionPress,
-  onGoogleMapPress,
   onLineSelected,
   onModelMeterSelected,
   onRegionChangeComplete,
   onSearchInfo,
 } from './handleButton';
+import { showToast } from '../../util';
 
 const inputAccessoryViewID = 'uniqueID';
 
@@ -56,11 +53,11 @@ export const DeclareMeterScreen = () => {
 
   return (
     <View style={styles.container}>
-      {hookProps.state.isBusy && (
+      {/* {hookProps.state.isBusy && (
         <View style={styles.containerLoader}>
           <Loader3 />
         </View>
-      )}
+      )} */}
       {Platform.OS === 'ios' && (
         <InputAccessoryView nativeID={inputAccessoryViewID}>
           <RNButton onPress={() => Keyboard.dismiss()} title="OK" />
@@ -78,7 +75,7 @@ export const DeclareMeterScreen = () => {
           <SelectDropdown
             ref={hookProps.refStation}
             defaultButtonText=" "
-            data={lisStationName}
+            data={hookProps.state.lisStationName}
             onSelect={selectedItem => {
               onLineSelected(selectedItem);
             }}
@@ -112,7 +109,7 @@ export const DeclareMeterScreen = () => {
           <SelectDropdown
             ref={hookProps.refModelMeter}
             defaultButtonText=" "
-            data={listModelMeterName}
+            data={hookProps.state.listModelMeterName}
             onSelect={selectedItem => {
               onModelMeterSelected(selectedItem);
             }}
@@ -139,6 +136,18 @@ export const DeclareMeterScreen = () => {
       </View>
 
       <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={hookProps.state.isBusy}
+            onRefresh={async () => {
+              if (hookProps.state.isBusy) {
+                return;
+              }
+              await UpdateListLineAndModelMeter();
+              showToast('Đã cập nhật danh sách trạm');
+            }}
+          />
+        }
         showsVerticalScrollIndicator={false}
         ref={hookProps.refScroll}>
         <View style={styles.containerSeri}>

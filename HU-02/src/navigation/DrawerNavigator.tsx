@@ -1,19 +1,17 @@
-import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import React from 'react';
 import component from '../component';
 import { Header } from '../component/header';
-import { screenDatas } from '../shared';
-import { Colors, Fonts, scale } from '../theme';
-import { DrawerParamsList } from './model/model';
-import { UserInfoScreen } from '../screen/userInfoScreen';
-import { SettingUserScreen } from '../screen/settingUser';
 import { GuideBookScreen } from '../screen/guideBook';
-import { Platform } from 'react-native';
-import { statusBarConst } from '../App';
+import { SettingUserScreen } from '../screen/settingUser';
+import { UserInfoScreen } from '../screen/userInfoScreen';
+import { screenDatas } from '../shared';
+import { Fonts } from '../theme';
+import { DrawerParamsList } from './model/model';
 
 const Drawer = createDrawerNavigator<DrawerParamsList>();
 
-const heightHeader = 50 * scale;
+// const heightHeader = 60 * scale;
 export const DrawerNavigator = () => {
   return (
     <Drawer.Navigator
@@ -21,7 +19,8 @@ export const DrawerNavigator = () => {
       screenOptions={{
         headerTitleStyle: { fontFamily: Fonts },
         drawerStyle: { width: '80%', maxWidth: 450 },
-        headerStyle: { height: heightHeader },
+
+        // headerStyle: { height: heightHeader },
         swipeEdgeWidth: 0,
         header: props => <Header {...props} />,
       }}
