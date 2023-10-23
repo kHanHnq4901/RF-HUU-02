@@ -49,7 +49,9 @@ export const LogReadOpticalScreenScreen = () => {
           <RNButton onPress={() => Keyboard.dismiss()} title="OK" />
         </InputAccessoryView>
       )}
-      <ScrollView contentContainerStyle={{ paddingBottom: 50 }}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 50 }}>
         <View style={styles.row}>
           <NormalTextInput
             styleContainer={{ flex: 1 }}

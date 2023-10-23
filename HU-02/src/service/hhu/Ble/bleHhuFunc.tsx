@@ -5,6 +5,7 @@ import BleManager from 'react-native-ble-manager';
 import { showAlert, showToast, sleep } from '../../../util';
 import { HhuObj, ObjSend, readVersion, ShakeHand } from './hhuFunc';
 import { checkUpdateHHU } from '../../api';
+import { Platform } from 'react-native';
 
 const KEY_STORAGE = 'BLE_INFO';
 const TAG = 'Ble Func:';
@@ -111,7 +112,9 @@ export const connectLatestBLE = async (store: PropsStore) => {
         state.hhu.connect = 'DISCONNECTED';
         return { ...state };
       });
-      showAlert('Thiết bị chưa được bật bluetooth');
+      if (Platform.OS === 'android') {
+        showAlert('Thiết bị chưa được bật bluetooth');
+      }
       return;
     }
     showToast('Đang thử kết nối với thiết bị Bluetooth trước đó ...');

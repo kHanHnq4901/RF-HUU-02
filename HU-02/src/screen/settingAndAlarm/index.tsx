@@ -53,6 +53,9 @@ export const SettingAndAlarmScreen = () => {
                     } else if (item === 'Sawaco') {
                       store.state.appSetting.server.host = '182.237.21.93';
                       store.state.appSetting.server.port = '3090';
+                    } else if (item === 'Nhà máy') {
+                      store.state.appSetting.server.host = '222.252.14.147';
+                      store.state.appSetting.server.port = '6060';
                     }
 
                     return { ...state };

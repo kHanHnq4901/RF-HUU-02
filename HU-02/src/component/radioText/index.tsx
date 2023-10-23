@@ -32,6 +32,7 @@ export const RadioText = React.forwardRef<TextInput, Props>((props, ref) => {
 
       <TextInput
         autoCorrect={false}
+        placeholderTextColor={Colors.caption}
         autoCapitalize="none"
         spellCheck={false}
         textAlignVertical="center"

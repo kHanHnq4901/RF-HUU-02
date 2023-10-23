@@ -3,7 +3,7 @@ import axios from 'axios';
 import FormData from 'form-data';
 import { Platform } from 'react-native';
 import { Region } from 'react-native-maps';
-import { endPoints, getUrl } from '../../service/api';
+import { endPoints, endPointsNsx, getUrl, getUrlNsx } from '../../service/api';
 import { emitEventSuccess } from '../../service/event';
 import { deleteFile } from '../../shared/file';
 import { showAlert, showToast } from '../../util';
@@ -179,7 +179,9 @@ export async function onSaveLogPress() {
           ',' +
           hookProps.state.region.longitude,
       };
-      let url = getUrl(endPoints.log);
+      let url = getUrlNsx(endPointsNsx.log);
+
+      url = url.replace(store.state.appSetting.hhu.port, '6060');
 
       for (let item in params) {
         // formData.append(item, params[item]);
@@ -193,32 +195,37 @@ export async function onSaveLogPress() {
 
       console.log('lengthFormData:', lengthFormData);
 
-      const result = await axios({
-        method: 'post',
-        data: hookProps.state.images.length === 0 ? undefined : formData,
-        url: url,
-        // timeout: 15000,
+      for (let numRetries = 0; numRetries < 3; numRetries++) {
+        const result = await axios({
+          method: 'post',
+          data: hookProps.state.images.length === 0 ? undefined : formData,
+          url: url,
+          // timeout: 15000,
 
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'multipart/form-data',
-          'Content-Length':
-            hookProps.state.images.length === 0 ? undefined : lengthFormData,
-        },
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'multipart/form-data',
+            'Content-Length':
+              hookProps.state.images.length === 0 ? undefined : lengthFormData,
+          },
 
-        // transformRequest: form => form,
-      });
+          // transformRequest: form => form,
+        });
 
-      //console.log('result: ', JSON.stringify(result));
+        //console.log('result: ', JSON.stringify(result));
 
-      const response: { CODE: '0' | '1'; MESSAGE: string } = result.data;
+        const response: { CODE: '0' | '1'; MESSAGE: string } = result.data;
 
-      console.log('response:', response);
+        console.log('response:', response);
 
-      if (response.CODE === '1') {
-        sendOk = true;
-      } else {
-        showAlert('Lỗi:' + response.MESSAGE ?? '');
+        if (response.CODE === '1') {
+          sendOk = true;
+          break;
+        } else {
+          if (numRetries === 2) {
+            showAlert('Lỗi:' + response.MESSAGE ?? '');
+          }
+        }
       }
     } catch (err) {
       showAlert('Lỗi:' + String(err));
@@ -229,6 +236,7 @@ export async function onSaveLogPress() {
       });
       if (sendOk) {
         emitEventSuccess();
+        showToast('Log thành công');
         showAlert(
           'Bạn có muốn xoá tất cả ?',
           {

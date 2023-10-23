@@ -132,7 +132,7 @@ export const DrawerContent = props => {
 
                 const url = `http://${store.state.appSetting.hhu.host}:${
                   store.state.appSetting.hhu.port
-                }/HU_01/HDSD_HU_02.pdf?timestamp=${new Date().getTime()}`;
+                }/HU_02/HDSD_HU_02.pdf?timestamp=${new Date().getTime()}`;
                 const supported = await Linking.canOpenURL(url);
 
                 if (supported) {

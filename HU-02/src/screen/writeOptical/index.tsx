@@ -17,6 +17,8 @@ import { USER_ROLE_TYPE } from '../../service/user';
 import Theme, { Colors, CommonFontSize, sizeScreen } from '../../theme';
 import { GetHookProps, hookProps, onDeInit, onInit, store } from './controller';
 import { onReadOpticalPress, onWriteOpticalPress } from './handleButton';
+import { RadioButton } from '../../component/radioButton/radioButton';
+import { CheckboxButton } from '../../component/checkbox/checkbox';
 
 const inputAccessoryViewID = 'uniqueID';
 
@@ -129,7 +131,7 @@ export const WriteOpticalScreen = () => {
                 hookProps.data.ipPortString = text;
               }}
               // defaultValue={hookProps.state.ipPort.value}
-              placeholder="222.252.14.147:6060"
+              //placeholder="222.252.14.147:6060"
               maxLength={30}
               textAlign="right"
               containerStyle={styles.width50}
@@ -137,6 +139,18 @@ export const WriteOpticalScreen = () => {
               ref={hookProps.refIPPort}
             />
           </View>
+          <CheckboxButton
+            style={{ marginTop: 50 }}
+            checked={hookProps.state.forceSendImmediately.checked}
+            onPress={() => {
+              hookProps.setState(state => {
+                state.forceSendImmediately.checked =
+                  !state.forceSendImmediately.checked;
+                return { ...state };
+              });
+            }}
+            label={'Yêu cầu module gửi dữ liệu tức thì'}
+          />
         </View>
       </ScrollView>
       <View style={styles.areaButton}>

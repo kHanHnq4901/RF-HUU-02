@@ -77,10 +77,16 @@ export function SignInScreen() {
           }}
           value={hook.state.password}
           placeholder="Mật khẩu"
-          iconType="lock"
+          iconType={hook.state.showPassword ? 'unlock' : 'lock'}
+          onLeftIconPress={() => {
+            hook.setState(state => {
+              state.showPassword = !state.showPassword;
+              return { ...state };
+            });
+          }}
           autoCapitalize="none"
           autoCorrect={false}
-          secureTextEntry={true}
+          secureTextEntry={!hook.state.showPassword}
           rightChildren={
             store.state.typeTouchID !== 'NoSupport' && (
               <TouchableOpacity
@@ -98,6 +104,8 @@ export function SignInScreen() {
               </TouchableOpacity>
             )
           }
+          blurOnSubmit={false}
+          onSubmitEditing={() => onLoginPress()}
         />
 
         <FormButton

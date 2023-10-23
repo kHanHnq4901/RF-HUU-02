@@ -72,7 +72,7 @@ function checkCondition(): boolean {
     showAlert('Bổ sung thông tin Mã khách hàng');
     return false;
   }
-  text = hookProps.state.data.PHONE.trim();
+  text = hookProps.state.data.PHONE?.trim() ?? '';
   if (text.length > 0) {
     if (isAllNumeric(text) === false) {
       showAlert('Số điện thoại không hợp lệ');

@@ -16,9 +16,13 @@ type PropsTypeAlarmRegister = 'Giá trị (kWh)' | 'Phần trăm (%)';
 
 type PropsValueAlarmRegister = 'Percent' | 'Value';
 
-type PropsSelectServer = 'EMIC' | 'Sawaco';
+type PropsSelectServer = 'Nhà máy' | 'EMIC' | 'Sawaco';
 
-export const listSelectServer: PropsSelectServer[] = ['EMIC', 'Sawaco'];
+export const listSelectServer: PropsSelectServer[] = [
+  'Nhà máy',
+  'EMIC',
+  'Sawaco',
+];
 
 export const typeAlarmRegister: {
   title: PropsTypeAlarmRegister;

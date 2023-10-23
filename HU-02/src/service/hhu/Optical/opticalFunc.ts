@@ -624,7 +624,7 @@ export async function waitOpticalAdvance(
 
           data['Thời gian gửi lần tiếp'] = convertRtcTime2String(timeSend.next);
           data['Lần cuối gửi'] = convertRtcTime2String(timeSend.last);
-          data['Thời gian gửi lần tiếp'] = convertRtcTime2String(
+          data['Lần cuối thành công'] = convertRtcTime2String(
             timeSend.lastSucceed,
           );
           data['Trạng thái gửi'] = getStateSend(timeSend.u8State);

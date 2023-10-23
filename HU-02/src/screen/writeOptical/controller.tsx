@@ -1,6 +1,6 @@
-import React, {useState} from 'react';
-import {PropsStore, storeContext} from '../../store';
-import {TextInput} from 'react-native';
+import React, { useState } from 'react';
+import { PropsStore, storeContext } from '../../store';
+import { TextInput } from 'react-native';
 
 export type RadioTextProps = {
   checked: boolean;
@@ -19,6 +19,7 @@ export type HookState = {
   seriModule: RadioTextProps;
   immediateData: RadioTextProps;
   ipPort: RadioTextProps;
+  forceSendImmediately: RadioTextProps;
   isBusy: boolean;
   status: string;
 };
@@ -42,7 +43,7 @@ hookProps.data = {
   seriMeter: '',
   seriModule: '',
   immediateData: '',
-  ipPortString:'',
+  ipPortString: '',
 };
 
 export const GetHookProps = (): HookProps => {
@@ -60,6 +61,9 @@ export const GetHookProps = (): HookProps => {
       // value: '',
     },
     ipPort: {
+      checked: false,
+    },
+    forceSendImmediately: {
       checked: false,
     },
     isBusy: false,

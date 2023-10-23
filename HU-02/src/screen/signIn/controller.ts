@@ -13,6 +13,7 @@ import { checkUpdateFromStore } from '../../service/user';
 type PropsState = {
   password: string;
   btnSignInBusy: boolean;
+  showPassword: boolean;
 };
 
 type PropsHook = {
@@ -28,6 +29,7 @@ export function UpdateHook() {
   const [state, setState] = React.useState<PropsState>({
     password: '',
     btnSignInBusy: false,
+    showPassword: false,
   });
 
   hook.state = state;

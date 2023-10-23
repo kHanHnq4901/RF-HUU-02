@@ -1,4 +1,4 @@
-import {uint8_t} from '../../../util/custom_typedef';
+import { uint8_t } from '../../../util/custom_typedef';
 import { Optical_TimeRtcProps } from './opticalProtocol';
 
 export function Get_State_Reset_By_User(state: uint8_t): string {
@@ -122,16 +122,18 @@ export function Get_State_Reset(state: uint8_t): string {
   return str;
 }
 
-export function convertRtcTime2String(time: Optical_TimeRtcProps): string
-{
-  const str = `${time.u8Date}-${time.u8Month}-${2000+ time.u8Year} ${time.u8Hour}:${time.u8Minute}:${time.u8Sec}`;
+export function convertRtcTime2String(time: Optical_TimeRtcProps): string {
+  const str = `${time.u8Date.toString().padStart(2, '0')}-${time.u8Month
+    .toString()
+    .padStart(2, '0')}-${2000 + time.u8Year} ${time.u8Hour}:${time.u8Minute
+    .toString()
+    .padStart(2, '0')}:${time.u8Sec.toString().padStart(2, '0')}`;
   return str;
 }
 
-export function getStateSend(state: uint8_t): string{
+export function getStateSend(state: uint8_t): string {
   let str = '';
-  switch(state)
-  {
+  switch (state) {
     case 0:
       str = 'STATE_UNDEFINED';
       break;
@@ -155,8 +157,7 @@ export function getStateSend(state: uint8_t): string{
       break;
     default:
       str = 'UNKNOWN' + state;
-    break;
+      break;
   }
   return str;
 }
-

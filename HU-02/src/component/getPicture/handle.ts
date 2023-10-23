@@ -9,7 +9,7 @@ export async function onTakePicturePress(func: PropsInsertImage) {
     mediaType: 'photo',
     cameraType: 'back',
     saveToPhotos: false,
-    quality: 1,
+    quality: 0.3,
   });
   if (result.assets) {
     func(result.assets);
@@ -19,7 +19,7 @@ export async function onTakePicturePress(func: PropsInsertImage) {
 export async function onPickFromLibrary(func: PropsInsertImage) {
   const result = await launchImageLibrary({
     mediaType: 'photo',
-    quality: 1,
+    quality: 0.3,
     selectionLimit: 2,
   });
   if (result.assets) {

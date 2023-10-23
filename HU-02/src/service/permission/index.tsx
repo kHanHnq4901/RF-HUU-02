@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import { PermissionsAndroid, Platform } from 'react-native';
 import * as permission from 'react-native-permissions';
 import { check, PERMISSIONS, request, RESULTS } from 'react-native-permissions';
 
@@ -84,13 +84,21 @@ export const requestPermissionGPSAndroid = async (): Promise<boolean> => {
           'ACCESS_FINE_LOCATION',
           'The permission has not been requested / is denied but requestable',
         );
-        let status = await permission.request(
-          permission.PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
+        // let status = await permission.request(
+        //   permission.PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
+        // );
+        // if (
+        //   status === permission.RESULTS.GRANTED ||
+        //   status === permission.RESULTS.BLOCKED
+        // ) {
+        //   return true;
+        // } else {
+        //   return false;
+        // }
+        let status = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
         );
-        if (
-          status === permission.RESULTS.GRANTED ||
-          status === permission.RESULTS.BLOCKED
-        ) {
+        if (status === 'granted') {
           return true;
         } else {
           return false;

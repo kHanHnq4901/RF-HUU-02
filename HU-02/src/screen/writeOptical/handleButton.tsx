@@ -290,7 +290,8 @@ async function checkCondition(): Promise<boolean> {
   if (hookProps.state.seriMeter.checked) {
     text = hookProps.data.seriMeter.trim();
     if (text !== '0') {
-      if (isNumeric(text) === false || text.length !== 10) {
+      if (isNumeric(text) === false) {
+        //|| text.length !== 10
         console.log('text 1:', text);
         await showAlert('Số seri đồng hồ không hợp lệ');
 
@@ -301,7 +302,8 @@ async function checkCondition(): Promise<boolean> {
   }
   if (hookProps.state.seriModule.checked) {
     text = hookProps.data.seriModule.trim();
-    if (isNumeric(text) === false || text.length !== 10) {
+    if (isNumeric(text) === false) {
+      //|| text.length !== 10
       console.log('text 2:', text);
       await showAlert('Số seri module không hợp lệ');
       hookProps.refSeriModule.current?.clear();
@@ -524,6 +526,28 @@ export async function onWriteOpticalPress() {
           });
           if (response.bSucceed) {
             message += 'Cài IP port thành công. ';
+          } else {
+            message += 'Lỗi: ' + response.message + '. ';
+            //setStatus(message);
+            bHasError = true;
+          }
+        }
+      }
+      if (hookProps.state.forceSendImmediately.checked) {
+        cmd = OPTICAL_CMD.OPTICAL_REQUEST_SEND_DATA;
+        payload = Buffer.alloc(1 + sizeof(Optical_HostPortType));
+        payload.fill(0);
+
+        header.u8Length = 0;
+        header.u8Command = cmd;
+        bRet = await opticalSend(header);
+        if (bRet) {
+          const response = await waitOpticalAdvance({
+            desiredCmd: OPTICAL_CMD.OPTICAL_ACK,
+            timeout: timeout,
+          });
+          if (response.bSucceed) {
+            message += 'yêu cầu module gửi dữ liệu thành công. ';
           } else {
             message += 'Lỗi: ' + response.message + '. ';
             //setStatus(message);

@@ -91,6 +91,8 @@ const hhuHandleDisconnectedPeripheral = data => {
 };
 
 function checkTokenValidInterval() {
+  console.log('add event check token');
+
   timerCheckValidToken = setInterval(() => {
     if (
       new Date().getTime() >=
@@ -192,21 +194,16 @@ export const onInit = async navigation => {
     store.state.userInfo.USER_TYPE === USER_ROLE_TYPE.CUSTOMER ||
     store.state.userInfo.USER_TYPE === USER_ROLE_TYPE.STAFF
   ) {
-    try {
-      //await getMeterByAccount();
-
-      //await getLineList();
-
-      checkTokenValidInterval();
-    } catch (err) {
-      console.log(TAG, err.message);
-    }
-
     subscriptionAppState = AppState.addEventListener('change', nextState => {
       console.log('nextState:', nextState);
 
       if (nextState === 'active') {
         checkTokenValidInterval();
+      } else if (nextState === 'background') {
+        if (timerCheckValidToken) {
+          console.log('clear event check token');
+          clearInterval(timerCheckValidToken);
+        }
       }
     });
   }

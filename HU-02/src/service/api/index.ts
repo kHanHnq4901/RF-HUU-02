@@ -36,6 +36,7 @@ export const endPointsNsx = {
   getFirmware: '/HU_02/firmware.txt',
   getVersionAppMobile: '/HU_02/AppMobile/version.txt',
   getHDSD: '/HU_02/HDSD_HU_02.pdf',
+  log: '/api/CreateLogReadOptical',
 };
 
 export function getUrlNsx(endPoint: string): string {
@@ -178,7 +179,10 @@ export const getStringFirmware = async (): Promise<PropsReturnGetFirmware> => {
   return ret;
 };
 
-export async function checkUpdateHHU(props?: PropsReturnGetVerion) {
+export async function checkUpdateHHU(
+  props?: PropsReturnGetVerion,
+  showAlertNewest?: boolean,
+) {
   try {
     if (store.state.hhu.shortVersion !== '') {
       let currentVersion = store.state.hhu.shortVersion;
@@ -203,7 +207,9 @@ export async function checkUpdateHHU(props?: PropsReturnGetVerion) {
           console.log('current version:', currentVersion);
         } else {
           console.log('Không có bản cập nhật nào');
-          showAlert('Phiên bản phần mềm thiết bị cầm tay đang là mới nhất');
+          if (showAlertNewest) {
+            showAlert('Phiên bản phần mềm thiết bị cầm tay đang là mới nhất');
+          }
         }
       }
       //console.log('rest version:', rest);

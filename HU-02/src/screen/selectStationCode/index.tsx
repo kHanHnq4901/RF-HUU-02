@@ -13,7 +13,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Checkbox } from 'react-native-paper';
 import SelectDropdown from 'react-native-select-dropdown';
 import { Button } from '../../component/button/button';
 import { CheckboxButton } from '../../component/checkbox/checkbox';
@@ -59,9 +58,9 @@ const RowHeader = (props: PropsRowHeader) => {
           });
         }}
         style={styles.checkTabel}>
-        <Checkbox
+        <CheckboxButton
           uncheckedColor={Colors.primary}
-          status={props.checked ? 'checked' : 'unchecked'}
+          checked={props.checked}
         />
       </TouchableOpacity>
       <View style={styles.contentTable}>
@@ -90,9 +89,9 @@ const Row = (item: PropsTabel) => {
       }}
       style={styles.containerRowTable}>
       <View style={styles.checkTabel}>
-        <Checkbox
+        <CheckboxButton
           uncheckedColor={Colors.primary}
-          status={item.checked ? 'checked' : 'unchecked'}
+          checked={item.checked}
         />
       </View>
       <View style={styles.contentTable}>
