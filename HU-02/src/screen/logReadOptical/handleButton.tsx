@@ -170,7 +170,7 @@ export async function onSaveLogPress() {
         Active: hookProps.state.data.active,
         RegisterModule: hookProps.state.data.registerModule,
         RegisterMeter: hookProps.state.data.registerMeter,
-        Note: hookProps.state.data.note,
+        Note: store.state.userInfo.USER_NAME + ':' + hookProps.state.data.note,
 
         Fixed: hookProps.state.data.fixed,
 
