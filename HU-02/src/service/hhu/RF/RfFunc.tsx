@@ -1,9 +1,9 @@
-import {Buffer} from 'buffer';
-import {aes_128_dec, aes_128_en} from '../../../util/aes128';
-import {crc16_offset} from '../../../util/crc16';
+import { Buffer } from 'buffer';
+import { aes_128_dec, aes_128_en } from '../../../util/aes128';
+import { crc16_offset } from '../../../util/crc16';
 import struct from '../../../util/cstruct';
-import {int8_t, uint8_t} from '../../../util/custom_typedef';
-import {HhuObj, TYPE_OBJ} from '../Ble/hhuFunc';
+import { int8_t, uint8_t } from '../../../util/custom_typedef';
+import { HhuObj, TYPE_OBJ } from '../Ble/hhuFunc';
 import {
   Array2Struct,
   sizeof,
@@ -39,10 +39,10 @@ import {
   RP_TYPE_PACKET,
   SIZE_SERIAL,
 } from './radioProtocol';
-import {PropsLabel} from '../defineWM';
-import {formatDateTimeDB, SimpleTimeToSTring} from '../util/utilFunc';
-import {BufferToString} from '../../../util';
-import {store} from '../../../component/drawer/drawerContent/controller';
+import { PropsLabel } from '../defineWM';
+import { formatDateTimeDB, SimpleTimeToSTring } from '../util/utilFunc';
+import { BufferToString } from '../../../util';
+import { store } from '../../../component/drawer/drawerContent/controller';
 
 const TAG = 'Rf Func';
 
@@ -475,7 +475,7 @@ export type PropsRead = {
 };
 
 export type PropsModelRadio = {
-  info: {[key in PropsLabel]: string};
+  info: { [key in PropsLabel]: string };
   data: {
     [key in PropsLabel]?: string;
   }[];
@@ -584,7 +584,16 @@ export async function RfFunc_Read(props: PropsRead): Promise<PropsResponse> {
                   dataRadio.radio.periodLatchData.toString();
               }
 
-              modelRadio.info.Rssi = dataRadio.infoGet.s8Rssi.toString();
+              const rssi: number = dataRadio.infoGet.s8Rssi;
+              let strRssi = '';
+              if (rssi > -90) {
+                strRssi = rssi.toString() + '(Khoẻ)';
+              } else if (rssi > -100) {
+                strRssi = rssi.toString() + '(Trung bình)';
+              } else if (rssi <= -100) {
+                strRssi = rssi.toString() + '(Yếu)';
+              }
+              modelRadio.info.Rssi = strRssi;
 
               // if (dataRadio.radio.transient) {
               //   modelRadio.info['Điện áp'] = (

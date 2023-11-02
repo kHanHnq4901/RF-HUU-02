@@ -488,39 +488,63 @@ export async function waitOpticalAdvance(
         console.log('get rtc');
         break;
       case OPTICAL_CMD.OPTICAL_GET_REGISTER:
-        const typeSensor = objOptical.payload[index];
-        index++;
-        const pulse = objOptical.payload.readUintLE(index, 4);
-        switch (typeSensor) {
-          case IdentitySensor.LC_METER.id:
-            data['Dữ liệu'] = (pulse * IdentitySensor.LC_METER.factor).toFixed(
-              2,
-            );
-            break;
-          case IdentitySensor['1l/v'].id:
-            data['Dữ liệu'] = (pulse * IdentitySensor['1l/v'].factor).toFixed(
-              2,
-            );
-            break;
-          case IdentitySensor['0.25l/v'].id:
-            data['Dữ liệu'] = (
-              pulse * IdentitySensor['0.25l/v'].factor
-            ).toFixed(2);
-            break;
-          case IdentitySensor['0.5l/1v'].id:
-            data['Dữ liệu'] = (
-              pulse * IdentitySensor['0.5l/1v'].factor
-            ).toFixed(2);
-            break;
-          case IdentitySensor['5l/1v'].id:
-            data['Dữ liệu'] = (pulse * IdentitySensor['5l/1v'].factor).toFixed(
-              2,
-            );
-            break;
-          default:
-            data['Dữ liệu'] = 'unknown';
+        {
+          const typeSensor = objOptical.payload[index];
+          index++;
+          const pulse = objOptical.payload.readUintLE(index, 4);
+          switch (typeSensor) {
+            case IdentitySensor.LC_METER.id:
+              data['Dữ liệu'] = (
+                pulse * IdentitySensor.LC_METER.factor
+              ).toFixed(2);
+              break;
+            case IdentitySensor['1l/v'].id:
+              data['Dữ liệu'] = (pulse * IdentitySensor['1l/v'].factor).toFixed(
+                2,
+              );
+              break;
+            case IdentitySensor['0.25l/v'].id:
+              data['Dữ liệu'] = (
+                pulse * IdentitySensor['0.25l/v'].factor
+              ).toFixed(2);
+              break;
+            case IdentitySensor['0.5l/1v'].id:
+              data['Dữ liệu'] = (
+                pulse * IdentitySensor['0.5l/1v'].factor
+              ).toFixed(2);
+              break;
+            case IdentitySensor['5l/1v'].id:
+              data['Dữ liệu'] = (
+                pulse * IdentitySensor['5l/1v'].factor
+              ).toFixed(2);
+              break;
+            case IdentitySensor.LC_METER_DN32.id:
+              data['Dữ liệu'] = (
+                pulse * IdentitySensor.LC_METER_DN32.factor
+              ).toFixed(2);
+              break;
+            default:
+              data['Dữ liệu'] = 'unknown';
+          }
+          console.log('get register');
         }
-        console.log('get register');
+        break;
+      case OPTICAL_CMD.OPTICAL_GET_DATA_NO_FACTOR_PULSE:
+        {
+          const cwLit = objOptical.payload.readUintLE(index, 4);
+          index += 4;
+          const uCwLit = objOptical.payload.readUintLE(index, 4);
+          index += 4;
+
+          const lit = cwLit - uCwLit;
+          if (lit >= 0) {
+            data['Dữ liệu'] = lit.toFixed(0);
+          } else {
+            data['Dữ liệu'] = 'Lỗi';
+          }
+
+          console.log('get register no pulse');
+        }
         break;
       case OPTICAL_CMD.OPTICAL_GET_LIST_DATA_DAILY:
         const numRecord =
@@ -640,7 +664,19 @@ export async function waitOpticalAdvance(
 
         data['Test RF'] = testRF.u8Succeed ? 'Thành công' : 'Thất bại';
         if (testRF.u8Succeed) {
-          data.Rssi = testRF.s8RssiSlaveRec.toString();
+          const rssi: number = testRF.s8RssiSlaveRec;
+          let strRssi = '';
+          if (rssi === 99) {
+            strRssi = 'Không sóng';
+          } else if (rssi > -100) {
+            strRssi = rssi.toString() + '(Khoẻ)';
+          } else if (rssi > -110) {
+            strRssi = rssi.toString() + '(Trung bình)';
+          } else if (rssi <= -110) {
+            strRssi = rssi.toString() + '(Yếu)';
+          }
+          data.Rssi = strRssi;
+
           data['Có IP'] = testRF.u8HasIP ? 'Có' : 'NO_IP';
           data.QCCID = StringFromArray(
             Buffer.from(testRF.au8Qccid),
@@ -699,7 +735,7 @@ export async function waitOpticalAdvance(
           activeStatus === 1
             ? 'Yes'
             : activeStatus === 0
-            ? 'No'
+            ? 'Chưa kích hoạt module'
             : 'unknown: ' + activeStatus.toString();
 
         console.log('get active status');

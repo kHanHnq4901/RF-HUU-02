@@ -1,5 +1,5 @@
 import struct from '../../../util/cstruct';
-import {Buffer} from 'buffer';
+import { Buffer } from 'buffer';
 import {
   float,
   int8_t,
@@ -7,7 +7,7 @@ import {
   uint32_t,
   uint8_t,
 } from '../../../util/custom_typedef';
-import {Rtc_SimpleTimeProps, Rtc_SimpleTimeType} from '../RF/radioProtocol';
+import { Rtc_SimpleTimeProps, Rtc_SimpleTimeType } from '../RF/radioProtocol';
 
 export enum OPTICAL_CMD {
   OPTICAL_START_SHAKE_HAND = 0 /** @brief command optical */,
@@ -81,7 +81,13 @@ export enum Optical_SeriType {
   OPTICAL_TYPE_SERI_METER = 2,
 }
 
-type TypeSensor = 'LC_METER' | '5l/1v' | '0.25l/v' | '0.5l/1v' | '1l/v';
+type TypeSensor =
+  | 'LC_METER'
+  | '5l/1v'
+  | '0.25l/v'
+  | '0.5l/1v'
+  | '1l/v'
+  | 'LC_METER_DN32';
 
 export type Identity_SensorProps = {
   [key in TypeSensor]: {
@@ -121,6 +127,10 @@ export const IdentitySensor: Identity_SensorProps = {
   '1l/v': {
     id: 5,
     factor: 1,
+  },
+  LC_METER_DN32: {
+    id: 6,
+    factor: 10.0 / 6.0,
   },
 };
 

@@ -188,7 +188,7 @@ export async function onReadOpticalPress() {
       }
 
       if (hookProps.state.immediateData.checked) {
-        cmd = OPTICAL_CMD.OPTICAL_GET_REGISTER;
+        cmd = OPTICAL_CMD.OPTICAL_GET_DATA_NO_FACTOR_PULSE;
         payload = undefined;
 
         header.u8Command = cmd;

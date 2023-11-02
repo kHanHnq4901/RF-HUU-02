@@ -268,7 +268,7 @@ async function readData() {
   arrCommand.push(OPTICAL_CMD.OPTICAL_GET_SERIAL);
   //}
   if (hookProps.state.typeRead === 'Tức thời') {
-    arrCommand.push(OPTICAL_CMD.OPTICAL_GET_REGISTER);
+    arrCommand.push(OPTICAL_CMD.OPTICAL_GET_DATA_NO_FACTOR_PULSE);
   } else {
     arrCommand.push(OPTICAL_CMD.OPTICAL_GET_LIST_DATA_DAILY);
   }
